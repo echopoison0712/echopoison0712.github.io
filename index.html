@@ -136,6 +136,97 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-kafka" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2019/08/21/kafka/">kafka</a>
+    </h1>
+  
+
+        <!--显示阅读次数-->
+
+        
+        <a href="/2019/08/21/kafka/" class="archive-article-date">
+  	<time datetime="2019-08-21T07:03:26.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-08-21</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h3 id="基本知识"><a href="#基本知识" class="headerlink" title="基本知识"></a>基本知识</h3><ul>
+<li>主题是一个逻辑上的概念，可以细分为多个分区</li>
+<li>同一主题下的不同分区包含的消息是不同的</li>
+<li>kafka中的分区可以分布在不同的服务器上</li>
+<li>每条消息呗发送到broker前，会根据分区规则选择存储到哪个具体的分区</li>
+<li>同一分区的不同副本保存的是相同的消息，其中leader副本负责处理读写请求，follower副本<strong>只</strong>负责与leader副本打的消息同步</li>
+<li>分区中的所有副本统称为AR，所有与leader副本一致的（包括leader）称为ISR，与leader副本之后<strong>过多</strong>的成为OSR，所以AR = ISR + OSR</li>
+<li>ISR与HW和LEO有关系 （LEO标识当前日志文件中下一条待写入消息的offset，分区ISR集合的每个副本都有一个ISR，ISR中最小的为HW）</li>
+<li>消费者只能拉到HW之前的消息</li>
+</ul>
+        
+          <a class="article-more-a" href="/2019/08/21/kafka/#more">more >></a>
+        
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">kafka</a>
+        		</li>
+      		 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">随笔</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2019/08/21/kafka/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-hello-world" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -300,6 +391,14 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
             <input type="checkbox" q-on="click:toggleTag(e)" q-attr="checked:showTags">
           </label>
           <ul class="article-tag-list" q-show="showTags">
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color1">kafka</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color3">随笔</a>
+              </li>
             
             <div class="clearfix"></div>
           </ul>
