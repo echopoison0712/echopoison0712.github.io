@@ -6,16 +6,20 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <link rel="dns-prefetch" href="http://yoursite.com">
-  <title>categories | echopoison</title>
+  <title>kafka分区一致性的思考 | echopoison</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta property="og:type" content="website">
-<meta property="og:title" content="categories">
-<meta property="og:url" content="http://yoursite.com/categories/index.html">
+  <meta name="description" content="在学习kafka的过程中，相信都听过一个概念“kafka不能保证消息整体的一致性，只能保证分区内的一致性“。其原因很简单当时看书的时候看到这里就觉得嗯嗯，是这么个道理，然后就接着往下看了。 后来在发送消息的API中，我以为发个消息，参数里就传topic和value就足够了，往指定topic里发value嘛，但是在代码里，发现除了这两个参数外，还有key这个参数，研讨一番后知道如果key不为null">
+<meta name="keywords" content="kafka">
+<meta property="og:type" content="article">
+<meta property="og:title" content="kafka分区一致性的思考">
+<meta property="og:url" content="http://yoursite.com/2019/09/09/kafka分区一致性的思考/index.html">
 <meta property="og:site_name" content="echopoison">
+<meta property="og:description" content="在学习kafka的过程中，相信都听过一个概念“kafka不能保证消息整体的一致性，只能保证分区内的一致性“。其原因很简单当时看书的时候看到这里就觉得嗯嗯，是这么个道理，然后就接着往下看了。 后来在发送消息的API中，我以为发个消息，参数里就传topic和value就足够了，往指定topic里发value嘛，但是在代码里，发现除了这两个参数外，还有key这个参数，研讨一番后知道如果key不为null">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2019-08-21T03:14:17.526Z">
+<meta property="og:updated_time" content="2019-09-09T07:14:43.835Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="categories">
+<meta name="twitter:title" content="kafka分区一致性的思考">
+<meta name="twitter:description" content="在学习kafka的过程中，相信都听过一个概念“kafka不能保证消息整体的一致性，只能保证分区内的一致性“。其原因很简单当时看书的时候看到这里就觉得嗯嗯，是这么个道理，然后就接着往下看了。 后来在发送消息的API中，我以为发个消息，参数里就传topic和value就足够了，往指定topic里发value嘛，但是在代码里，发现除了这两个参数外，还有key这个参数，研讨一番后知道如果key不为null">
   
     <link rel="alternative" href="/atom.xml" title="echopoison" type="application/atom+xml">
   
@@ -135,14 +139,14 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            <article id="page-" class="article article-type-page " itemscope itemprop="blogPost">
+            <article id="post-kafka分区一致性的思考" class="article article-type-post " itemscope itemprop="blogPost">
   <div class="article-inner">
     
       <header class="article-header">
         
   
     <h1 class="article-title" itemprop="name">
-      categories
+      kafka分区一致性的思考
     </h1>
   
 
@@ -157,15 +161,30 @@
   </a>
   
         
-        <a href="/categories/index.html" class="archive-article-date">
-  	<time datetime="2019-08-21T03:14:01.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-08-21</time>
+        <a href="/2019/09/09/kafka分区一致性的思考/" class="archive-article-date">
+  	<time datetime="2019-09-09T07:13:43.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-09-09</time>
 </a>
         
       </header>
     
     <div class="article-entry" itemprop="articleBody">
       
-        
+        <p>在学习kafka的过程中，相信都听过一个概念<strong>“kafka不能保证消息整体的一致性，只能保证分区内的一致性“</strong>。其原因很简单当时看书的时候看到这里就觉得嗯嗯，是这么个道理，然后就接着往下看了。</p>
+<p>后来在发送消息的API中，我以为发个消息，参数里就传topic和value就足够了，往指定topic里发value嘛，但是在代码里，发现除了这两个参数外，还有key这个参数，研讨一番后知道如果key不为null，计算得到的分区号会是所有分区中的任意一个（对key进行hash运算，相同hash的入同一分区），如果key为null，那么计算得到的分区号仅为可用分区中的任意一个。kafka的producer分区策略可以阅读DefaultPartitioner#partition方法</p>
+<a id="more"></a>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">partition</span><span class="params">(String topic, Object key, <span class="keyword">byte</span>[] keyBytes, Object value, <span class="keyword">byte</span>[] valueBytes, Cluster cluster)</span> </span>&#123;</span><br><span class="line">    List&lt;PartitionInfo&gt; partitions = cluster.partitionsForTopic(topic);</span><br><span class="line">    <span class="keyword">int</span> numPartitions = partitions.size();</span><br><span class="line">    <span class="keyword">if</span> (keyBytes == <span class="keyword">null</span>) &#123; <span class="comment">// 未指定key</span></span><br><span class="line">        <span class="keyword">int</span> nextValue = nextValue(topic);</span><br><span class="line">        List&lt;PartitionInfo&gt; availablePartitions = cluster.availablePartitionsForTopic(topic);	<span class="comment">// 得到所有可用分区</span></span><br><span class="line">        <span class="keyword">if</span> (availablePartitions.size() &gt; <span class="number">0</span>) &#123;</span><br><span class="line">            <span class="keyword">int</span> part = Utils.toPositive(nextValue) % availablePartitions.size();</span><br><span class="line">            <span class="keyword">return</span> availablePartitions.get(part).partition();</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="comment">// no partitions are available, give a non-available partition</span></span><br><span class="line">            <span class="keyword">return</span> Utils.toPositive(nextValue) % numPartitions;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="comment">// hash the keyBytes to choose a partition</span></span><br><span class="line">        <span class="keyword">return</span> Utils.toPositive(Utils.murmur2(keyBytes)) % numPartitions;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>以及nextValue方法</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">int</span> <span class="title">nextValue</span><span class="params">(String topic)</span> </span>&#123;</span><br><span class="line">    AtomicInteger counter = topicCounterMap.get(topic);</span><br><span class="line">    <span class="keyword">if</span> (<span class="keyword">null</span> == counter) &#123;</span><br><span class="line">        counter = <span class="keyword">new</span> AtomicInteger(ThreadLocalRandom.current().nextInt());</span><br><span class="line">        AtomicInteger currentCounter = topicCounterMap.putIfAbsent(topic, counter);</span><br><span class="line">        <span class="keyword">if</span> (currentCounter != <span class="keyword">null</span>) &#123;</span><br><span class="line">            counter = currentCounter;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> counter.getAndIncrement();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这段代码大概意思也不难读懂，了解之后得出一个结论，key这个参数就是在发送消息的时候用来指定<strong>消息发往哪个分区的</strong></p>
+<p>至此，得出了两个结论，但是当时并没有发散去思考问题，其实仔细想想，这两个概念还是有一定关联关系的。下面通过一个demo来分析一下。</p>
+<p>后来的某一天，我们接了这样一个消息，这个消息的的内容是mysql的binlog，就是通过canal来解析mysql的binlog并将解析出来的DML和DDL写入kafka。</p>
+<p>我当时通过<code>bin/kafka-topics.sh --zookeeper 127.0.0.1:2181 --topic TOPIC --describe</code>命令看了一下这个topic的详情，发现它的分区数量PartitionCount = 1，当时很不理解为什么要把分区数量设为1，这样岂不是对于一个消费者组而言只有一个消费者在消费数据吗？不过由于开发这段功能的“前辈”已经离职了，所以也就不了了之了，一个分区就一个分区呗，我咸吃萝卜淡操着那个心干嘛。</p>
+<p>后来，当我重读《深入理解Kafka：核心设计与实践原理》这本书的时候，再看到“kafka不能保证消息整体的一致性，只能保证分区内的一致性”这个概念的时候，突然想到了这个示例，突然间意识到原来当时那个topic的partitionCount = 1 是有其业务意义的，因为消息的是表的DML语句，其对于顺序的要求是很高的，先Insert再Update和先Update再Insert这就有可能产生两种数据，如果这里建立了多个分区，一致性就得不到保障。当想通这个道理的时候不禁觉得前辈到底是前辈，这里确实只能建一个分区。</p>
+<p>再后来，当我看到producer的key这个参数的时候，再回想这个示例不禁发现，真的只能建一个分区吗？kafka既然是一个成熟的中间件了，对于这种需要保证消息一致性的解决方案就是只能是建一个分区吗？显然，kafka留下了key这个参数用来解决这个问题，在该业务上，完全可以将同一张表的DML/DDL用一个key来映射，不同的表使用不同的key，这样就完美解决了该问题，其分区也就可以根据情况来创建多个了。类比到其他业务线上比如订单系统中相同订单号的消息使用同一topic来send。想到这里，emmm，“前辈”确实只是个“前辈”。</p>
+<p>至此，通过一个样例，将kafka的两个概念串联了起来，不禁觉得这些看起来很easy的概念，如果面试的时候面试官单问任何一个都可以侃侃而谈的概念，如果多思考，多问为什么，还是可以得到很多不一样的心得与体会的。学习的乐趣大体在于此吧。</p>
+
       
 
       
@@ -173,6 +192,17 @@
     <div class="article-info article-info-index">
       
       
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">kafka</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
       
 
       
@@ -223,7 +253,7 @@
     <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
     <p>扫一扫，分享到微信</p>
     <div class="wx-qrcode">
-      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/categories/" alt="微信分享二维码">
+      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2019/09/09/kafka分区一致性的思考/" alt="微信分享二维码">
     </div>
 </div>
 
@@ -328,7 +358,7 @@
 	var yiliaConfig = {
 		mathjax: false,
 		isHome: false,
-		isPost: false,
+		isPost: true,
 		isArchive: false,
 		isTag: false,
 		isCategory: false,
