@@ -6,20 +6,22 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <link rel="dns-prefetch" href="http://yoursite.com">
-  <title>kafka分区一致性的思考 | echopoison</title>
+  <title>尝试解读一下helpGC | echopoison</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="在学习kafka的过程中，相信都听过一个概念“kafka不能保证消息整体的一致性，只能保证分区内的一致性“。其原因很简单当时看书的时候看到这里就觉得嗯嗯，是这么个道理，然后就接着往下看了。 后来在发送消息的API中，我以为发个消息，参数里就传topic和value就足够了，往指定topic里发value嘛，但是在代码里，发现除了这两个参数外，还有key这个参数，研讨一番后知道如果key不为null">
-<meta name="keywords" content="kafka">
+  <meta name="description" content="在阅读JUC源码的时候，时不时能看到//help GC这样的注释">
+<meta name="keywords" content="-- JVM">
 <meta property="og:type" content="article">
-<meta property="og:title" content="kafka分区一致性的思考">
-<meta property="og:url" content="http://yoursite.com/2019/09/09/kafka分区一致性的思考/index.html">
+<meta property="og:title" content="尝试解读一下helpGC">
+<meta property="og:url" content="http://yoursite.com/2019/09/10/尝试解读一下helpGC/index.html">
 <meta property="og:site_name" content="echopoison">
-<meta property="og:description" content="在学习kafka的过程中，相信都听过一个概念“kafka不能保证消息整体的一致性，只能保证分区内的一致性“。其原因很简单当时看书的时候看到这里就觉得嗯嗯，是这么个道理，然后就接着往下看了。 后来在发送消息的API中，我以为发个消息，参数里就传topic和value就足够了，往指定topic里发value嘛，但是在代码里，发现除了这两个参数外，还有key这个参数，研讨一番后知道如果key不为null">
+<meta property="og:description" content="在阅读JUC源码的时候，时不时能看到//help GC这样的注释">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2019-09-09T07:14:43.835Z">
+<meta property="og:image" content="http://pwxc1xwdv.bkt.clouddn.com/blog-helpGC.png">
+<meta property="og:updated_time" content="2019-09-10T15:03:15.647Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="kafka分区一致性的思考">
-<meta name="twitter:description" content="在学习kafka的过程中，相信都听过一个概念“kafka不能保证消息整体的一致性，只能保证分区内的一致性“。其原因很简单当时看书的时候看到这里就觉得嗯嗯，是这么个道理，然后就接着往下看了。 后来在发送消息的API中，我以为发个消息，参数里就传topic和value就足够了，往指定topic里发value嘛，但是在代码里，发现除了这两个参数外，还有key这个参数，研讨一番后知道如果key不为null">
+<meta name="twitter:title" content="尝试解读一下helpGC">
+<meta name="twitter:description" content="在阅读JUC源码的时候，时不时能看到//help GC这样的注释">
+<meta name="twitter:image" content="http://pwxc1xwdv.bkt.clouddn.com/blog-helpGC.png">
   
     <link rel="alternative" href="/atom.xml" title="echopoison" type="application/atom+xml">
   
@@ -133,14 +135,14 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            <article id="post-kafka分区一致性的思考" class="article article-type-post " itemscope itemprop="blogPost">
+            <article id="post-尝试解读一下helpGC" class="article article-type-post " itemscope itemprop="blogPost">
   <div class="article-inner">
     
       <header class="article-header">
         
   
     <h1 class="article-title" itemprop="name">
-      kafka分区一致性的思考
+      尝试解读一下helpGC
     </h1>
   
 
@@ -155,29 +157,33 @@
   </a>
   
         
-        <a href="/2019/09/09/kafka分区一致性的思考/" class="archive-article-date">
-  	<time datetime="2019-09-09T07:13:43.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-09-09</time>
+        <a href="/2019/09/10/尝试解读一下helpGC/" class="archive-article-date">
+  	<time datetime="2019-09-10T15:01:26.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-09-10</time>
 </a>
         
       </header>
     
     <div class="article-entry" itemprop="articleBody">
       
-        <p>在学习kafka的过程中，相信都听过一个概念<strong>“kafka不能保证消息整体的一致性，只能保证分区内的一致性“</strong>。其原因很简单当时看书的时候看到这里就觉得嗯嗯，是这么个道理，然后就接着往下看了。</p>
-<p>后来在发送消息的API中，我以为发个消息，参数里就传topic和value就足够了，往指定topic里发value嘛，但是在代码里，发现除了这两个参数外，还有key这个参数，研讨一番后知道如果key不为null，计算得到的分区号会是所有分区中的任意一个（对key进行hash运算，相同hash的入同一分区），如果key为null，那么计算得到的分区号仅为可用分区中的任意一个。kafka的producer分区策略可以阅读DefaultPartitioner#partition方法</p>
+        <p>在阅读JUC源码的时候，时不时能看到//help GC这样的注释</p>
 <a id="more"></a>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">partition</span><span class="params">(String topic, Object key, <span class="keyword">byte</span>[] keyBytes, Object value, <span class="keyword">byte</span>[] valueBytes, Cluster cluster)</span> </span>&#123;</span><br><span class="line">    List&lt;PartitionInfo&gt; partitions = cluster.partitionsForTopic(topic);</span><br><span class="line">    <span class="keyword">int</span> numPartitions = partitions.size();</span><br><span class="line">    <span class="keyword">if</span> (keyBytes == <span class="keyword">null</span>) &#123; <span class="comment">// 未指定key</span></span><br><span class="line">        <span class="keyword">int</span> nextValue = nextValue(topic);</span><br><span class="line">        List&lt;PartitionInfo&gt; availablePartitions = cluster.availablePartitionsForTopic(topic);	<span class="comment">// 得到所有可用分区</span></span><br><span class="line">        <span class="keyword">if</span> (availablePartitions.size() &gt; <span class="number">0</span>) &#123;</span><br><span class="line">            <span class="keyword">int</span> part = Utils.toPositive(nextValue) % availablePartitions.size();</span><br><span class="line">            <span class="keyword">return</span> availablePartitions.get(part).partition();</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="comment">// no partitions are available, give a non-available partition</span></span><br><span class="line">            <span class="keyword">return</span> Utils.toPositive(nextValue) % numPartitions;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="comment">// hash the keyBytes to choose a partition</span></span><br><span class="line">        <span class="keyword">return</span> Utils.toPositive(Utils.murmur2(keyBytes)) % numPartitions;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-<p>以及nextValue方法</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">int</span> <span class="title">nextValue</span><span class="params">(String topic)</span> </span>&#123;</span><br><span class="line">    AtomicInteger counter = topicCounterMap.get(topic);</span><br><span class="line">    <span class="keyword">if</span> (<span class="keyword">null</span> == counter) &#123;</span><br><span class="line">        counter = <span class="keyword">new</span> AtomicInteger(ThreadLocalRandom.current().nextInt());</span><br><span class="line">        AtomicInteger currentCounter = topicCounterMap.putIfAbsent(topic, counter);</span><br><span class="line">        <span class="keyword">if</span> (currentCounter != <span class="keyword">null</span>) &#123;</span><br><span class="line">            counter = currentCounter;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> counter.getAndIncrement();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>这段代码大概意思也不难读懂，了解之后得出一个结论，key这个参数就是在发送消息的时候用来指定<strong>消息发往哪个分区的</strong></p>
-<p>至此，得出了两个结论，但是当时并没有发散去思考问题，其实仔细想想，这两个概念还是有一定关联关系的。下面通过一个demo来分析一下。</p>
-<p>后来的某一天，我们接了这样一个消息，这个消息的的内容是mysql的binlog，就是通过canal来解析mysql的binlog并将解析出来的DML和DDL写入kafka。</p>
-<p>我当时通过<code>bin/kafka-topics.sh --zookeeper 127.0.0.1:2181 --topic TOPIC --describe</code>命令看了一下这个topic的详情，发现它的分区数量PartitionCount = 1，当时很不理解为什么要把分区数量设为1，这样岂不是对于一个消费者组而言只有一个消费者在消费数据吗？不过由于开发这段功能的“前辈”已经离职了，所以也就不了了之了，一个分区就一个分区呗，我咸吃萝卜淡操着那个心干嘛。</p>
-<p>后来，当我重读《深入理解Kafka：核心设计与实践原理》这本书的时候，再看到“kafka不能保证消息整体的一致性，只能保证分区内的一致性”这个概念的时候，突然想到了这个示例，突然间意识到原来当时那个topic的partitionCount = 1 是有其业务意义的，因为消息的是表的DML语句，其对于顺序的要求是很高的，先Insert再Update和先Update再Insert这就有可能产生两种数据，如果这里建立了多个分区，一致性就得不到保障。当想通这个道理的时候不禁觉得前辈到底是前辈，这里确实只能建一个分区。</p>
-<p>再后来，当我看到producer的key这个参数的时候，再回想这个示例不禁发现，真的只能建一个分区吗？kafka既然是一个成熟的中间件了，对于这种需要保证消息一致性的解决方案就是只能是建一个分区吗？显然，kafka留下了key这个参数用来解决这个问题，在该业务上，完全可以将同一张表的DML/DDL用一个key来映射，不同的表使用不同的key，这样就完美解决了该问题，其分区也就可以根据情况来创建多个了。类比到其他业务线上比如订单系统中相同订单号的消息使用同一topic来send。想到这里，emmm，“前辈”确实只是个“前辈”。</p>
-<p>至此，通过一个样例，将kafka的两个概念串联了起来，不禁觉得这些看起来很easy的概念，如果面试的时候面试官单问任何一个都可以侃侃而谈的概念，如果多思考，多问为什么，还是可以得到很多不一样的心得与体会的。学习的乐趣大体在于此吧。</p>
+<p><img src="http://pwxc1xwdv.bkt.clouddn.com/blog-helpGC.png" alt="blog-helpGC"></p>
+<p>起初读到这里就在思考，怎么就help GC了？我就一个赋值操作就可以help GC？怎么个help方法，素质三连之后发现并没有啥想法也就不了了之了。</p>
+<p>之后，当我重读《深入理解Java虚拟机》的时候，当读到GC Roots节点的时候回想到了这个help GC的问题，思考会不会是因为GC Roots的原因呢？</p>
+<p>相信大家都知道GC Roots也知道什么对象可以做为GC Roots</p>
+<ul>
+<li>虚拟机栈中引用的对象</li>
+<li>方法区中常量引用的对象</li>
+<li>方法区中静态属性引用的变量</li>
+<li>本地方法栈中native方法引用的对象</li>
+</ul>
+<p>反正我最开始在看到这里的时候就是小笔一划，小圈一画也就直接往下继续看了，理解全靠死记硬背。</p>
+<p>这里拿常量举例来说，如果它不作为GC Roots的话，那么就需要有一个更上层的GC Roots来指向它，那么这个更上层的节点又会是谁呢？想了想好像找不出来，反证法也得出常量需要是GC Roots节点。</p>
+<p>再来说说help GC，现在想一想，栈中对象的生命周期和该方法的生命周期一样长，而常量和静态属性则在类加载过程的“准备”阶段就已经加载进JVM中，其生命周期和类的生命周期一样长应该是整个JVM期间，native方法不知道但猜测应该是和常量/静态属性一样。既然说常量的生命周期和类的生命周期一样长，那么常量所引用的对象不使用后如果不显示的置NULL，岂不造成内存泄漏？想想似乎ThreadLocalMap中ThreadLocal设为弱引用好像也是基于此。</p>
+<p>而上文中的示例，栈中引用的对象如果不显示的塞NULL值，那么在整个方法的运行过程中其一直存在，然后eden区就满了，显示的塞NULL后在GC过程中由于该节点是GC Roots节点，那么很快就会被标记到既而成功清除</p>
+<p>而后在继续度娘的过程中发现了<a href="https://www.jianshu.com/p/4a1080373096?mType=Group&from=androidqq" target="_blank" rel="noopener">这样一篇文章</a>，顿时发现实践是检验真理的唯一标准啊，膜拜大佬。</p>
+<p>其实到这里，通过超链的文章已经证实了确实是有help GC，但是至于究竟怎么个help法还是不是特别的透彻，不过这正是学习的乐趣不是吗？</p>
 
       
 
@@ -191,7 +197,7 @@
 		<ul class="article-tag-list">
 			 
         		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">kafka</a>
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color2">-- JVM</a>
         		</li>
       		
 		</ul>
@@ -247,7 +253,7 @@
     <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
     <p>扫一扫，分享到微信</p>
     <div class="wx-qrcode">
-      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2019/09/09/kafka分区一致性的思考/" alt="微信分享二维码">
+      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2019/09/10/尝试解读一下helpGC/" alt="微信分享二维码">
     </div>
 </div>
 
@@ -261,15 +267,11 @@
   
 <nav id="article-nav">
   
-    <a href="/2019/09/10/尝试解读一下helpGC/" id="article-nav-newer" class="article-nav-link-wrap">
-      <i class="icon-circle-left"></i>
-      <div class="article-nav-title">
-        
-          尝试解读一下helpGC
-        
-      </div>
-    </a>
   
+    <a href="/2019/09/09/kafka分区一致性的思考/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">kafka分区一致性的思考</div>
+      <i class="icon-circle-right"></i>
+    </a>
   
 </nav>
 
