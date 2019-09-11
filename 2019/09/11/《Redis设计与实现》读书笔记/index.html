@@ -8,18 +8,30 @@
   <link rel="dns-prefetch" href="http://yoursite.com">
   <title>《Redis设计与实现》读书笔记 | echopoison</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="单机数据库的实现">
-<meta name="keywords" content="redis">
+  <meta name="description" content="《Redis设计与实现》 读书笔记">
+<meta name="keywords" content="redis,读书笔记">
 <meta property="og:type" content="article">
 <meta property="og:title" content="《Redis设计与实现》读书笔记">
 <meta property="og:url" content="http://yoursite.com/2019/09/11/《Redis设计与实现》读书笔记/index.html">
 <meta property="og:site_name" content="echopoison">
-<meta property="og:description" content="单机数据库的实现">
+<meta property="og:description" content="《Redis设计与实现》 读书笔记">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2019-09-11T09:55:27.432Z">
+<meta property="og:image" content="http://pwxc1xwdv.bkt.clouddn.com/image-20190831000346835.png">
+<meta property="og:image" content="http://pwxc1xwdv.bkt.clouddn.com/image-20190831095736147.png">
+<meta property="og:image" content="http://pwxc1xwdv.bkt.clouddn.com/image-20190831101225871.png">
+<meta property="og:image" content="http://pwxc1xwdv.bkt.clouddn.com/image-20190831101321784.png">
+<meta property="og:image" content="http://pwxc1xwdv.bkt.clouddn.com/image-20190831102124452.png">
+<meta property="og:image" content="http://pwxc1xwdv.bkt.clouddn.com/image-20190831102139083.png">
+<meta property="og:image" content="http://pwxc1xwdv.bkt.clouddn.com/image-20190831102334582.png">
+<meta property="og:image" content="http://pwxc1xwdv.bkt.clouddn.com/image-20190831211338761.png">
+<meta property="og:image" content="http://pwxc1xwdv.bkt.clouddn.com/image-20190902114748806.png">
+<meta property="og:image" content="http://pwxc1xwdv.bkt.clouddn.com/image-20190902114825957.png">
+<meta property="og:image" content="http://pwxc1xwdv.bkt.clouddn.com/image-20190902142057365.png">
+<meta property="og:updated_time" content="2019-09-11T10:41:01.378Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="《Redis设计与实现》读书笔记">
-<meta name="twitter:description" content="单机数据库的实现">
+<meta name="twitter:description" content="《Redis设计与实现》 读书笔记">
+<meta name="twitter:image" content="http://pwxc1xwdv.bkt.clouddn.com/image-20190831000346835.png">
   
     <link rel="alternative" href="/atom.xml" title="echopoison" type="application/atom+xml">
   
@@ -163,8 +175,222 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <h1 id="单机数据库的实现"><a href="#单机数据库的实现" class="headerlink" title="单机数据库的实现"></a>单机数据库的实现</h1><a id="more"></a>
+        <p><a href="http://redisbook.com/" target="_blank" rel="noopener">《Redis设计与实现》</a> 读书笔记</p>
+<a id="more"></a>
+
+<h1 id="数据结构与对象"><a href="#数据结构与对象" class="headerlink" title="数据结构与对象"></a>数据结构与对象</h1><h3 id="SDS"><a href="#SDS" class="headerlink" title="SDS"></a>SDS</h3><ul>
+<li><p>Redis里面，C字符串只会做字符串字面量用在一些无需对字符串值进行修改的地方</p>
+</li>
+<li><p>数据结构</p>
+<p><img src="http://pwxc1xwdv.bkt.clouddn.com/image-20190831000346835.png" alt="image-20190831000346835"></p>
+</li>
+<li><p>SDS与C字符串的区别</p>
+<p><img src="http://pwxc1xwdv.bkt.clouddn.com/image-20190831095736147.png" alt="image-20190831095736147"></p>
 <ul>
+<li><p>常数复杂度获取字符串长度</p>
+<p>通过使用SDS而不是C字符串，Redis将获取字符串长度所需的复杂度从O(N)降低到O(1)；</p>
+<p>设置和更新SDS长度的工作是由SDS的API在执行时自动完成的</p>
+</li>
+<li><p>杜绝缓冲区溢出</p>
+<p>由于C字符串不记录自身长度，因此可能带来缓冲区的溢出，而SDS的空间分配策略完全杜绝了发生缓冲区溢出的可能性</p>
+</li>
+<li><p>减少修改字符串时带来的内存重分配次数</p>
+<ul>
+<li><p>问题：对于字符串拼接操作可能产生缓冲区溢出、对于字符串截断操作可能内存泄漏</p>
+</li>
+<li><p>SDS通过未使用空间接触了字符串长度和底层数组长度的关联</p>
+</li>
+<li><p>两种优化策略</p>
+<ul>
+<li><p>空间预分配</p>
+<p>对SDS修改后长度小于1MB，则分配和len同样大小的未使用空间</p>
+<p>对SDS修改后长度大于1MB，分配1MB</p>
+</li>
+<li><p>惰性空间释放</p>
+<p>当SDS的API需要缩短SDS保存的字符串时，不利己使用内存重分配来回收缩短后多出来的字节，而是使用free属性将这些字节存储起来</p>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>二进制安全</p>
+<p>C字符串由于以空字符来判断结尾，因此若存储的流中包含空字符，会导致数据丢失</p>
+<p>所有SDS API都会以处理二进制的方式来处理SDS存放在buf数组里的数据</p>
+</li>
+<li><p>兼容部分C的函数</p>
+</li>
+</ul>
+</li>
+</ul>
+<h3 id="链表"><a href="#链表" class="headerlink" title="链表"></a>链表</h3><ul>
+<li><p>在listNode的基础上定义了list数据结构来更方便的操作链表</p>
+<img src="http://pwxc1xwdv.bkt.clouddn.com/image-20190831101225871.png" alt="image-20190831101225871">
+
+<p> <img src="http://pwxc1xwdv.bkt.clouddn.com/image-20190831101321784.png" alt="image-20190831101321784"></p>
+</li>
+</ul>
+<h3 id="字典"><a href="#字典" class="headerlink" title="字典"></a>字典</h3><ul>
+<li><p>数据结构</p>
+<p>哈希表节点dictEntry —-&gt; 哈希表ditch —-&gt; 字典dict</p>
+<p><img src="http://pwxc1xwdv.bkt.clouddn.com/image-20190831102124452.png" alt="image-20190831102124452"></p>
+</li>
+</ul>
+<p><img src="http://pwxc1xwdv.bkt.clouddn.com/image-20190831102139083.png" alt="image-20190831102139083"></p>
+<p><img src="http://pwxc1xwdv.bkt.clouddn.com/image-20190831102334582.png" alt="image-20190831102334582"></p>
+<ul>
+<li><p>ht属性是一个包含两个项的数组，一般情况下字典只使用ht[0]哈希表，ht[1]哈希表只会在ht[0]在rehash时使用</p>
+</li>
+<li><p>因为dictEntry节点组成的链表没有指向链表表尾的指针，所有出于速度考虑程序总是将新节点添加到链表的表头位置</p>
+</li>
+<li><p>rehash</p>
+<ul>
+<li><p>扩容，那么ht[1]的大小为第一个&gt;=ht[0].used*2 的2^n；如5 * 2 =10，则扩容后为16(2^4)</p>
+</li>
+<li><p>收缩，那么ht[1]的大小为第一个&gt;=ht[0].used的2^n</p>
+</li>
+<li><p>情景</p>
+<ul>
+<li><p>没有执行bgsave/bgrewriteaof且负载因子&gt;=1</p>
+</li>
+<li><p>在执行bgsave/bgrewriteaof且负载因子&gt;=5</p>
+</li>
+<li><p>负载因子&lt;0.1时自动收缩</p>
+</li>
+<li><p>负载因子 = 哈希表已保存节点数量 / 哈希表大小</p>
+<blockquote>
+<p>即没有保存+哈希表满 / 在保存+5倍满的时候执行</p>
+</blockquote>
+</li>
+</ul>
+</li>
+<li><p>rehash是渐进式的</p>
+<ul>
+<li>为ht[1]分配空间</li>
+<li>维持索引计数器变量 rehashidx并设置为0</li>
+<li>CURD时，除了执行指定操作外，还会顺带将ht[0]在rehashidx索引上的所有键值对rehash到ht[1]上，并自增rehashidx</li>
+<li>rehash完成后置rehashidx = -1</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h3 id="跳表"><a href="#跳表" class="headerlink" title="跳表"></a>跳表</h3><ul>
+<li>TODO</li>
+</ul>
+<h3 id="整数集合"><a href="#整数集合" class="headerlink" title="整数集合"></a>整数集合</h3><p>整数集合是集合键的底层实现之一，当一个集合只包含整数值元素且集合的元素数量不多时，Redis会使用整数集合作为集合键的底层实现</p>
+<p><img src="http://pwxc1xwdv.bkt.clouddn.com/image-20190831211338761.png" alt="image-20190831211338761"></p>
+<ul>
+<li><p>升级</p>
+<p>新元素的类型比集合现有的所有类型都要长</p>
+<ul>
+<li>步骤<ul>
+<li>根据新元素的类型扩展整数集合底层数组的空间大小，为新元素分配空间</li>
+<li>按新元素的类型转换现有的所有元素并放置到正确的位置上</li>
+<li>新元素添加(尾or头)</li>
+</ul>
+</li>
+<li>优势<ul>
+<li>提升灵活性：可以任意的将int16、int32等类型的整数添加到同一个集合中</li>
+<li>节约内存：在灵活性的基础上，若存储的都是int16数据，初始化的时候不会默认初始化成int64，只有在需要升级的时候才会去占用更多内存</li>
+<li>不支持降级</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h3 id="压缩列表"><a href="#压缩列表" class="headerlink" title="压缩列表"></a>压缩列表</h3><p>压缩列表是列表键和哈希键的底层实现之一</p>
+<p>压缩列表是Redis为了节约内存而开发的，是由一系列特殊编码的连续内存块组成的顺序型数据结构，一个压缩列表可以包含多个节点，每个节点可以保存一个字节数组或者一个整数值</p>
+<p><img src="http://pwxc1xwdv.bkt.clouddn.com/image-20190902114748806.png" alt="image-20190902114748806"></p>
+<p><img src="http://pwxc1xwdv.bkt.clouddn.com/image-20190902114825957.png" alt="image-20190902114825957"></p>
+<ul>
+<li><p>压缩列表的节点构成</p>
+<ul>
+<li>Previous_entry_length 记录了压缩列表中前一个节点的长度</li>
+<li>encoding 记录了节点的content属性所保存的数据的类型及长度</li>
+<li>content 保存节点的值</li>
+</ul>
+</li>
+<li><p>压缩列表的连锁更新</p>
+<p>由于previous_entry_length的长度为1字节/5字节，所以在添加/删除新节点的时候可能会触发连锁更新，连锁更新在最坏的情况下需要对压缩列表进行N次的空间重分配操作，但由于其造成的几率低（触发条件苛刻）因此默认不需要考虑</p>
+</li>
+</ul>
+<h1 id="对象系统"><a href="#对象系统" class="headerlink" title="对象系统"></a>对象系统</h1><p>Redis根据SDS，双端链表，字典，压缩列表，整数集合等数据结构来创建对象系统</p>
+<ul>
+<li>使用对象的好处<ul>
+<li>redis可以在执行命令之前，根据对象的类型来判断一个对象是否可以执行给定的命令</li>
+<li>在不同的使用场景，为对象设置多种不同的数据结构实现，优化对象在不同场景下的使用效率</li>
+</ul>
+</li>
+</ul>
+<p><img src="http://pwxc1xwdv.bkt.clouddn.com/image-20190902142057365.png" alt="image-20190902142057365"></p>
+<p>当我们对一个数据库键执行TYPE命令时，返回的结果为数据库键对应的值对象的类型而非键对象的类型（键对象的类型就是字符串对象）</p>
+<ul>
+<li><p>type的取值从“REDIS_STRING”,”REDIS_LIST”,”REDIS_HASH”,”REDIS_SET”,”REDIS_ZSET”中取值</p>
+</li>
+<li><p>encoding的取值从long类型的整数、embstr编码的简单动态字符串、简单动态字符串、字典、双端链表、压缩列表、整数集合、跳表和字典取值</p>
+<p>每种类型的对象都至少使用了两种不同的编码</p>
+</li>
+<li><p>字符串对象</p>
+<ul>
+<li>字符串对象的编码可以是int（整数）、raw（&gt;32字节的字符串）、embstr（&lt;32字节的字符串）</li>
+<li>raw和embstr<ul>
+<li>embstr是专门用来保存短字符串的一种优化编码方式，和raw一样都适用redisObject和sdshdr结构来表示字符串对象</li>
+<li>raw会调用两次内存分配函数来创建redisObject结构和sdshdr结构而embstr编码则通过调用一次内存分配函数来创建一块连续的空间，空间中依次包含redisObject和sdshdr两个结构，而embstr编码则通过调用一次内存分配函数来分配一块联系的空间，空间中依次包含redisObject和sdshdr两个结构</li>
+</ul>
+</li>
+<li>int编码和embstr编码的字符串对象在条件满足的情况下，会被转换为raw编码的字符串对象</li>
+<li>因为没有对embstr编码的字符串对象编写所以embstr编码的字符串对象实际上是只读的，当对该对象执行修改命令时，程序会先将对象的编码从embstr转换成raw格式</li>
+</ul>
+</li>
+<li><p>列表对象</p>
+<ul>
+<li>列表对象的编码可以是ziplist或者linkedlist</li>
+<li>列表对象可以同时满足以下两个条件时使用zipList<ul>
+<li>列表对象保存的所有字符串元素的长度都&lt;64字节</li>
+<li>列表对象保存的元素数量少于512个</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>哈希对象</p>
+<ul>
+<li>哈希对象的编码可以是zipList或者hashtable</li>
+<li>哈希对象使用ziplist编码的条件和列表对象相同</li>
+</ul>
+</li>
+<li><p>集合对象</p>
+<ul>
+<li>集合对象的编码可以是intset或者hashtable</li>
+<li>集合对象可以同时满足以下两个条件时使用intset<ul>
+<li>集合对象保存的所有元素都是整数值</li>
+<li>集合对象保存的元素数量不超过512个</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>有序集合对象</p>
+<ul>
+<li>有序集合对象的编码可以是ziplist或者skiplist</li>
+</ul>
+</li>
+<li><p>类型检查与命令多态</p>
+<p>原因就是redis操作键的命令分为针对任何类型的键如DEL、EXPIRE等和针对特定对象的键；同时又因为对同一对象的底层实现可以有多种情况</p>
+</li>
+<li><p>内存回收</p>
+<p>Redis在自己的对象系统中构建了一个引用计数技术来直线内存回收机制</p>
+</li>
+<li><p>对象共享（类似于Java常量池）</p>
+<ul>
+<li>对象共享的步骤<ul>
+<li>将数据库键的值指针指向一个现有的值对象</li>
+<li>被共享的值对象的引用计数+1</li>
+</ul>
+</li>
+<li>Redis会在初始化时会初始化1w个字符串对象（类型Integer的缓存）</li>
+</ul>
+</li>
+</ul>
+<h1 id="单机数据库的实现"><a href="#单机数据库的实现" class="headerlink" title="单机数据库的实现"></a>单机数据库的实现</h1><ul>
 <li><p>数据库键空间</p>
 <p>redis是一个键值对数据库服务器，服务器的每个数据库都由一个redis.h/redisDb结构表示，其中redisDb结构的dict字典保存了数据库中的所有键值对，把这个字典成为键空间</p>
 <ul>
@@ -318,6 +544,10 @@
         		<li class="article-tag-list-item">
         			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">redis</a>
         		</li>
+      		 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">读书笔记</a>
+        		</li>
       		
 		</ul>
 	</div>
@@ -415,7 +645,7 @@
                 </span>
                 <span class="tooltip-content">
                     <div class="toc-article">
-                    <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#单机数据库的实现"><span class="toc-number">1.</span> <span class="toc-text">单机数据库的实现</span></a></li></ol>
+                    <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#数据结构与对象"><span class="toc-number">1.</span> <span class="toc-text">数据结构与对象</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#SDS"><span class="toc-number">1.0.1.</span> <span class="toc-text">SDS</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#链表"><span class="toc-number">1.0.2.</span> <span class="toc-text">链表</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#字典"><span class="toc-number">1.0.3.</span> <span class="toc-text">字典</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#跳表"><span class="toc-number">1.0.4.</span> <span class="toc-text">跳表</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#整数集合"><span class="toc-number">1.0.5.</span> <span class="toc-text">整数集合</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#压缩列表"><span class="toc-number">1.0.6.</span> <span class="toc-text">压缩列表</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#对象系统"><span class="toc-number">2.</span> <span class="toc-text">对象系统</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#单机数据库的实现"><span class="toc-number">3.</span> <span class="toc-text">单机数据库的实现</span></a></li></ol>
                     </div>
                 </span>
             </div>
@@ -550,7 +780,7 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
           <ul class="article-tag-list" q-show="showTags">
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">kafka</a>
+                <a href="javascript:void(0)" class="js-tag color4">JVM</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -558,7 +788,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">JVM</a>
+                <a href="javascript:void(0)" class="js-tag color5">读书笔记</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color1">kafka</a>
               </li>
             
             <div class="clearfix"></div>
