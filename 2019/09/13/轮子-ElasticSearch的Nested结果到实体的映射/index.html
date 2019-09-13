@@ -6,15 +6,20 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <link rel="dns-prefetch" href="http://yoursite.com">
-  <title>echopoison</title>
+  <title>轮子---ElasticSearch的Nested结果到实体的映射 | echopoison</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta property="og:type" content="website">
-<meta property="og:title" content="echopoison">
-<meta property="og:url" content="http://yoursite.com/index.html">
+  <meta name="description" content="背景项目使用了ES来替换MySQL的查询，然而在ES的实体定义过程中，我们选择了一个索引多Nested的形式来存储数据，这样就带来了一个结果就是查询出来的ES结果被打散到各个Nested的集合中去了。同时为了降低改造的耦合度，和前端的接口定义并没有修改，这就需要将层级的ES结果再打散到扁平的实体中去。因为映射的字段不同，甚至于映射的层级也不同，BeanUtils#copyProperties()方">
+<meta name="keywords" content="轮子">
+<meta property="og:type" content="article">
+<meta property="og:title" content="轮子---ElasticSearch的Nested结果到实体的映射">
+<meta property="og:url" content="http://yoursite.com/2019/09/13/轮子-ElasticSearch的Nested结果到实体的映射/index.html">
 <meta property="og:site_name" content="echopoison">
+<meta property="og:description" content="背景项目使用了ES来替换MySQL的查询，然而在ES的实体定义过程中，我们选择了一个索引多Nested的形式来存储数据，这样就带来了一个结果就是查询出来的ES结果被打散到各个Nested的集合中去了。同时为了降低改造的耦合度，和前端的接口定义并没有修改，这就需要将层级的ES结果再打散到扁平的实体中去。因为映射的字段不同，甚至于映射的层级也不同，BeanUtils#copyProperties()方">
 <meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2019-09-13T05:31:59.042Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="echopoison">
+<meta name="twitter:title" content="轮子---ElasticSearch的Nested结果到实体的映射">
+<meta name="twitter:description" content="背景项目使用了ES来替换MySQL的查询，然而在ES的实体定义过程中，我们选择了一个索引多Nested的形式来存储数据，这样就带来了一个结果就是查询出来的ES结果被打散到各个Nested的集合中去了。同时为了降低改造的耦合度，和前端的接口定义并没有修改，这就需要将层级的ES结果再打散到扁平的实体中去。因为映射的字段不同，甚至于映射的层级也不同，BeanUtils#copyProperties()方">
   
     <link rel="alternative" href="/atom.xml" title="echopoison" type="application/atom+xml">
   
@@ -142,21 +147,27 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            
-  
-    <article id="post-轮子-ElasticSearch的Nested结果到实体的映射" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+            <article id="post-轮子-ElasticSearch的Nested结果到实体的映射" class="article article-type-post " itemscope itemprop="blogPost">
   <div class="article-inner">
     
       <header class="article-header">
         
   
-    <h1 itemprop="name">
-      <a class="article-title" href="/2019/09/13/轮子-ElasticSearch的Nested结果到实体的映射/">轮子---ElasticSearch的Nested结果到实体的映射</a>
+    <h1 class="article-title" itemprop="name">
+      轮子---ElasticSearch的Nested结果到实体的映射
     </h1>
   
 
         <!--显示阅读次数-->
 
+  <br/>
+  <a class="cloud-tie-join-count" href="javascript:void(0);" style="color:gray;font-size:14px;">
+  <span class="icon-sort"></span>
+  <span id="busuanzi_container_page_pv" style="color:#ef7522;font-size:14px;">
+            阅读数: <span id="busuanzi_value_page_pv"></span>次 &nbsp;&nbsp;
+  </span>
+  </a>
+  
         
         <a href="/2019/09/13/轮子-ElasticSearch的Nested结果到实体的映射/" class="archive-article-date">
   	<time datetime="2019-09-13T05:31:05.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-09-13</time>
@@ -167,9 +178,50 @@
     <div class="article-entry" itemprop="articleBody">
       
         <h3 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h3><p>项目使用了ES来替换MySQL的查询，然而在ES的实体定义过程中，我们选择了一个索引多Nested的形式来存储数据，这样就带来了一个结果就是查询出来的ES结果被打散到各个Nested的集合中去了。同时为了降低改造的耦合度，和前端的接口定义并没有修改，这就需要将层级的ES结果再打散到扁平的实体中去。因为映射的字段不同，甚至于映射的层级也不同，BeanUtils#copyProperties()方法并不适用，同时由于我们虽然使用了Nested类型，但是Nested下的List中的元素最多只有一个(业务上可以限定住)。因此这里简单造了个轮子来实现该方法。</p>
-        
-          <a class="article-more-a" href="/2019/09/13/轮子-ElasticSearch的Nested结果到实体的映射/#more">more >></a>
-        
+<a id="more"></a>
+
+<h3 id="实体VO"><a href="#实体VO" class="headerlink" title="实体VO"></a>实体VO</h3><p>如下是ES的model，其中的Student和Course都是Nested类型</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Document</span>(indexName = <span class="string">"index"</span>,type = <span class="string">"type"</span>)</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">BasicDataResult</span> <span class="keyword">implements</span> <span class="title">Serializable</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">long</span> serialVersionUID = <span class="number">1L</span>;</span><br><span class="line">    <span class="meta">@Field</span>(type = FieldType.Nested)</span><br><span class="line">    <span class="keyword">private</span> List&lt;Student&gt; student;</span><br><span class="line">  	<span class="meta">@Field</span>(type = FieldType.Nested)</span><br><span class="line">  	<span class="keyword">private</span> List&lt;Course&gt; course;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Student</span></span>&#123;</span><br><span class="line">  <span class="keyword">private</span> Integer id;</span><br><span class="line">  <span class="keyword">private</span> Integer name;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Course</span></span>&#123;</span><br><span class="line">  <span class="keyword">private</span> Integer id;</span><br><span class="line">  <span class="keyword">private</span> Integer name;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>那么其查询结果是形如下面的json</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    <span class="attr">"student"</span>: [</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="attr">"id"</span>: <span class="number">1</span>,</span><br><span class="line">            <span class="attr">"name"</span>: <span class="string">"echo"</span></span><br><span class="line">        &#125;</span><br><span class="line">    ],</span><br><span class="line">    <span class="attr">"course"</span>: [</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="attr">"id"</span>: <span class="number">1</span>,</span><br><span class="line">            <span class="attr">"name"</span>: <span class="string">"java"</span></span><br><span class="line">        &#125;</span><br><span class="line">    ]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>而我们正常和前端约定好的返回结果可能是这个样子</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    <span class="attr">"studentId"</span>:<span class="number">1</span>,</span><br><span class="line">    <span class="attr">"studentName"</span>:<span class="string">"echo"</span>,</span><br><span class="line">    <span class="attr">"courseId"</span>:<span class="number">1</span>,</span><br><span class="line">    <span class="attr">"courseName"</span>:<span class="string">"java"</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>显然，其对应的实体就是酱样</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Info</span></span>&#123;</span><br><span class="line">	<span class="keyword">private</span> Integer studentId;</span><br><span class="line">  <span class="keyword">private</span> Integer courseId;</span><br><span class="line">  <span class="keyword">private</span> String studentName;</span><br><span class="line">  <span class="keyword">private</span> String courseName;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="实现思路"><a href="#实现思路" class="headerlink" title="实现思路"></a>实现思路</h3><p>参照BeanUtils#copyProperties()，以及Mybatis的ResultMap的实现方式，显然反射是一个很奈斯的选项。</p>
+<h3 id="代码"><a href="#代码" class="headerlink" title="代码"></a>代码</h3><p>首先，既然是不同名称的字段的对照规则，自然需要有一张对照表来告诉机器字段间的对照关系。这样的对照表很自然的就想到了map来存储。这里定义了一个抽象父类AbstractConvertRule</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">abstract</span> <span class="class"><span class="keyword">class</span> <span class="title">AbstractConvertRule</span> </span>&#123;</span><br><span class="line">	    <span class="function"><span class="keyword">public</span> <span class="keyword">abstract</span> Map&lt;String,String&gt; <span class="title">getConvertMap</span><span class="params">()</span></span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>又因为这里的需求是从ES的Nested结构到扁平实体，因此又定义了一个抽象父类ElasticNestedConvertRule来提供一些默认的实现。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">abstract</span> <span class="class"><span class="keyword">class</span> <span class="title">ElasticNestedConvertRule</span> <span class="keyword">extends</span> <span class="title">AbstractConvertRule</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">protected</span> <span class="keyword">static</span> String <span class="title">getStudent</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="string">"Student."</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">protected</span> <span class="keyword">static</span> String <span class="title">getCourse</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="string">"Course."</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>ok，下面就是最终的映射实体类了</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * key-value的关系和BeanUtils#copyProperties是反着的，emmm，好像不太友好</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">BasicDataToInfoRule</span> <span class="keyword">extends</span> <span class="title">ElasticNestedConvertRule</span></span>&#123;</span><br><span class="line">    <span class="comment">/** 转换规则，key是待转换的,value是es的*/</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> Map&lt;String,String&gt; map = <span class="keyword">new</span> HashMap&lt;&gt;();</span><br><span class="line">  	<span class="comment">// 父类提供的默认实现</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> String STUDENT = getStudent();</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> String COURSE = getCourse();</span><br><span class="line">  	<span class="comment">// key值是Info的字段，value是常量+该常量的实体中的字段</span></span><br><span class="line">    <span class="keyword">static</span> &#123;</span><br><span class="line">        map.put(<span class="string">"studentId"</span>,STUDENT + <span class="string">"id"</span>);</span><br><span class="line">        map.put(<span class="string">"courseId"</span>,COURSE + <span class="string">"id"</span>);</span><br><span class="line">      	map.put(<span class="string">"studentName"</span>,STUDENT + <span class="string">"name"</span>);</span><br><span class="line">        map.put(<span class="string">"courseName"</span>,COURSE + <span class="string">"name"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">  	<span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Map&lt;String,String&gt; <span class="title">getConvertMap</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> map;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>既然对照关系出来了，剩下的就是通过反射来将A实体中的值映射到B实体中去了，下面是转换的代码</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 将es查询出得bean转换成新的VO对象</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> setBean 待转换的实体</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> getBean es查询的实体</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> convertData 转换规则，key是待转换的,value是es的</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">convertData</span><span class="params">(Object setBean, Object getBean, Map&lt;String,String&gt; convertData)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">    Field[] fields = setBean.getClass().getDeclaredFields();</span><br><span class="line">    <span class="keyword">for</span> (Field field : fields) &#123;</span><br><span class="line">        String fieldName = field.getName();</span><br><span class="line">        <span class="keyword">if</span>(convertData.containsKey(fieldName))&#123;</span><br><span class="line">            Object value = <span class="keyword">null</span>;</span><br><span class="line">            String[] split = convertData.get(fieldName).split(<span class="string">"\\."</span>);</span><br><span class="line">            <span class="keyword">if</span>(split.length != <span class="number">2</span>)&#123;</span><br><span class="line">                <span class="keyword">throw</span> <span class="keyword">new</span> InvalidPropertiesFormatException(<span class="string">"convertData中,key值为:"</span>+fieldName+<span class="string">"的value值不合法,请检查"</span>);</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="comment">// Step1:先从BaseDataResult中取得具体的Bean</span></span><br><span class="line">            Object tableBean = dynamicGet(getBean, StringUtils.toLowerCaseFirstOne(split[<span class="number">0</span>]));</span><br><span class="line">            <span class="keyword">if</span>(tableBean <span class="keyword">instanceof</span> ArrayList)&#123;</span><br><span class="line">                <span class="keyword">if</span>(((ArrayList) tableBean).isEmpty())&#123;</span><br><span class="line">                    <span class="keyword">continue</span>;</span><br><span class="line">                &#125;</span><br><span class="line">                List&lt;?&gt; list = castObjectToList(tableBean);</span><br><span class="line">                Object fieldBean = list.get(<span class="number">0</span>);</span><br><span class="line">                <span class="comment">// Step2:根据Step1中取得的Bean和具体的字段取值</span></span><br><span class="line">                value = dynamicGet(fieldBean,split[<span class="number">1</span>]);</span><br><span class="line">            &#125;<span class="keyword">else</span> &#123;</span><br><span class="line">                value = tableBean;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="comment">// Step3: 将第二步拿到的值塞入待转换的实体中</span></span><br><span class="line">            dynamicSet(setBean,fieldName,value);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>下面列了一些#convertDate中用到的私有方法</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> Object <span class="title">dynamicGet</span><span class="params">(Object obj,String propertyName)</span> <span class="keyword">throws</span> NoSuchFieldException,IllegalAccessException</span>&#123;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        Field field = obj.getClass().getDeclaredField(propertyName);</span><br><span class="line">        field.setAccessible(<span class="keyword">true</span>);</span><br><span class="line">        <span class="keyword">return</span> field.get(obj);</span><br><span class="line">    &#125; <span class="keyword">catch</span> (NoSuchFieldException e) &#123;</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> NoSuchFieldException(String.format(<span class="string">"实体:%s中不包含:%s字段，请检查对照规则"</span>,obj,propertyName));</span><br><span class="line">    &#125; <span class="keyword">catch</span> (IllegalAccessException e) &#123;</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> IllegalAccessException(String.format(<span class="string">"实体:%s中%s字段的不可见,请检查"</span>,obj,propertyName));</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 这里如果对照的实体类型不同可能需要进行特殊处理，如从Integer--&gt;Long,Boolean--&gt;Integer等</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">dynamicSet</span><span class="params">(Object obj,String propertyName,Object value)</span> <span class="keyword">throws</span> NoSuchFieldException,IllegalAccessException</span>&#123;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        Field field = obj.getClass().getDeclaredField(propertyName);</span><br><span class="line">        <span class="comment">// 待塞入的值是Long而value值是Integer类型</span></span><br><span class="line">        <span class="keyword">if</span>(field.getType() == Long.class &amp;&amp; value <span class="keyword">instanceof</span> Integer)&#123;</span><br><span class="line">            value = ((Integer) value).longValue();</span><br><span class="line">        &#125;<span class="keyword">else</span> <span class="keyword">if</span>(field.getType() == Integer.class &amp;&amp; value <span class="keyword">instanceof</span> Byte)&#123;</span><br><span class="line">            value = ((Byte) value).intValue();</span><br><span class="line">        &#125;</span><br><span class="line">        field.setAccessible(<span class="keyword">true</span>);</span><br><span class="line">        field.set(obj,value);</span><br><span class="line">    &#125; <span class="keyword">catch</span> (NoSuchFieldException e) &#123;</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> NoSuchFieldException(String.format(<span class="string">"实体:%s中不包含:%s字段，请检查对照规则"</span>,obj,propertyName));</span><br><span class="line">    &#125; <span class="keyword">catch</span> (IllegalAccessException e) &#123;</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> IllegalAccessException(String.format(<span class="string">"实体:%s中%s字段的不可见,请检查"</span>,obj,propertyName));</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> &lt;T extends List&lt;?&gt;&gt; <span class="function">T <span class="title">castObjectToList</span><span class="params">(Object obj)</span></span>&#123;</span><br><span class="line">    <span class="keyword">return</span> (T) obj;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>至此，工具类就算完工了，剩下的就是调用了，其调用方式就喝BeanUtils#copyProperties差不多了，只不过注意是参数反过来了</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">BasicDataToInfoRule rule = <span class="keyword">new</span> BasicDataToInfoRule();</span><br><span class="line">Map&lt;String,String&gt; convertMap = rule.getConvertMap();</span><br><span class="line">Info info = <span class="keyword">new</span> Info();</span><br><span class="line">BaseConvert.convertData(info,basicDataResult,convertMap);</span><br></pre></td></tr></table></figure>
+
+<h3 id="后记"><a href="#后记" class="headerlink" title="后记"></a>后记</h3><p>再之后的需求中，又遇到了将带下划线的实体映射到驼峰的实体中去，不过好在本次是从一个扁平的实体到另一个扁平的实体中，因此继承抽象规则AbstractConvertRule类覆盖其#getConvertMap</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">UnderLineToCamelRule</span> <span class="keyword">extends</span> <span class="title">AbstractConvertRule</span></span>&#123;</span><br><span class="line">	  <span class="keyword">private</span> <span class="keyword">static</span> Map&lt;String,String&gt; map = <span class="keyword">new</span> HashMap&lt;&gt;();</span><br><span class="line">  	</span><br><span class="line">  	<span class="keyword">static</span>&#123;</span><br><span class="line">      map.put(<span class="string">"s_id"</span>,<span class="string">"sid"</span>);</span><br><span class="line">      map.put(<span class="string">"s_name"</span>,<span class="string">"sName"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">  	</span><br><span class="line">  	<span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Map&lt;String, String&gt; <span class="title">getConvertMap</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> map;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>而后在BaseConvert的工具类中增加了对扁平实体的对照方法#convertVO，因为不需要处理层级关系，代码简单很多</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">convertVO</span><span class="params">(Object setBean,Object getBean,Map&lt;String,String&gt; convertMap)</span> <span class="keyword">throws</span> Exception</span>&#123;</span><br><span class="line">    Field[] fields = setBean.getClass().getDeclaredFields();</span><br><span class="line">    <span class="keyword">for</span> (Field field : fields) &#123;</span><br><span class="line">        String fieldName = field.getName();</span><br><span class="line">        <span class="keyword">if</span>(convertMap.containsKey(fieldName)) &#123;</span><br><span class="line">            Object value = dynamicGet(getBean, convertMap.get(fieldName));</span><br><span class="line">            dynamicSet(setBean,fieldName,value);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="感想"><a href="#感想" class="headerlink" title="感想"></a>感想</h3><ul>
+<li>平时在实现一个工具类的过程中，最好提供足够优秀的可扩展性</li>
+<li>良好设计模式的重要性</li>
+</ul>
+
       
 
       
@@ -191,16 +243,75 @@
       
 
       
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2019/09/13/轮子-ElasticSearch的Nested结果到实体的映射/">展开全文 >></a>
-        </p>
-      
 
+      
+        
+<div class="share-btn share-icons tooltip-left">
+  <div class="tooltip tooltip-east">
+    <span class="tooltip-item">
+      <a href="javascript:;" class="share-sns share-outer">
+        <i class="icon icon-share"></i>
+      </a>
+    </span>
+    <span class="tooltip-content">
+      <div class="share-wrap">
+        <div class="share-icons">
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="icon icon-weibo"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="icon icon-weixin"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="icon icon-qq"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="icon icon-douban"></i>
+          </a>
+          <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a>
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="icon icon-facebook"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="icon icon-twitter"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="icon icon-google"></i>
+          </a>
+        </div>
+      </div>
+    </span>
+  </div>
+</div>
+
+<div class="page-modal wx-share js-wx-box">
+    <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2019/09/13/轮子-ElasticSearch的Nested结果到实体的映射/" alt="微信分享二维码">
+    </div>
+</div>
+
+<div class="mask js-mask"></div>
       
       <div class="clearfix"></div>
     </div>
   </div>
 </article>
+
+  
+<nav id="article-nav">
+  
+  
+    <a href="/2019/09/11/《Redis设计与实现》读书笔记/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">《Redis设计与实现》读书笔记</div>
+      <i class="icon-circle-right"></i>
+    </a>
+  
+</nav>
+
 
 <aside class="wrap-side-operation">
     <div class="mod-side-operation">
@@ -215,253 +326,60 @@
         </div>
         
         
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-《Redis设计与实现》读书笔记" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2019/09/11/《Redis设计与实现》读书笔记/">《Redis设计与实现》读书笔记</a>
-    </h1>
-  
-
-        <!--显示阅读次数-->
-
-        
-        <a href="/2019/09/11/《Redis设计与实现》读书笔记/" class="archive-article-date">
-  	<time datetime="2019-09-11T09:52:40.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-09-11</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p><a href="http://redisbook.com/" target="_blank" rel="noopener">《Redis设计与实现》</a> 读书笔记</p>
-        
-          <a class="article-more-a" href="/2019/09/11/《Redis设计与实现》读书笔记/#more">more >></a>
-        
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">redis</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">读书笔记</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2019/09/11/《Redis设计与实现》读书笔记/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
+        <div class="toc-container tooltip-left">
+            <i class="icon-font icon-category"></i>
+            <div class="tooltip tooltip-east">
+                <span class="tooltip-item">
+                </span>
+                <span class="tooltip-content">
+                    <div class="toc-article">
+                    <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#背景"><span class="toc-number">1.</span> <span class="toc-text">背景</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#实体VO"><span class="toc-number">2.</span> <span class="toc-text">实体VO</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#实现思路"><span class="toc-number">3.</span> <span class="toc-text">实现思路</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#代码"><span class="toc-number">4.</span> <span class="toc-text">代码</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#后记"><span class="toc-number">5.</span> <span class="toc-text">后记</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#感想"><span class="toc-number">6.</span> <span class="toc-text">感想</span></a></li></ol>
+                    </div>
+                </span>
             </div>
         </div>
         
-        
     </div>
 </aside>
 
 
 
-
   
-    <article id="post-尝试解读一下helpGC" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
   
-    <h1 itemprop="name">
-      <a class="article-title" href="/2019/09/10/尝试解读一下helpGC/">尝试解读一下helpGC</a>
-    </h1>
   
 
-        <!--显示阅读次数-->
-
-        
-        <a href="/2019/09/10/尝试解读一下helpGC/" class="archive-article-date">
-  	<time datetime="2019-09-10T15:01:26.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-09-10</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>在阅读JUC源码的时候，时不时能看到//help GC这样的注释</p>
-        
-          <a class="article-more-a" href="/2019/09/10/尝试解读一下helpGC/#more">more >></a>
-        
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">JVM</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2019/09/10/尝试解读一下helpGC/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-kafka分区一致性的思考" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2019/09/09/kafka分区一致性的思考/">kafka分区一致性的思考</a>
-    </h1>
   
 
-        <!--显示阅读次数-->
-
-        
-        <a href="/2019/09/09/kafka分区一致性的思考/" class="archive-article-date">
-  	<time datetime="2019-09-09T07:13:43.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-09-09</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>在学习kafka的过程中，相信都听过一个概念<strong>“kafka不能保证消息整体的一致性，只能保证分区内的一致性“</strong>。其原因很简单当时看书的时候看到这里就觉得嗯嗯，是这么个道理，然后就接着往下看了。</p>
-<p>后来在发送消息的API中，我以为发个消息，参数里就传topic和value就足够了，往指定topic里发value嘛，但是在代码里，发现除了这两个参数外，还有key这个参数，研讨一番后知道如果key不为null，计算得到的分区号会是所有分区中的任意一个（对key进行hash运算，相同hash的入同一分区），如果key为null，那么计算得到的分区号仅为可用分区中的任意一个。kafka的producer分区策略可以阅读DefaultPartitioner#partition方法</p>
-        
-          <a class="article-more-a" href="/2019/09/09/kafka分区一致性的思考/#more">more >></a>
-        
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">kafka</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2019/09/09/kafka分区一致性的思考/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
+  
 
   
   
+  
+<section id="comments" class="comments">
+  <style>
+    .comments{margin:30px;padding:10px;background:#fff}
+    @media screen and (max-width:800px){.comments{margin:auto;padding:10px;background:#fff}}
+  </style>
+  <div id="vcomment" class="comment"></div> 
+<script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src="//unpkg.com/valine/dist/Valine.min.js"></script>
+<script>
+   var notify = 'false' == true ? true : false;
+   var verify = 'false' == true ? true : false;
+    window.onload = function() {
+        new Valine({
+            el: '.comment',
+            notify: notify,
+            verify: verify,
+            app_id: "oXH16TPsBfYaIX0UArBSPBV1-gzGzoHsz",
+            app_key: "GzmsGChQoqPE8wd1DekzRaIq",
+            placeholder: "Hello World",
+            avatar:"mm"
+        });
+    }
+</script>
+  </section>
+
 
 
           </div>
@@ -486,8 +404,8 @@
     <script>
 	var yiliaConfig = {
 		mathjax: false,
-		isHome: true,
-		isPost: false,
+		isHome: false,
+		isPost: true,
 		isArchive: false,
 		isTag: false,
 		isCategory: false,
