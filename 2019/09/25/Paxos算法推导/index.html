@@ -6,18 +6,20 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <link rel="dns-prefetch" href="http://yoursite.com">
-  <title>Archives: 2019/9 | echopoison</title>
+  <title>Paxos算法推导 | echopoison</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="记录一些学习上的思考，与君共勉">
-<meta property="og:type" content="website">
-<meta property="og:title" content="echopoison">
-<meta property="og:url" content="http://yoursite.com/archives/2019/09/index.html">
+  <meta name="description" content="阅读《从Paxos到Zookeeper分布式一致性原理与实践》一书中有关Paxos一致性算法的部分，在此基础上增加一些个人的见解，试图讲得在大白话一点。">
+<meta name="keywords" content="Paxos">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Paxos算法推导">
+<meta property="og:url" content="http://yoursite.com/2019/09/25/Paxos算法推导/index.html">
 <meta property="og:site_name" content="echopoison">
-<meta property="og:description" content="记录一些学习上的思考，与君共勉">
+<meta property="og:description" content="阅读《从Paxos到Zookeeper分布式一致性原理与实践》一书中有关Paxos一致性算法的部分，在此基础上增加一些个人的见解，试图讲得在大白话一点。">
 <meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2019-09-25T15:21:35.636Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="echopoison">
-<meta name="twitter:description" content="记录一些学习上的思考，与君共勉">
+<meta name="twitter:title" content="Paxos算法推导">
+<meta name="twitter:description" content="阅读《从Paxos到Zookeeper分布式一致性原理与实践》一书中有关Paxos一致性算法的部分，在此基础上增加一些个人的见解，试图讲得在大白话一点。">
   
     <link rel="alternative" href="/atom.xml" title="echopoison" type="application/atom+xml">
   
@@ -143,36 +145,127 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            
-  
-  
+            <article id="post-Paxos算法推导" class="article article-type-post " itemscope itemprop="blogPost">
+  <div class="article-inner">
     
-    
-      
-      
-      <section class="archives-wrap">
-        <div class="archive-year-wrap">
-          <a href="/archives/2019" class="archive-year">2019</a>
-        </div>
-        <div class="archives">
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2019/09/25/Paxos算法推导/" class="archive-article-date">
-  	<time datetime="2019-09-25T15:18:24.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-09-25</time>
-</a>
-        </div>
-    	 
+      <header class="article-header">
+        
   
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2019/09/25/Paxos算法推导/">Paxos算法推导</a>
+    <h1 class="article-title" itemprop="name">
+      Paxos算法推导
     </h1>
   
 
-        <div class="article-info info-on-right">
-          
+        <!--显示阅读次数-->
+
+  <br/>
+  <a class="cloud-tie-join-count" href="javascript:void(0);" style="color:gray;font-size:14px;">
+  <span class="icon-sort"></span>
+  <span id="busuanzi_container_page_pv" style="color:#ef7522;font-size:14px;">
+            阅读数: <span id="busuanzi_value_page_pv"></span>次 &nbsp;&nbsp;
+  </span>
+  </a>
+  
+        
+        <a href="/2019/09/25/Paxos算法推导/" class="archive-article-date">
+  	<time datetime="2019-09-25T15:18:24.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-09-25</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>阅读《从Paxos到Zookeeper分布式一致性原理与实践》一书中有关Paxos一致性算法的部分，在此基础上增加一些个人的见解，试图讲得在大白话一点。</p>
+<a id="more"></a>
+
+<h3 id="问题背景"><a href="#问题背景" class="headerlink" title="问题背景"></a>问题背景</h3><p>首先参考维基百科的背景介绍</p>
+<blockquote>
+<p>分布式系统中的节点通信存在两种模型：<a href="https://zh.wikipedia.org/wiki/共享内存" target="_blank" rel="noopener">共享内存</a>（Shared memory）和<a href="https://zh.wikipedia.org/wiki/消息传递" target="_blank" rel="noopener">消息传递</a>（Messages passing）。基于消息传递通信模型的分布式系统，不可避免的会发生以下错误：进程可能会慢、被杀死或者重启，消息可能会延迟、丢失、重复，在基础 Paxos 场景中，先不考虑可能出现消息篡改即<a href="https://zh.wikipedia.org/wiki/拜占庭将军问题" target="_blank" rel="noopener">拜占庭错误</a>的情况。Paxos 算法解决的问题是在一个可能发生上述异常的<a href="https://zh.wikipedia.org/wiki/分布式计算" target="_blank" rel="noopener">分布式系统</a>中如何就某个值达成一致，保证不论发生以上任何异常，都不会破坏决议的一致性。一个典型的场景是，在一个分布式数据库系统中，如果各节点的初始状态一致，每个节点都执行相同的操作序列，那么他们最后能得到一个一致的状态。为保证每个节点执行相同的命令序列，需要在每一条指令上执行一个“一致性算法”以保证每个节点看到的指令一致。一个通用的一致性算法可以应用在许多场景中，是分布式计算中的重要问题。因此从20世纪80年代起对于一致性算法的研究就没有停止过。</p>
+<p>为描述Paxos算法，Lamport虚拟了一个叫做Paxos的<a href="https://zh.wikipedia.org/wiki/希臘城邦" target="_blank" rel="noopener">希腊城邦</a>，这个岛按照议会民主制的政治模式制订法律，但是没有人愿意将自己的全部时间和精力放在这种事情上。所以无论是议员，议长或者传递纸条的服务员都不能承诺别人需要时一定会出现，也无法承诺批准决议或者传递消息的时间。但是这里假设没有<a href="https://zh.wikipedia.org/wiki/拜占庭将军问题" target="_blank" rel="noopener">拜占庭将军问题</a>（Byzantine failure，即虽然有可能一个消息被传递了两次，但是绝对不会出现错误的消息）；只要等待足够的时间，消息就会被传到。另外，Paxos岛上的议员是不会反对其他议员提出的决议的。</p>
+<p>对应于分布式系统，议员对应于各个节点，制定的法律对应于系统的状态。各个节点需要进入一个一致的状态，例如在独立<a href="https://zh.wikipedia.org/wiki/Cache" target="_blank" rel="noopener">Cache</a>的<a href="https://zh.wikipedia.org/w/index.php?title=对称多处理器&action=edit&redlink=1" target="_blank" rel="noopener">对称多处理器</a>系统中，各个处理器读内存的某个字节时，必须读到同样的一个值，否则系统就违背了一致性的要求。一致性要求对应于法律条文只能有一个版本。议员和服务员的不确定性对应于节点和消息传递通道的不可靠性。</p>
+</blockquote>
+<h3 id="一致性算法的重要属性"><a href="#一致性算法的重要属性" class="headerlink" title="一致性算法的重要属性"></a>一致性算法的重要属性</h3><h4 id="安全性"><a href="#安全性" class="headerlink" title="安全性"></a>安全性</h4><p>指哪些需要保证永远不会发生的事情</p>
+<ul>
+<li>只有被提出的提案才能被选定</li>
+<li>只能有一个值被选定</li>
+<li>如果某个进程认为某个提案被选定了，那么这个提案必须是真的被选定的那个</li>
+</ul>
+<h3 id="活性"><a href="#活性" class="headerlink" title="活性"></a>活性</h3><p>指那些最终一定会发生的事情</p>
+<h3 id="算法推导"><a href="#算法推导" class="headerlink" title="算法推导"></a>算法推导</h3><h4 id="奠定基调"><a href="#奠定基调" class="headerlink" title="奠定基调"></a>奠定基调</h4><p>我理解的证明，就类似于高中数学那样，已知，求证。而推导过程就是根据题目的已知和XX公式/定理得到各种中间过程，继而得出求证。而Paxos的推导过程却不是这样，因此也造成了我最开始读的时候总觉得哪里怪怪的原因。因此，这里先简单的按照我的理解来进行一下代入。</p>
+<p>首先，既然是推导，那么我们推导的结论是什么？</p>
+<blockquote>
+<p>Paxos算法是一致性算法，其解决的问题就是如何在一个可能发生机器宕机/网络异常的分布式系统中，快速且正确地在集群内部对<strong>某个数据的值</strong>达成<strong>一致</strong>，并且保证不论发生以上任何异常，都不会破坏整个系统的一致性。</p>
+</blockquote>
+<p>ok，结论出来了就是证明Paxos算法是面对该问题的解决方案，那么条件呢？已知呢？不能什么都没有硬生生的去证明吧。这些条件/已知书的作者并没有像传统证明题那样直截了当的告诉你，而是在文中通过<strong>“需求”</strong>这样的名词来给出。老板的需求是提给产品的，产品的需求是提给开发的，那Paxos的需求是提给谁的呢？先给出结论：Paxos的需求是给下文中提到的三种角色的。</p>
+<p>本段总结起来就是，如果分布式系统中各个参与者按照Paxos的需求那样去工作，那么整个分布式系统的数据是一致的。那么接下来的推导过程就变成了</p>
+<ol>
+<li>需求都是什么？</li>
+<li>需求是怎么保证一致性的？</li>
+</ol>
+<h4 id="推导过程"><a href="#推导过程" class="headerlink" title="推导过程"></a>推导过程</h4><p>在一致性算法中有三种参与角色，分别为proposer、acceptor和learner</p>
+<ul>
+<li><p>proposer：proposers 提出提案类似于生产/消费模型中的生产者</p>
+</li>
+<li><p>acceptor：acceptor 收到提案后可以<strong>批准</strong>（accept）提案，若提案获得多数派（majority）的 acceptors 的批准，则称该提案被<strong>选定</strong>（chosen）</p>
+</li>
+<li><p>learner：learner 只能“学习”被选定的提案</p>
+</li>
+</ul>
+<p>在没有失败和消息丢失的情况下，如果我们希望即使在只有一个提案被提出的情况下，仍然可以选出一个提案，那么就暗示了如下的需求（📒小本本：需求P1出来了，显然该需求是对acceptor的需求）</p>
+<blockquote>
+<p>P1:一个acceptor必须批准第一次收到的提案</p>
+</blockquote>
+<p>上面这个需求会引出一个新的问题，就是如果有多个提案被不同的proposer同时提出，可能会造成每个acceptor都批准到它的第一个提案，每个提案的权重都相同</p>
+<p>![image-20190924224318547](/Users/echo/Library/Application Support/typora-user-images/image-20190924224318547.png)</p>
+<p>显然这种场景下是无法选出一个唯一提案的，另外，即使只有两个提案被选出且acceptor的数量是奇数的，看起来很完美然而即使只有1个acceptor出错，都有可能导致无法确定该选择哪个提案，如下图</p>
+<p>![image-20190924224513680](/Users/echo/Library/Application Support/typora-user-images/image-20190924224513680.png)</p>
+<p>因此在P1点基础上，我们还需要根据少数服从多数原则增加一个限制条件就是说一个提案被选定需要半数以上的acceptor接受(感觉这个限制条件也算是一个需求，但是文中并没有单列出来所以也不好说)  ，而这个限定条件就暗示着说一个acceptor必须能够批准不止一个提案。同时也意味着说一个提案可以被多个acceptor接受，那么怎么来区分被多个acceptor接受的提案呢？比如可以用前缀来表示，而这里paxos算法采用的是一个全局的唯一编号来唯一标示一个<strong>被acceptor批准</strong>的提案，当一个具有某Value值的提案被半数以上的acceptor接受后，我们就认为这个提案被批准了。因为引入了编号的概念所以提案已经不是单纯的Value值了，而是变成了一个“【编号，Value】”来表示一个提案。 </p>
+<p>根据上面讲到的内容，我们虽然允许多个提案被选定，但同时必须保证所有被选定的提案具有相同的Value，这是一个关于提案的Value的约定，结合提案的编号，该约定定义如下（📒小本本：需求P2出来了，那该需求是针对哪个角色提出的需求呢？大眼一瞅感觉好像都不是，因此下文会对P2进行泛化来找到该需求的具体角色）</p>
+<blockquote>
+<p>P2:如果编号为M0、Value值为V0的提案即[M0,V0]被选定了，那么所有比编号M0更高的且被选定的提案，其Value值也必须是V0</p>
+</blockquote>
+<p>因为提案的编号是全序的，因此P2就保证了只有一个Value被选定这个安全性的属性。同时一个提案即然要被选定，那么首先必须被至少一个acceptor批准（半数以上批准 &lt;=&gt; 选定）因此可以通过如下条件来满足P2</p>
+<blockquote>
+<p>P2a:如果编号为M0、Value值为V0的提案即[M0,V0]被选定了，那么所有比编号M0更高的且被acceptor批准的提案，其Value值也必须是V0</p>
+</blockquote>
+<p>P2a相比于P2，使用“被acceptor批准”来取代“选定”，由于只有批准是选定的充分不必要条件，因此P2a也就是P2的充分不必要条件。</p>
+<p>至此，P1保持不变。但是因为通信是异步的，因此一个提案可以在任意时刻被acceptor接受，出现下图的场景</p>
+<p>![image-20190925002422980](/Users/echo/Library/Application Support/typora-user-images/image-20190925002422980.png)</p>
+<p>proposer2发松V2，由于网络等原因在V2还未被批准的时候 proposer1发送V1，被acceptor2～5先后批准产生了【M1～M4，V1】的提案（详见P2上的粗体：被批准了才有编号）这个时候V2姗姗来迟被acceptor1接受了，根据P1的规则acceptor1必须批准收到的第一个提案，因此产生了M5，这里发现M5的编号&gt; M0~M4 且V2!=V1，与P2a矛盾了，而我们又需要P1来保证提案被选定，因此说明对P2对泛化P2a泛化的还不够，因此继续泛化成如下</p>
+<blockquote>
+<p>P2b:如果一个提案[M0,V0]被选定后，那么之后任何proposer产生的编号更高的提案，其value值都为V0</p>
+</blockquote>
+<p>这里是有一点小懵逼的，因为上文说了编号是只有被批准了才有，怎么到P2b这里感觉变成了只要被产生就有编号？多读几次后我认为这里的本意是，任何proposer产生的提案其value值都为V0，提案如果因为网络等原因被丢掉没被批准，这种异常情况不会对算法产生影响，如果被acceptor批准后，那么就会产生编号且编号会大于已被选定的提案[M0,V0]的编号M0。那么自然P2b也就是对proposer的需求</p>
+<p>因为一个提案只有被proposer提出才能被acceptor批准，继而才能被整个集群选定，因此P2b又成为了P2a的充分不必要条件，继而成为P2的充分不必要条件</p>
+<p>但是P2b只是一个对proposer的需求，是一个理论模型难以提出实现手段，所以需要再进一步的去泛化P2b。</p>
+<p>结合P2-P2a、P2a-P2b的泛化思想，这里需要找的就是一个需求P2c，使得当P2c满足时，P2b满足，即IF P2c THEN (if [M0,V0]被选定，任意Mn&gt;M0的提案其value为V0)。再翻译一下就是找寻一种需求使得proposer生产的提案是符合规定的提案。</p>
+<p>现在假如说proposer提出一个[Mn,Vn]的提案，即然该提案可以被提出说明要么之前还未有提案被选定（否则大概率Vn != V0，违背P2b，这个时候Vn可以是任意值）；要么就是已经有[M0,V0]被选定了，而因为编号M0的提案被选定，被选定就意味着存在半数以上的acceptor集合C，C中的每一个元素都批准了该value并产生了M0～Mn-1的编号且这些编号对应的value都是V0，而集群的任意一个半数以上子集S都和C至少有一个交点，那么得出结论</p>
+<p>当集群选定一个提案后，集群的任意半数以上子集S都至少有一个acceptor，其批准过一个编号为M0～Mn-1，value = V0的提案。</p>
+<p>这时，只需要令新提出的Vn等于所有批准的小于Mn的提案中编号最大的提案的value值即可，即P2c的描述如下</p>
+<blockquote>
+<p>P2c:对于任意的Mn和Vn，如果提案[Mn,Vn]被提出，那么肯定存在一个由半数以上的acceptor组成的集合S，满足以下两个条件中的任意一个</p>
+<ul>
+<li>S中不存在任何批准过编号小于Mn的提案的acceptor</li>
+<li>选取S中所有acceptor批准的编号小于Mn的提案，其中编号最大的那个提案其value值是Vn</li>
+</ul>
+</blockquote>
+<p>维基百科对其的解释如下：</p>
+<blockquote>
+<p>P2c:如果一个编号为n的提案具有value v，那么存在一个多数派，要么他们中所有人都没有接受（accept）编号小于 n的任何提案，要么他们已经接受（accept）的所有编号小于 n 的提案中编号最大的那个提案具有 value v。</p>
+</blockquote>
+<p>关于P2c到P2b的推导，是采用<a href="https://zh.wikipedia.org/wiki/数学归纳法" target="_blank" rel="noopener">数学归纳法</a>证明</p>
+<p>假设具有value v的提案m获得批准，当n=m+1时，采用反证法，假如提案n不具有value v，而是具有value w，根据P2c，则存在一个多数派S1，要么他们中没有人接受过编号小于n的任何提案，要么他们已经接受的所有编号小于n的提案中编号最大的那个提案是value w。由于S1和通过提案m时的多数派C之间至少有一个公共的acceptor，所以以上两个条件都不成立，导出矛盾从而推翻假设，证明了提案n必须具有value v；</p>
+<p>若（m+1）..（N-1）所有提案都具有value v，采用反证法，假如新提案N不具有value v，而是具有value w’,根据P2c，则存在一个多数派S2，要么他们没有接受过m..（N-1）中的任何提案，要么他们已经接受的所有编号小于N的提案中编号最大的那个提案是value w’。由于S2和通过m的多数派C之间至少有一个公共的acceptor，所以至少有一个acceptor曾经接受了m，从而也可以推出S2中已接受的所有编号小于n的提案中编号最大的那个提案的编号范围在m..（N-1）之间，而根据初始假设，m..（N-1）之间的所有提案都具有value v，所以S2中已接受的所有编号小于n的提案中编号最大的那个提案肯定具有value v，导出矛盾从而推翻新提案n不具有value v的假设。根据数学归纳法，我们证明了若满足P2c，则P2b一定满足。</p>
+<h3 id="引用"><a href="#引用" class="headerlink" title="引用"></a>引用</h3><p><a href="https://zh.wikipedia.org/wiki/Paxos算法" target="_blank" rel="noopener">Paxos算法</a></p>
+<p><a href="https://item.jd.com/11622772.html" target="_blank" rel="noopener">从Paxos到Zookeeper</a></p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
 	<div class="article-tag tagcloud">
 		<i class="icon-price-tags icon"></i>
 		<ul class="article-tag-list">
@@ -184,217 +277,146 @@
 		</ul>
 	</div>
 
-          
+      
 
+      
+
+      
+        
+<div class="share-btn share-icons tooltip-left">
+  <div class="tooltip tooltip-east">
+    <span class="tooltip-item">
+      <a href="javascript:;" class="share-sns share-outer">
+        <i class="icon icon-share"></i>
+      </a>
+    </span>
+    <span class="tooltip-content">
+      <div class="share-wrap">
+        <div class="share-icons">
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="icon icon-weibo"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="icon icon-weixin"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="icon icon-qq"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="icon icon-douban"></i>
+          </a>
+          <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a>
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="icon icon-facebook"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="icon icon-twitter"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="icon icon-google"></i>
+          </a>
         </div>
-        <div class="clearfix"></div>
-    </header>
+      </div>
+    </span>
+  </div>
+</div>
+
+<div class="page-modal wx-share js-wx-box">
+    <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="//api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://echopoison.com/http://yoursite.com/2019/09/25/Paxos算法推导/" alt="微信分享二维码">
+    </div>
+</div>
+
+<div class="mask js-mask"></div>
+      
+      <div class="clearfix"></div>
+    </div>
   </div>
 </article>
+
   
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2019/09/15/读书笔记|《深入理解kafka-核心设计与实现》/" class="archive-article-date">
-  	<time datetime="2019-09-15T14:43:52.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-09-15</time>
-</a>
+<nav id="article-nav">
+  
+  
+    <a href="/2019/09/15/读书笔记|《深入理解kafka-核心设计与实现》/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">读书笔记|《深入理解kafka:核心设计与实现》</div>
+      <i class="icon-circle-right"></i>
+    </a>
+  
+</nav>
+
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
         </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2019/09/15/读书笔记|《深入理解kafka-核心设计与实现》/">读书笔记|《深入理解kafka:核心设计与实现》</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">kafka</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">读书笔记</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-
+        
+        
+        <div class="toc-container tooltip-left">
+            <i class="icon-font icon-category"></i>
+            <div class="tooltip tooltip-east">
+                <span class="tooltip-item">
+                </span>
+                <span class="tooltip-content">
+                    <div class="toc-article">
+                    <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#问题背景"><span class="toc-number">1.</span> <span class="toc-text">问题背景</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#一致性算法的重要属性"><span class="toc-number">2.</span> <span class="toc-text">一致性算法的重要属性</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#安全性"><span class="toc-number">2.1.</span> <span class="toc-text">安全性</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#活性"><span class="toc-number">3.</span> <span class="toc-text">活性</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#算法推导"><span class="toc-number">4.</span> <span class="toc-text">算法推导</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#奠定基调"><span class="toc-number">4.1.</span> <span class="toc-text">奠定基调</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#推导过程"><span class="toc-number">4.2.</span> <span class="toc-text">推导过程</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#引用"><span class="toc-number">5.</span> <span class="toc-text">引用</span></a></li></ol>
+                    </div>
+                </span>
+            </div>
         </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
+        
+    </div>
+</aside>
+
+
+
   
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2019/09/13/轮子-ElasticSearch的Nested结果到实体的映射/" class="archive-article-date">
-  	<time datetime="2019-09-13T05:31:05.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-09-13</time>
-</a>
-        </div>
-    	 
   
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2019/09/13/轮子-ElasticSearch的Nested结果到实体的映射/">轮子---ElasticSearch的Nested结果到实体的映射</a>
-    </h1>
   
 
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">轮子</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2019/09/11/读书笔记|《Redis设计与实现》/" class="archive-article-date">
-  	<time datetime="2019-09-11T09:52:40.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-09-11</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2019/09/11/读书笔记|《Redis设计与实现》/">读书笔记|《Redis设计与实现》</a>
-    </h1>
   
 
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">redis</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">读书笔记</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2019/09/10/尝试解读一下helpGC/" class="archive-article-date">
-  	<time datetime="2019-09-10T15:01:26.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-09-10</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2019/09/10/尝试解读一下helpGC/">尝试解读一下helpGC</a>
-    </h1>
   
 
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">JVM</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2019/09/09/kafka分区一致性的思考/" class="archive-article-date">
-  	<time datetime="2019-09-09T07:13:43.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-09-09</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2019/09/09/kafka分区一致性的思考/">kafka分区一致性的思考</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">kafka</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
   
   
-    </div></section>
   
+<section id="comments" class="comments">
+  <style>
+    .comments{margin:30px;padding:10px;background:#fff}
+    @media screen and (max-width:800px){.comments{margin:auto;padding:10px;background:#fff}}
+  </style>
+  <div id="vcomment" class="comment"></div> 
+<script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src="//unpkg.com/valine/dist/Valine.min.js"></script>
+<script>
+   var notify = 'false' == true ? true : false;
+   var verify = 'false' == true ? true : false;
+    window.onload = function() {
+        new Valine({
+            el: '.comment',
+            notify: notify,
+            verify: verify,
+            app_id: "oXH16TPsBfYaIX0UArBSPBV1-gzGzoHsz",
+            app_key: "GzmsGChQoqPE8wd1DekzRaIq",
+            placeholder: "Hello World",
+            avatar:"mm"
+        });
+    }
+</script>
+  </section>
 
-    
 
 
           </div>
@@ -422,8 +444,8 @@
 	var yiliaConfig = {
 		mathjax: false,
 		isHome: false,
-		isPost: false,
-		isArchive: true,
+		isPost: true,
+		isArchive: false,
 		isTag: false,
 		isCategory: false,
 		open_in_new: false,
