@@ -16,10 +16,14 @@
 <meta property="og:site_name" content="echopoison">
 <meta property="og:description" content="阅读《从Paxos到Zookeeper分布式一致性原理与实践》一书中有关Paxos一致性算法的部分，在此基础上增加一些个人的见解，试图讲得在大白话一点。">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2019-09-25T15:21:35.636Z">
+<meta property="og:image" content="http://pwxc1xwdv.bkt.clouddn.com/image-20190924224318547.png">
+<meta property="og:image" content="http://pwxc1xwdv.bkt.clouddn.com/image-20190924224513680.png">
+<meta property="og:image" content="http://pwxc1xwdv.bkt.clouddn.com/image-20190925002422980.png">
+<meta property="og:updated_time" content="2019-09-25T15:33:37.034Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Paxos算法推导">
 <meta name="twitter:description" content="阅读《从Paxos到Zookeeper分布式一致性原理与实践》一书中有关Paxos一致性算法的部分，在此基础上增加一些个人的见解，试图讲得在大白话一点。">
+<meta name="twitter:image" content="http://pwxc1xwdv.bkt.clouddn.com/image-20190924224318547.png">
   
     <link rel="alternative" href="/atom.xml" title="echopoison" type="application/atom+xml">
   
@@ -216,9 +220,9 @@
 <p>P1:一个acceptor必须批准第一次收到的提案</p>
 </blockquote>
 <p>上面这个需求会引出一个新的问题，就是如果有多个提案被不同的proposer同时提出，可能会造成每个acceptor都批准到它的第一个提案，每个提案的权重都相同</p>
-<p>![image-20190924224318547](/Users/echo/Library/Application Support/typora-user-images/image-20190924224318547.png)</p>
+<p><img src="http://pwxc1xwdv.bkt.clouddn.com/image-20190924224318547.png" alt="image-20190924224318547"></p>
 <p>显然这种场景下是无法选出一个唯一提案的，另外，即使只有两个提案被选出且acceptor的数量是奇数的，看起来很完美然而即使只有1个acceptor出错，都有可能导致无法确定该选择哪个提案，如下图</p>
-<p>![image-20190924224513680](/Users/echo/Library/Application Support/typora-user-images/image-20190924224513680.png)</p>
+<p><img src="http://pwxc1xwdv.bkt.clouddn.com/image-20190924224513680.png" alt="image-20190924224513680"></p>
 <p>因此在P1点基础上，我们还需要根据少数服从多数原则增加一个限制条件就是说一个提案被选定需要半数以上的acceptor接受(感觉这个限制条件也算是一个需求，但是文中并没有单列出来所以也不好说)  ，而这个限定条件就暗示着说一个acceptor必须能够批准不止一个提案。同时也意味着说一个提案可以被多个acceptor接受，那么怎么来区分被多个acceptor接受的提案呢？比如可以用前缀来表示，而这里paxos算法采用的是一个全局的唯一编号来唯一标示一个<strong>被acceptor批准</strong>的提案，当一个具有某Value值的提案被半数以上的acceptor接受后，我们就认为这个提案被批准了。因为引入了编号的概念所以提案已经不是单纯的Value值了，而是变成了一个“【编号，Value】”来表示一个提案。 </p>
 <p>根据上面讲到的内容，我们虽然允许多个提案被选定，但同时必须保证所有被选定的提案具有相同的Value，这是一个关于提案的Value的约定，结合提案的编号，该约定定义如下（📒小本本：需求P2出来了，那该需求是针对哪个角色提出的需求呢？大眼一瞅感觉好像都不是，因此下文会对P2进行泛化来找到该需求的具体角色）</p>
 <blockquote>
@@ -230,7 +234,7 @@
 </blockquote>
 <p>P2a相比于P2，使用“被acceptor批准”来取代“选定”，由于只有批准是选定的充分不必要条件，因此P2a也就是P2的充分不必要条件。</p>
 <p>至此，P1保持不变。但是因为通信是异步的，因此一个提案可以在任意时刻被acceptor接受，出现下图的场景</p>
-<p>![image-20190925002422980](/Users/echo/Library/Application Support/typora-user-images/image-20190925002422980.png)</p>
+<p><img src="http://pwxc1xwdv.bkt.clouddn.com/image-20190925002422980.png" alt="image-20190925002422980"></p>
 <p>proposer2发松V2，由于网络等原因在V2还未被批准的时候 proposer1发送V1，被acceptor2～5先后批准产生了【M1～M4，V1】的提案（详见P2上的粗体：被批准了才有编号）这个时候V2姗姗来迟被acceptor1接受了，根据P1的规则acceptor1必须批准收到的第一个提案，因此产生了M5，这里发现M5的编号&gt; M0~M4 且V2!=V1，与P2a矛盾了，而我们又需要P1来保证提案被选定，因此说明对P2对泛化P2a泛化的还不够，因此继续泛化成如下</p>
 <blockquote>
 <p>P2b:如果一个提案[M0,V0]被选定后，那么之后任何proposer产生的编号更高的提案，其value值都为V0</p>
@@ -511,7 +515,7 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">kafka</a>
+                <a href="javascript:void(0)" class="js-tag color4">JVM</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -523,7 +527,7 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">JVM</a>
+                <a href="javascript:void(0)" class="js-tag color1">kafka</a>
               </li>
              
               <li class="article-tag-list-item">
