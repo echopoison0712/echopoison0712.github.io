@@ -9,19 +9,19 @@
   <title>读书笔记|《深入理解kafka:核心设计与实现》 | echopoison</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   <meta name="description" content="本篇记录了《深入理解kafka:核心设计与实现》的小概念，算是读书笔记吧，还待不断补充ing">
-<meta name="keywords" content="读书笔记,kafka">
+<meta name="keywords" content="kafka,读书笔记">
 <meta property="og:type" content="article">
 <meta property="og:title" content="读书笔记|《深入理解kafka:核心设计与实现》">
 <meta property="og:url" content="http://yoursite.com/2019/09/15/读书笔记|《深入理解kafka-核心设计与实现》/index.html">
 <meta property="og:site_name" content="echopoison">
 <meta property="og:description" content="本篇记录了《深入理解kafka:核心设计与实现》的小概念，算是读书笔记吧，还待不断补充ing">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:image" content="http://pwxc1xwdv.bkt.clouddn.com/image-20190730115238065.png">
-<meta property="og:updated_time" content="2019-09-15T14:49:37.567Z">
+<meta property="og:image" content="https://echopoison-blog.oss-cn-beijing.aliyuncs.com/image-20190730115238065.png?Expires=1570934794&OSSAccessKeyId=TMP.hZXzMytWTxztDTudcngFASAtM2u3Kb1tKfqDnZdtLYHenHE5neDv1z9kHu9KCtiNKz4tcqqjJXNkbQmAXd4vZqnBTLJWhGJDdZTtvWnMFb5VUuu58gEDAKSpCTP5hW.tmp&Signature=d7N0lnM8ajjqyK9plV9I6ia2U8U%3D">
+<meta property="og:updated_time" content="2019-10-13T01:46:56.851Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="读书笔记|《深入理解kafka:核心设计与实现》">
 <meta name="twitter:description" content="本篇记录了《深入理解kafka:核心设计与实现》的小概念，算是读书笔记吧，还待不断补充ing">
-<meta name="twitter:image" content="http://pwxc1xwdv.bkt.clouddn.com/image-20190730115238065.png">
+<meta name="twitter:image" content="https://echopoison-blog.oss-cn-beijing.aliyuncs.com/image-20190730115238065.png?Expires=1570934794&OSSAccessKeyId=TMP.hZXzMytWTxztDTudcngFASAtM2u3Kb1tKfqDnZdtLYHenHE5neDv1z9kHu9KCtiNKz4tcqqjJXNkbQmAXd4vZqnBTLJWhGJDdZTtvWnMFb5VUuu58gEDAKSpCTP5hW.tmp&Signature=d7N0lnM8ajjqyK9plV9I6ia2U8U%3D">
   
     <link rel="alternative" href="/atom.xml" title="echopoison" type="application/atom+xml">
   
@@ -202,7 +202,7 @@
 <li>kafkaProducer —&gt; send() —&gt; intgerceptor() —&gt; serializer() —&gt; partitioner() —&gt; broker</li>
 <li>如果key不为null，计算得到的分区号会是所有分区中的任意一个（对key进行hash运算，相同hash的入同一分区），如果key为null，那么计算得到的分区号仅为可用分区中的任意一个</li>
 <li>kafkaProducer会在消息被应答之前或消息发送失败时调用拦截器，优先于用户设定的callback之前执行</li>
-<li>生产者架构图<br><img src="http://pwxc1xwdv.bkt.clouddn.com/image-20190730115238065.png" alt="image-20190730115238065"><ul>
+<li>生产者架构图<br><img src="https://echopoison-blog.oss-cn-beijing.aliyuncs.com/image-20190730115238065.png?Expires=1570934794&OSSAccessKeyId=TMP.hZXzMytWTxztDTudcngFASAtM2u3Kb1tKfqDnZdtLYHenHE5neDv1z9kHu9KCtiNKz4tcqqjJXNkbQmAXd4vZqnBTLJWhGJDdZTtvWnMFb5VUuu58gEDAKSpCTP5hW.tmp&Signature=d7N0lnM8ajjqyK9plV9I6ia2U8U%3D" alt="image-20190730115238065"><ul>
 <li>整个生产者由两个线程（主线程和sender线程）执行</li>
 <li>RecordAccumulator 主要用来缓存消息 以便 Sender 线程可以批量发送</li>
 <li>主线程中发送过来的消息都会被迫加到 RecordAccumulator 的某个双端队列( Deque)中，<br>在 RecordAccumulator 的内部为每个分区都维护了 一 个双端队列，队列中的内容就是<br>ProducerBatch，即 Deque<producerbatch></producerbatch></li>
@@ -372,11 +372,11 @@
 		<ul class="article-tag-list">
 			 
         		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">读书笔记</a>
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">kafka</a>
         		</li>
       		 
         		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">kafka</a>
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">读书笔记</a>
         		</li>
       		
 		</ul>
@@ -625,6 +625,10 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color1">kafka</a>
+              </li>
+             
+              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">JVM</a>
               </li>
              
@@ -634,10 +638,6 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">读书笔记</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">kafka</a>
               </li>
              
               <li class="article-tag-list-item">
