@@ -6,22 +6,23 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <link rel="dns-prefetch" href="http://yoursite.com">
-  <title>读书笔记|《深入理解kafka:核心设计与实现》 | echopoison</title>
+  <title>巧妙记住函数调用对应栈桢的出入栈 | echopoison</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="本篇记录了《深入理解kafka:核心设计与实现》的小概念，算是读书笔记吧，还待不断补充ing">
-<meta name="keywords" content="kafka,读书笔记">
+  <meta name="description" content="在学习JVM的时候，都会记住这样几个概念：  栈是线程私有的。 每个方法的调用对应着栈桢的入栈出栈。 每个栈帧包含局部变量表、操作数栈以及指向当前方法所属类的运行时常量池的引用。 局部变量是线程安全的  这些概念都不难理解也不难记住，不过吧总觉得这些就是干巴巴的概念，背下来也就过去了。今天突然意识到其实在看到这些相关概念前，就已经见到他们的身影并受到其恩惠了。 平时都有debug程序，而debug">
+<meta name="keywords" content="抖机灵,栈桢">
 <meta property="og:type" content="article">
-<meta property="og:title" content="读书笔记|《深入理解kafka:核心设计与实现》">
-<meta property="og:url" content="http://yoursite.com/2019/09/15/读书笔记|《深入理解kafka-核心设计与实现》/index.html">
+<meta property="og:title" content="巧妙记住函数调用对应栈桢的出入栈">
+<meta property="og:url" content="http://yoursite.com/2019/10/13/巧妙记住函数调用对应栈桢的出入栈/index.html">
 <meta property="og:site_name" content="echopoison">
-<meta property="og:description" content="本篇记录了《深入理解kafka:核心设计与实现》的小概念，算是读书笔记吧，还待不断补充ing">
+<meta property="og:description" content="在学习JVM的时候，都会记住这样几个概念：  栈是线程私有的。 每个方法的调用对应着栈桢的入栈出栈。 每个栈帧包含局部变量表、操作数栈以及指向当前方法所属类的运行时常量池的引用。 局部变量是线程安全的  这些概念都不难理解也不难记住，不过吧总觉得这些就是干巴巴的概念，背下来也就过去了。今天突然意识到其实在看到这些相关概念前，就已经见到他们的身影并受到其恩惠了。 平时都有debug程序，而debug">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:image" content="https://echopoison-blog.oss-cn-beijing.aliyuncs.com/image-20190730115238065.png?Expires=1570934794&OSSAccessKeyId=TMP.hZXzMytWTxztDTudcngFASAtM2u3Kb1tKfqDnZdtLYHenHE5neDv1z9kHu9KCtiNKz4tcqqjJXNkbQmAXd4vZqnBTLJWhGJDdZTtvWnMFb5VUuu58gEDAKSpCTP5hW.tmp&Signature=d7N0lnM8ajjqyK9plV9I6ia2U8U%3D">
-<meta property="og:updated_time" content="2019-10-13T01:46:56.851Z">
+<meta property="og:image" content="https://echopoison-blog.oss-cn-beijing.aliyuncs.com/image-20191013171640070.png?Expires=1570961902&OSSAccessKeyId=TMP.hZXzMytWTxztDTudcngFASAtM2u3Kb1tKfqDnZdtLYHenHE5neDv1z9kHu9KCtiNKz4tcqqjJXNkbQmAXd4vZqnBTLJWhGJDdZTtvWnMFb5VUuu58gEDAKSpCTP5hW.tmp&Signature=kifpth4zS0gbUBRwer5g1vuttuA%3D">
+<meta property="og:image" content="https://echopoison-blog.oss-cn-beijing.aliyuncs.com/image-20191013171602272.png?Expires=1570961887&OSSAccessKeyId=TMP.hZXzMytWTxztDTudcngFASAtM2u3Kb1tKfqDnZdtLYHenHE5neDv1z9kHu9KCtiNKz4tcqqjJXNkbQmAXd4vZqnBTLJWhGJDdZTtvWnMFb5VUuu58gEDAKSpCTP5hW.tmp&Signature=LlM2M5ANKVE2ufKf%2FLbQOBE6f2Q%3D">
+<meta property="og:updated_time" content="2019-10-13T09:18:58.724Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="读书笔记|《深入理解kafka:核心设计与实现》">
-<meta name="twitter:description" content="本篇记录了《深入理解kafka:核心设计与实现》的小概念，算是读书笔记吧，还待不断补充ing">
-<meta name="twitter:image" content="https://echopoison-blog.oss-cn-beijing.aliyuncs.com/image-20190730115238065.png?Expires=1570934794&OSSAccessKeyId=TMP.hZXzMytWTxztDTudcngFASAtM2u3Kb1tKfqDnZdtLYHenHE5neDv1z9kHu9KCtiNKz4tcqqjJXNkbQmAXd4vZqnBTLJWhGJDdZTtvWnMFb5VUuu58gEDAKSpCTP5hW.tmp&Signature=d7N0lnM8ajjqyK9plV9I6ia2U8U%3D">
+<meta name="twitter:title" content="巧妙记住函数调用对应栈桢的出入栈">
+<meta name="twitter:description" content="在学习JVM的时候，都会记住这样几个概念：  栈是线程私有的。 每个方法的调用对应着栈桢的入栈出栈。 每个栈帧包含局部变量表、操作数栈以及指向当前方法所属类的运行时常量池的引用。 局部变量是线程安全的  这些概念都不难理解也不难记住，不过吧总觉得这些就是干巴巴的概念，背下来也就过去了。今天突然意识到其实在看到这些相关概念前，就已经见到他们的身影并受到其恩惠了。 平时都有debug程序，而debug">
+<meta name="twitter:image" content="https://echopoison-blog.oss-cn-beijing.aliyuncs.com/image-20191013171640070.png?Expires=1570961902&OSSAccessKeyId=TMP.hZXzMytWTxztDTudcngFASAtM2u3Kb1tKfqDnZdtLYHenHE5neDv1z9kHu9KCtiNKz4tcqqjJXNkbQmAXd4vZqnBTLJWhGJDdZTtvWnMFb5VUuu58gEDAKSpCTP5hW.tmp&Signature=kifpth4zS0gbUBRwer5g1vuttuA%3D">
   
     <link rel="alternative" href="/atom.xml" title="echopoison" type="application/atom+xml">
   
@@ -153,14 +154,14 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            <article id="post-读书笔记|《深入理解kafka-核心设计与实现》" class="article article-type-post " itemscope itemprop="blogPost">
+            <article id="post-巧妙记住函数调用对应栈桢的出入栈" class="article article-type-post " itemscope itemprop="blogPost">
   <div class="article-inner">
     
       <header class="article-header">
         
   
     <h1 class="article-title" itemprop="name">
-      读书笔记|《深入理解kafka:核心设计与实现》
+      巧妙记住函数调用对应栈桢的出入栈
     </h1>
   
 
@@ -175,196 +176,28 @@
   </a>
   
         
-        <a href="/2019/09/15/读书笔记|《深入理解kafka-核心设计与实现》/" class="archive-article-date">
-  	<time datetime="2019-09-15T14:43:52.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-09-15</time>
+        <a href="/2019/10/13/巧妙记住函数调用对应栈桢的出入栈/" class="archive-article-date">
+  	<time datetime="2019-10-13T03:43:38.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-10-13</time>
 </a>
         
       </header>
     
     <div class="article-entry" itemprop="articleBody">
       
-        <p>本篇记录了<a href="https://item.jd.com/12489649.html" target="_blank" rel="noopener">《深入理解kafka:核心设计与实现》</a>的小概念，算是读书笔记吧，还待不断补充ing</p>
-<a id="more"></a>
-<h3 id="基本知识"><a href="#基本知识" class="headerlink" title="基本知识"></a>基本知识</h3><ul>
-<li>主题是一个逻辑上的概念，可以细分为多个分区</li>
-<li>同一主题下的不同分区包含的消息是不同的</li>
-<li>kafka中的分区可以分布在不同的服务器上</li>
-<li>每条消息被发送到broker前，会根据分区规则选择存储到哪个具体的分区</li>
-<li>同一分区的不同副本保存的是相同的消息，其中leader副本负责处理读写请求，follower副本<strong>只</strong>负责与leader副本进行消息同步</li>
-<li>分区中的所有副本统称为AR，所有与leader副本一致的（包括leader）称为ISR，与leader副本之后<strong>过多</strong>的成为OSR，所以AR = ISR + OSR</li>
-<li>ISR与HW和LEO有关系 （LEO标识当前日志文件中下一条待写入消息的offset，分区ISR集合的每个副本都有一个ISR，ISR中最小的为HW）</li>
-<li>消费者只能拉到HW之前的消息</li>
+        <p>在学习JVM的时候，都会记住这样几个概念：</p>
+<ul>
+<li>栈是线程私有的。</li>
+<li>每个方法的调用对应着栈桢的入栈出栈。</li>
+<li>每个栈帧包含局部变量表、操作数栈以及指向当前方法所属类的运行时常量池的引用。</li>
+<li>局部变量是线程安全的</li>
 </ul>
-<h3 id="生产者"><a href="#生产者" class="headerlink" title="生产者"></a>生产者</h3><ul>
-<li>发送消息主要有三种方式：发后即忘（fire-and-forget）、同步（sync）、异步（async）</li>
-<li>kafkaProducer一般发生两种异常：<ul>
-<li>可重试异常：NetworkException、LeaderNotAvaliableException、UnknowTopicOrPartitionException、NotEnoughReplicasException等<ul>
-<li>对于可重试异常，如果配置了retries参数，那么只要在规定的重试次数内自行恢复了就不会抛出异常</li>
-</ul>
-</li>
-<li>不可重试异常</li>
-</ul>
-</li>
-<li>kafkaProducer —&gt; send() —&gt; intgerceptor() —&gt; serializer() —&gt; partitioner() —&gt; broker</li>
-<li>如果key不为null，计算得到的分区号会是所有分区中的任意一个（对key进行hash运算，相同hash的入同一分区），如果key为null，那么计算得到的分区号仅为可用分区中的任意一个</li>
-<li>kafkaProducer会在消息被应答之前或消息发送失败时调用拦截器，优先于用户设定的callback之前执行</li>
-<li>生产者架构图<br><img src="https://echopoison-blog.oss-cn-beijing.aliyuncs.com/image-20190730115238065.png?Expires=1570934794&OSSAccessKeyId=TMP.hZXzMytWTxztDTudcngFASAtM2u3Kb1tKfqDnZdtLYHenHE5neDv1z9kHu9KCtiNKz4tcqqjJXNkbQmAXd4vZqnBTLJWhGJDdZTtvWnMFb5VUuu58gEDAKSpCTP5hW.tmp&Signature=d7N0lnM8ajjqyK9plV9I6ia2U8U%3D" alt="image-20190730115238065"><ul>
-<li>整个生产者由两个线程（主线程和sender线程）执行</li>
-<li>RecordAccumulator 主要用来缓存消息 以便 Sender 线程可以批量发送</li>
-<li>主线程中发送过来的消息都会被迫加到 RecordAccumulator 的某个双端队列( Deque)中，<br>在 RecordAccumulator 的内部为每个分区都维护了 一 个双端队列，队列中的内容就是<br>ProducerBatch，即 Deque<producerbatch></producerbatch></li>
-<li>Sender 从 RecordAccumulator 中 获取缓存的消息之后，会进 一 步将原本&lt;分区， Deque&lt;<br>ProducerBatch&gt;&gt;的保存形式转变成&lt;Node, List&lt; ProducerBatch&gt;的形式,Sender 还 会进一步封装成&lt;Node,Request&gt;的形式</li>
-<li>请求在从 Sender 线程发往 Kafka 之前还会保存到 InFlightRequests 中，它的主要作用是缓存了已经发出去但还没有收到响应的请求,通过配置参数还可 以限制每个连接最多缓存的请求数</li>
-</ul>
-</li>
-</ul>
-<h3 id="消费者"><a href="#消费者" class="headerlink" title="消费者"></a>消费者</h3><ul>
-<li>消费者可以通过集合/正则的方式订阅多个主题    subscribe()<ul>
-<li>如果通过正则订阅后，有人创建新的符合该正则的主题后，消费者也可以消费到这个新加入的主题</li>
-</ul>
-</li>
-<li>消费者可以直接订阅某些主题的特定分区 assign()</li>
-<li>kafka中的消费是基于拉模式。</li>
-<li>poll()涉及到消费位移、消费者协调器、组协调器、消费者的选举、分区分配的分发、再均衡的逻辑、心跳等内容</li>
-<li>位移提交<ul>
-<li>kafka默认的消费位移的提交方式是自动提交，这里的自动提交是定期提交</li>
-<li>每次真正向服务端发起拉取请求之前都会检查是否可以进行提交，如果可以就会提交上次轮训的位移</li>
-<li>手动提交可以细分为同步和异步提交，对应kafkaConsumer的commitSync()和commintAsync()</li>
-</ul>
-</li>
-<li>指定位移消费seek() 方法只能重置消费者分配到的分区的消费位置</li>
-<li>再均衡是指分区的所属权从一个消费者转移到另一个消费者的行为，为消费组具备高可用性和伸缩性提供保障，不过在再均衡发生期间，消费组内的消费者是无法读取消息的</li>
-<li>通过再均衡监听器来监听事件，进行位移提交等操作</li>
-<li>kafkaProducer是线程安全的，然后consumer是非线程安全的，在consumer中定义了acquire()方法，通过CAS来判断当前是否只有一个线程在操作</li>
-<li>拉消息包含两种场景，follower副本做同步以及consumer的接收</li>
-</ul>
-<h3 id="分区和副本"><a href="#分区和副本" class="headerlink" title="分区和副本"></a>分区和副本</h3><ul>
-<li>创建topic时可以通过replica-assignment 来手动指定分区副本的分配方案</li>
-<li>分区副本分配<ul>
-<li>生产者：为每条消息指定所要发往的分区</li>
-<li>消费者：为消费者指定可以消费消息的分区</li>
-<li>集群：在哪个broker上创建哪些分区的副本</li>
-</ul>
-</li>
-<li>创建topic<ul>
-<li>kafka-topics.sh</li>
-<li>kafkaAdminClient</li>
-<li>直接zk创建子节点</li>
-</ul>
-</li>
-<li>目前kafka只支持增加分区数而不支持减少分区数</li>
-<li>删除topic<ul>
-<li>通过指定删除</li>
-<li>直接在zk的删除路径下创建同名节点</li>
-<li>删除zk节点及log</li>
-</ul>
-</li>
-<li>优先副本是指在AR集合列表的第一个副本，理想情况下优先副本就是leader副本</li>
-<li>分区平衡 通过一定的方式促使优先副本选举为leader副本</li>
-<li>kafka不会将失效的分区副本自动的前一到集群中剩余的可用broker节点上</li>
-<li>分区重分配一般发生在集群扩容、broker节点失效的场景下对分区进行迁移</li>
-<li>分区重分配的本质在于数据复制</li>
-<li>一味的增加分区可能会导致kafka崩溃，原因在于增加一个分区时会对应增加一个文件描述符，文件描述符可能会不够</li>
-</ul>
-<h3 id="日志存储"><a href="#日志存储" class="headerlink" title="日志存储"></a>日志存储</h3><ul>
-<li>一个副本对应一个日志文件夹，文件夹下包含多个LogSegment包括.log、.index、 .timeindex等其他文件</li>
-<li>向log中增加消息是顺序写入的，只有最后一个LogSegment才能知晓写入操作</li>
-<li>每个LogSegment中的日志文件（.log结尾）都有对应的两个索引文件(.index和.timeindex)，每个LogSegement的命名都是根据基准偏移量（baseOffset，表示当前LogSegment的第一条消息的offset）命名的</li>
-<li>Kafka实现的压缩方式是将多条消息一起进行压缩</li>
-<li>Kafka中的索引文件以稀疏索引的方式构建消息的索引，通过MappedByteBuffer将索引文件映射阿斗内存中，以加快索引的查询速度</li>
-<li>日志分段文件切分条件<ul>
-<li>大小超过配置的值，默认&gt;1GB</li>
-<li>最大时间戳与当前时间查超过配置的值，默认 &gt; 7天</li>
-<li>两个索引文件的大小超过配置的值，默认 &gt; 10MB</li>
-<li>追加的消息偏移量超过配置的值，默认 &gt; Integer.MAX_VALUE</li>
-</ul>
-</li>
-<li>日志清理<ul>
-<li>日志删除（默认）<ul>
-<li>基于时间的保留策略 默认7天</li>
-<li>基于日志大小的保留策略 默认1GB</li>
-<li>基于日志起始偏移量的保留策略</li>
-</ul>
-</li>
-<li>日志压缩<ul>
-<li>会保留一个key的最新value值</li>
-<li>如果一条消息的key部位null但value为null，此消息称为墓碑消息，日志清理线程会进行清理并保留一段时间</li>
-</ul>
-</li>
-</ul>
-</li>
-<li>kafka高可用<ul>
-<li>顺序写入</li>
-<li>页缓存</li>
-<li>零拷贝 依赖底层的sendfile()</li>
-</ul>
-</li>
-</ul>
-<h3 id="深入服务端"><a href="#深入服务端" class="headerlink" title="深入服务端"></a>深入服务端</h3><ul>
-<li>kafka自定义了一组基于TCP的二进制协议</li>
-<li>kafka基于时间轮的概念自定义实现了用于延时功能的定时器<ul>
-<li>时间轮是一个存储定时任务的环形队列，底层采用数组实现，数组中的每个元素可以存放一个 定时任务列表，该列表是一个环形的双向链表，链表的每一项是定时任务项，封装了真正的定时任务</li>
-<li>当任务的到期时间超过了当前时间轮所表示的时间范畴时，会尝试添加到上层时间轮中</li>
-</ul>
-</li>
-<li>ack = -1 的情况下，leader副本默认等待30s时间接受follower副本的ack</li>
-<li>延时操作创建之后会加入延时操作管理器来管理，每个延时操作管理器会配备一个定时器来做超时管理。延时操作需要支持外部事件的处罚，所以需要配备一个监听池来监听每个分区的外部事件</li>
-<li>kafka集群会有多个broker，其中一个broker会被选举为控制器，负责管理整个集群的梭鱼哦分区和副本的状态</li>
-<li>控制器选举依赖zk，成功竞选控制器的broker会在zk中创建/controller这个临时节点</li>
-<li>每个broker都会在内存中保存当前控制器的brokerid值，被标示为activeControllerId</li>
-<li>zk中还会有一个持久的节点用来保存控制器发生变更的次数，每个和控制器交互的请求都会携带该值，如果请求的值小于内存中的值则认为请求时失效的。kafka通过controller_epoch来保证控制器的唯一性，进而保证相关操作的一致性</li>
-<li>优雅关闭<ul>
-<li>使用脚本关闭可能不奏效，原因是ps命令会限制输出字符数不得超过页大小PAGE_SIZE = 4096</li>
-<li>所以jps查看kafka的pid，然后使用kill -s TERM PID / kill -15 PID </li>
-<li>kafka服务入口程序中有一个名为kafka-shutdown-hock的关闭钩子</li>
-</ul>
-</li>
-</ul>
-<h3 id="深入客户端"><a href="#深入客户端" class="headerlink" title="深入客户端"></a>深入客户端</h3><ul>
-<li>消费者分区分配策略<ul>
-<li>RangeAssignor 按照消费者总数和分区总数进行整除得到跨度，然后将分区按照跨度进行平均分配</li>
-<li>RoundRobinAssignor 轮询方式分配，如果同一组内消费者订阅的信息不同，分配的会不均匀</li>
-<li>StickyAssignor </li>
-<li>自定义</li>
-</ul>
-</li>
-<li>旧版消费者客户端使用zk上配置监听器来监听消费者组和kafka集群的状态，此时触发再均衡操作时会导致羊群效应和脑裂效应</li>
-<li>新版使用消费者协调器和组协调器来解决该问题</li>
-<li>消息中间件的消息传输保障有3个层级<ul>
-<li>at most once</li>
-<li>at least once</li>
-<li>Exactly once</li>
-</ul>
-</li>
-<li>由于kafka多副本机制，及对于网络等异常的重试机制，因此这里kafka选用的是at least once</li>
-<li>而对于消费者而言，at most once/at least once 取决于拉取和提交的相对顺序</li>
-<li>为了实现生产者的幂等性，kafka引入来PID和序列号，每个新的生产者实例在初始化的时候会被分配一个PID，对于每个PID，消息发送到的每一个分区都有对应的序列号</li>
-<li>broker端会在内存中为每一对&lt;PID，分区&gt;维护一个序列号，对于收到的消息只有当消息的序列号 = broker.序列号 + 1时才接受</li>
-<li>因为序列号是分区上的概念，所以幂等性并不跨越多个分区运作。而事务可以弥补这个缺陷</li>
-<li>对于典型的流式应用：消费Atopic——do something ——生产Btopic，通过transactionalId实现事务</li>
-<li>从生产者角度来说，通过事务kafka可以保证跨生产者会话的消息幂等发送（对有相同transactionalId的新生产者实例被创建且工作时，旧的相同transcationalId将不再工作）及跨生产者会话的事务恢复</li>
-<li>从消费者角度分析，出于以下原因，事务语义较弱<ul>
-<li>采用日志压缩后，由于相同key的消息会覆盖导致某些消息被清理</li>
-<li>消息被分布在同一分区的多个日志分段，老的分段又被删除</li>
-<li>消费者可以通过seek()访问任意offset的消息</li>
-</ul>
-</li>
-</ul>
-<h3 id="可靠性探究、"><a href="#可靠性探究、" class="headerlink" title="可靠性探究、"></a>可靠性探究、</h3><ul>
-<li>当follower副本将leader副本LEO之前的日志全部同步时，认为follower副本追上leader副本</li>
-<li>follower副本更新自己HW的算法是比较当前的LEO与leader副本传送过来的HW的值，取最小</li>
-<li>leader副本会根据follower副本传来的LEO的最小值作为自己的HW</li>
-<li>以前版本kafka使用的是基于HW的同步机制，但这样会有数据不一致的问题，原因是HW同步有间隙即follower在更新自己的LEO后需要再一轮的请求才会更新自己的HW，follow副本的HW不能比leader副本的HW高</li>
-<li>新版本引入leader epoch在需要截断数据的时候使用该值作为参考依据而不是以前的HW</li>
-<li>生产者写入与消费者读取消息都是与leader副本交互的，从而实现一种主写主独的模型</li>
-<li>kafka分区及副本的设计导致每个broker上的读写负载是一样的</li>
-<li>读写分离的弊端<ul>
-<li>数据不一致</li>
-<li>延时</li>
-</ul>
-</li>
-<li>常规日志同步机制（少数服从多数）的弊端就是如果容忍1个follower的失败需要保证至少3个副本</li>
-<li>kafka采用的是ISR机制</li>
-</ul>
+<p>这些概念都不难理解也不难记住，不过吧总觉得这些就是干巴巴的概念，背下来也就过去了。今天突然意识到其实在看到这些相关概念前，就已经见到他们的身影并受到其恩惠了。</p>
+<p>平时都有debug程序，而debug模式下可以看到调用栈信息，最开始学习debug的时候当时带我的同事就跟我说在Frames这里是debug调用栈，蓝色选中的就是当前程序停留的位置，它往下依次是调用的方法信息。右侧Variables就可以看到当前的变量信息。当时觉得很神奇但现在想想，调用栈里的每一层不对应着一个栈桢，然后variables中的值就是对应栈桢中存储的元素。</p>
+<p>下面用一段死锁的demo来验证一下</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">DeadLock</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> Object o1 = <span class="keyword">new</span> Object();</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> Object o2 = <span class="keyword">new</span> Object();</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Exception</span>&#123;</span><br><span class="line">        ExecutorService threadPool = Executors.newFixedThreadPool(<span class="number">2</span>);</span><br><span class="line">        threadPool.submit(<span class="keyword">new</span> Runnable() &#123;</span><br><span class="line">            <span class="meta">@Override</span></span><br><span class="line">            <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">                <span class="keyword">int</span> variableA = <span class="number">10</span>;</span><br><span class="line">                <span class="keyword">synchronized</span> (o1)&#123;</span><br><span class="line">                    System.out.println(<span class="string">"thread:=="</span>+Thread.currentThread()+<span class="string">"拿到o1资源"</span>);</span><br><span class="line">                    <span class="keyword">try</span> &#123;</span><br><span class="line">                        Thread.sleep(<span class="number">10</span>);</span><br><span class="line">                    &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">                        e.printStackTrace();</span><br><span class="line">                    &#125;</span><br><span class="line">                    <span class="keyword">synchronized</span> (o2)&#123;</span><br><span class="line">                        System.out.println(<span class="string">"thread:=="</span>+Thread.currentThread()+<span class="string">"拿到o2资源"</span>);</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;);</span><br><span class="line">        threadPool.submit(<span class="keyword">new</span> Runnable() &#123;</span><br><span class="line">            <span class="meta">@Override</span></span><br><span class="line">            <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">              	<span class="keyword">int</span> variableA = <span class="number">20</span>;</span><br><span class="line">                <span class="keyword">synchronized</span> (o2)&#123;</span><br><span class="line">                    System.out.println(<span class="string">"thread:=="</span>+Thread.currentThread()+<span class="string">"拿到o2资源"</span>);</span><br><span class="line">                    <span class="keyword">try</span> &#123;</span><br><span class="line">                        Thread.sleep(<span class="number">10</span>);</span><br><span class="line">                    &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">                        e.printStackTrace();</span><br><span class="line">                    &#125;</span><br><span class="line">                    <span class="keyword">synchronized</span> (o1)&#123;</span><br><span class="line">                        System.out.println(<span class="string">"thread:=="</span>+Thread.currentThread()+<span class="string">"拿到o1资源"</span>);</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;);</span><br><span class="line">        threadPool.shutdown();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://echopoison-blog.oss-cn-beijing.aliyuncs.com/image-20191013171640070.png?Expires=1570961902&OSSAccessKeyId=TMP.hZXzMytWTxztDTudcngFASAtM2u3Kb1tKfqDnZdtLYHenHE5neDv1z9kHu9KCtiNKz4tcqqjJXNkbQmAXd4vZqnBTLJWhGJDdZTtvWnMFb5VUuu58gEDAKSpCTP5hW.tmp&Signature=kifpth4zS0gbUBRwer5g1vuttuA%3D" alt="image-20191013171602272"></p>
+<p><img src="https://echopoison-blog.oss-cn-beijing.aliyuncs.com/image-20191013171602272.png?Expires=1570961887&OSSAccessKeyId=TMP.hZXzMytWTxztDTudcngFASAtM2u3Kb1tKfqDnZdtLYHenHE5neDv1z9kHu9KCtiNKz4tcqqjJXNkbQmAXd4vZqnBTLJWhGJDdZTtvWnMFb5VUuu58gEDAKSpCTP5hW.tmp&Signature=LlM2M5ANKVE2ufKf%2FLbQOBE6f2Q%3D" alt="image-20191013171640070"></p>
 
       
 
@@ -378,11 +211,11 @@
 		<ul class="article-tag-list">
 			 
         		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">kafka</a>
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">抖机灵</a>
         		</li>
       		 
         		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">读书笔记</a>
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">栈桢</a>
         		</li>
       		
 		</ul>
@@ -438,7 +271,7 @@
     <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
     <p>扫一扫，分享到微信</p>
     <div class="wx-qrcode">
-      <img src="//api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://echopoison.com/http://yoursite.com/2019/09/15/读书笔记|《深入理解kafka-核心设计与实现》/" alt="微信分享二维码">
+      <img src="//api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://echopoison.com/http://yoursite.com/2019/10/13/巧妙记住函数调用对应栈桢的出入栈/" alt="微信分享二维码">
     </div>
 </div>
 
@@ -452,18 +285,9 @@
   
 <nav id="article-nav">
   
-    <a href="/2019/09/25/Paxos算法推导/" id="article-nav-newer" class="article-nav-link-wrap">
-      <i class="icon-circle-left"></i>
-      <div class="article-nav-title">
-        
-          Paxos算法推导
-        
-      </div>
-    </a>
   
-  
-    <a href="/2019/09/13/轮子-ElasticSearch的Nested结果到实体的映射/" id="article-nav-older" class="article-nav-link-wrap">
-      <div class="article-nav-title">轮子---ElasticSearch的Nested结果到实体的映射</div>
+    <a href="/2019/09/25/Paxos算法推导/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">Paxos算法推导</div>
       <i class="icon-circle-right"></i>
     </a>
   
@@ -490,7 +314,7 @@
                 </span>
                 <span class="tooltip-content">
                     <div class="toc-article">
-                    <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#基本知识"><span class="toc-number">1.</span> <span class="toc-text">基本知识</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#生产者"><span class="toc-number">2.</span> <span class="toc-text">生产者</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#消费者"><span class="toc-number">3.</span> <span class="toc-text">消费者</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#分区和副本"><span class="toc-number">4.</span> <span class="toc-text">分区和副本</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#日志存储"><span class="toc-number">5.</span> <span class="toc-text">日志存储</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#深入服务端"><span class="toc-number">6.</span> <span class="toc-text">深入服务端</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#深入客户端"><span class="toc-number">7.</span> <span class="toc-text">深入客户端</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#可靠性探究、"><span class="toc-number">8.</span> <span class="toc-text">可靠性探究、</span></a></li></ol>
+                    目录被宝儿姐埋了
                     </div>
                 </span>
             </div>
