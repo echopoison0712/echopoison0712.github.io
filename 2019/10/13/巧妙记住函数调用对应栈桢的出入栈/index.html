@@ -8,20 +8,20 @@
   <link rel="dns-prefetch" href="http://yoursite.com">
   <title>巧妙记住函数调用对应栈桢的出入栈 | echopoison</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="在学习JVM的时候，都会记住这样几个概念：  栈是线程私有的。 每个方法的调用对应着栈桢的入栈出栈。 每个栈帧包含局部变量表、操作数栈以及指向当前方法所属类的运行时常量池的引用。 局部变量是线程安全的  这些概念都不难理解也不难记住，不过吧总觉得这些就是干巴巴的概念，背下来也就过去了。今天突然意识到其实在看到这些相关概念前，就已经见到他们的身影并受到其恩惠了。 平时都有debug程序，而debug">
+  <meta name="description" content="在学习JVM的时候，都会记住这样几个概念：  栈是线程私有的。 每个方法的调用对应着栈桢的入栈出栈。 每个栈帧包含局部变量表、操作数栈以及指向当前方法所属类的运行时常量池的引用。 局部变量是线程安全的  这些概念都不难理解也不难记住，不过吧总觉得这些就是干巴巴的概念，背下来也就过去了。今天突然意识到其实在看到这些相关概念前，就已经见到他们的身影并受到其恩惠了。">
 <meta name="keywords" content="抖机灵,栈桢">
 <meta property="og:type" content="article">
 <meta property="og:title" content="巧妙记住函数调用对应栈桢的出入栈">
 <meta property="og:url" content="http://yoursite.com/2019/10/13/巧妙记住函数调用对应栈桢的出入栈/index.html">
 <meta property="og:site_name" content="echopoison">
-<meta property="og:description" content="在学习JVM的时候，都会记住这样几个概念：  栈是线程私有的。 每个方法的调用对应着栈桢的入栈出栈。 每个栈帧包含局部变量表、操作数栈以及指向当前方法所属类的运行时常量池的引用。 局部变量是线程安全的  这些概念都不难理解也不难记住，不过吧总觉得这些就是干巴巴的概念，背下来也就过去了。今天突然意识到其实在看到这些相关概念前，就已经见到他们的身影并受到其恩惠了。 平时都有debug程序，而debug">
+<meta property="og:description" content="在学习JVM的时候，都会记住这样几个概念：  栈是线程私有的。 每个方法的调用对应着栈桢的入栈出栈。 每个栈帧包含局部变量表、操作数栈以及指向当前方法所属类的运行时常量池的引用。 局部变量是线程安全的  这些概念都不难理解也不难记住，不过吧总觉得这些就是干巴巴的概念，背下来也就过去了。今天突然意识到其实在看到这些相关概念前，就已经见到他们的身影并受到其恩惠了。">
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="https://echopoison-blog.oss-cn-beijing.aliyuncs.com/image-20191013171640070.png?Expires=1570961902&OSSAccessKeyId=TMP.hZXzMytWTxztDTudcngFASAtM2u3Kb1tKfqDnZdtLYHenHE5neDv1z9kHu9KCtiNKz4tcqqjJXNkbQmAXd4vZqnBTLJWhGJDdZTtvWnMFb5VUuu58gEDAKSpCTP5hW.tmp&Signature=kifpth4zS0gbUBRwer5g1vuttuA%3D">
 <meta property="og:image" content="https://echopoison-blog.oss-cn-beijing.aliyuncs.com/image-20191013171602272.png?Expires=1570961887&OSSAccessKeyId=TMP.hZXzMytWTxztDTudcngFASAtM2u3Kb1tKfqDnZdtLYHenHE5neDv1z9kHu9KCtiNKz4tcqqjJXNkbQmAXd4vZqnBTLJWhGJDdZTtvWnMFb5VUuu58gEDAKSpCTP5hW.tmp&Signature=LlM2M5ANKVE2ufKf%2FLbQOBE6f2Q%3D">
-<meta property="og:updated_time" content="2019-10-13T09:18:58.724Z">
+<meta property="og:updated_time" content="2019-10-13T09:20:38.619Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="巧妙记住函数调用对应栈桢的出入栈">
-<meta name="twitter:description" content="在学习JVM的时候，都会记住这样几个概念：  栈是线程私有的。 每个方法的调用对应着栈桢的入栈出栈。 每个栈帧包含局部变量表、操作数栈以及指向当前方法所属类的运行时常量池的引用。 局部变量是线程安全的  这些概念都不难理解也不难记住，不过吧总觉得这些就是干巴巴的概念，背下来也就过去了。今天突然意识到其实在看到这些相关概念前，就已经见到他们的身影并受到其恩惠了。 平时都有debug程序，而debug">
+<meta name="twitter:description" content="在学习JVM的时候，都会记住这样几个概念：  栈是线程私有的。 每个方法的调用对应着栈桢的入栈出栈。 每个栈帧包含局部变量表、操作数栈以及指向当前方法所属类的运行时常量池的引用。 局部变量是线程安全的  这些概念都不难理解也不难记住，不过吧总觉得这些就是干巴巴的概念，背下来也就过去了。今天突然意识到其实在看到这些相关概念前，就已经见到他们的身影并受到其恩惠了。">
 <meta name="twitter:image" content="https://echopoison-blog.oss-cn-beijing.aliyuncs.com/image-20191013171640070.png?Expires=1570961902&OSSAccessKeyId=TMP.hZXzMytWTxztDTudcngFASAtM2u3Kb1tKfqDnZdtLYHenHE5neDv1z9kHu9KCtiNKz4tcqqjJXNkbQmAXd4vZqnBTLJWhGJDdZTtvWnMFb5VUuu58gEDAKSpCTP5hW.tmp&Signature=kifpth4zS0gbUBRwer5g1vuttuA%3D">
   
     <link rel="alternative" href="/atom.xml" title="echopoison" type="application/atom+xml">
@@ -192,6 +192,7 @@
 <li>局部变量是线程安全的</li>
 </ul>
 <p>这些概念都不难理解也不难记住，不过吧总觉得这些就是干巴巴的概念，背下来也就过去了。今天突然意识到其实在看到这些相关概念前，就已经见到他们的身影并受到其恩惠了。</p>
+<a id="more"></a>
 <p>平时都有debug程序，而debug模式下可以看到调用栈信息，最开始学习debug的时候当时带我的同事就跟我说在Frames这里是debug调用栈，蓝色选中的就是当前程序停留的位置，它往下依次是调用的方法信息。右侧Variables就可以看到当前的变量信息。当时觉得很神奇但现在想想，调用栈里的每一层不对应着一个栈桢，然后variables中的值就是对应栈桢中存储的元素。</p>
 <p>下面用一段死锁的demo来验证一下</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">DeadLock</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> Object o1 = <span class="keyword">new</span> Object();</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> Object o2 = <span class="keyword">new</span> Object();</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Exception</span>&#123;</span><br><span class="line">        ExecutorService threadPool = Executors.newFixedThreadPool(<span class="number">2</span>);</span><br><span class="line">        threadPool.submit(<span class="keyword">new</span> Runnable() &#123;</span><br><span class="line">            <span class="meta">@Override</span></span><br><span class="line">            <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">                <span class="keyword">int</span> variableA = <span class="number">10</span>;</span><br><span class="line">                <span class="keyword">synchronized</span> (o1)&#123;</span><br><span class="line">                    System.out.println(<span class="string">"thread:=="</span>+Thread.currentThread()+<span class="string">"拿到o1资源"</span>);</span><br><span class="line">                    <span class="keyword">try</span> &#123;</span><br><span class="line">                        Thread.sleep(<span class="number">10</span>);</span><br><span class="line">                    &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">                        e.printStackTrace();</span><br><span class="line">                    &#125;</span><br><span class="line">                    <span class="keyword">synchronized</span> (o2)&#123;</span><br><span class="line">                        System.out.println(<span class="string">"thread:=="</span>+Thread.currentThread()+<span class="string">"拿到o2资源"</span>);</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;);</span><br><span class="line">        threadPool.submit(<span class="keyword">new</span> Runnable() &#123;</span><br><span class="line">            <span class="meta">@Override</span></span><br><span class="line">            <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">              	<span class="keyword">int</span> variableA = <span class="number">20</span>;</span><br><span class="line">                <span class="keyword">synchronized</span> (o2)&#123;</span><br><span class="line">                    System.out.println(<span class="string">"thread:=="</span>+Thread.currentThread()+<span class="string">"拿到o2资源"</span>);</span><br><span class="line">                    <span class="keyword">try</span> &#123;</span><br><span class="line">                        Thread.sleep(<span class="number">10</span>);</span><br><span class="line">                    &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">                        e.printStackTrace();</span><br><span class="line">                    &#125;</span><br><span class="line">                    <span class="keyword">synchronized</span> (o1)&#123;</span><br><span class="line">                        System.out.println(<span class="string">"thread:=="</span>+Thread.currentThread()+<span class="string">"拿到o1资源"</span>);</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;);</span><br><span class="line">        threadPool.shutdown();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
@@ -451,6 +452,14 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
           <ul class="article-tag-list" q-show="showTags">
              
               <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color1">Paxos</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color1">kafka</a>
+              </li>
+             
+              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">JVM</a>
               </li>
              
@@ -460,14 +469,6 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color3">栈桢</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">kafka</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">Paxos</a>
               </li>
              
               <li class="article-tag-list-item">
