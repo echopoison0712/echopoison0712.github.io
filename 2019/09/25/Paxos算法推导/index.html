@@ -16,14 +16,14 @@
 <meta property="og:site_name" content="echopoison">
 <meta property="og:description" content="阅读《从Paxos到Zookeeper分布式一致性原理与实践》一书中有关Paxos一致性算法的部分，在此基础上增加一些个人的见解，试图讲得在大白话一点。">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:image" content="https://echopoison-blog.oss-cn-beijing.aliyuncs.com/image-20190924224318547.png?Expires=1570935119&OSSAccessKeyId=TMP.hZXzMytWTxztDTudcngFASAtM2u3Kb1tKfqDnZdtLYHenHE5neDv1z9kHu9KCtiNKz4tcqqjJXNkbQmAXd4vZqnBTLJWhGJDdZTtvWnMFb5VUuu58gEDAKSpCTP5hW.tmp&Signature=YiT9Wf2eAjZt1rh7d9ZyYZ7gpEg%3D">
-<meta property="og:image" content="https://echopoison-blog.oss-cn-beijing.aliyuncs.com/image-20190924224513680.png?Expires=1570935132&OSSAccessKeyId=TMP.hZXzMytWTxztDTudcngFASAtM2u3Kb1tKfqDnZdtLYHenHE5neDv1z9kHu9KCtiNKz4tcqqjJXNkbQmAXd4vZqnBTLJWhGJDdZTtvWnMFb5VUuu58gEDAKSpCTP5hW.tmp&Signature=1buM2aNFppcAaLMbjaqSdDThjuw%3D">
+<meta property="og:image" content="https://echopoison-blog.oss-cn-beijing.aliyuncs.com/image-20190924224318547.png?Expires=1571158199&OSSAccessKeyId=TMP.hYNQkgYDXgNoDxTpuwGK6AASus1wnHSCX4fDtCd4Ls54fhzgvQR4qYGpnH1p4EvfDntb6uXBawCQwhYeJmKKWeHfmYR46nwapeRq83SLDFYvKYyBkDCNxPg1SLxadq.tmp&Signature=Ri81uF48qeizKcvo825W4nMGIUY%3D">
+<meta property="og:image" content="https://echopoison-blog.oss-cn-beijing.aliyuncs.com/image-20190924224513680.png?Expires=1571158241&OSSAccessKeyId=TMP.hYNQkgYDXgNoDxTpuwGK6AASus1wnHSCX4fDtCd4Ls54fhzgvQR4qYGpnH1p4EvfDntb6uXBawCQwhYeJmKKWeHfmYR46nwapeRq83SLDFYvKYyBkDCNxPg1SLxadq.tmp&Signature=fHfXmoJzcDxqMj18YOiKHnFWLcU%3D">
 <meta property="og:image" content="http://pwxc1xwdv.bkt.clouddn.com/image-20190925002422980.png">
-<meta property="og:updated_time" content="2019-10-13T01:52:24.446Z">
+<meta property="og:updated_time" content="2019-10-15T15:50:58.752Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Paxos算法推导">
 <meta name="twitter:description" content="阅读《从Paxos到Zookeeper分布式一致性原理与实践》一书中有关Paxos一致性算法的部分，在此基础上增加一些个人的见解，试图讲得在大白话一点。">
-<meta name="twitter:image" content="https://echopoison-blog.oss-cn-beijing.aliyuncs.com/image-20190924224318547.png?Expires=1570935119&OSSAccessKeyId=TMP.hZXzMytWTxztDTudcngFASAtM2u3Kb1tKfqDnZdtLYHenHE5neDv1z9kHu9KCtiNKz4tcqqjJXNkbQmAXd4vZqnBTLJWhGJDdZTtvWnMFb5VUuu58gEDAKSpCTP5hW.tmp&Signature=YiT9Wf2eAjZt1rh7d9ZyYZ7gpEg%3D">
+<meta name="twitter:image" content="https://echopoison-blog.oss-cn-beijing.aliyuncs.com/image-20190924224318547.png?Expires=1571158199&OSSAccessKeyId=TMP.hYNQkgYDXgNoDxTpuwGK6AASus1wnHSCX4fDtCd4Ls54fhzgvQR4qYGpnH1p4EvfDntb6uXBawCQwhYeJmKKWeHfmYR46nwapeRq83SLDFYvKYyBkDCNxPg1SLxadq.tmp&Signature=Ri81uF48qeizKcvo825W4nMGIUY%3D">
   
     <link rel="alternative" href="/atom.xml" title="echopoison" type="application/atom+xml">
   
@@ -226,9 +226,9 @@
 <p>P1:一个acceptor必须批准第一次收到的提案</p>
 </blockquote>
 <p>上面这个需求会引出一个新的问题，就是如果有多个提案被不同的proposer同时提出，可能会造成每个acceptor都批准到它的第一个提案，每个提案的权重都相同</p>
-<p><img src="https://echopoison-blog.oss-cn-beijing.aliyuncs.com/image-20190924224318547.png?Expires=1570935119&OSSAccessKeyId=TMP.hZXzMytWTxztDTudcngFASAtM2u3Kb1tKfqDnZdtLYHenHE5neDv1z9kHu9KCtiNKz4tcqqjJXNkbQmAXd4vZqnBTLJWhGJDdZTtvWnMFb5VUuu58gEDAKSpCTP5hW.tmp&Signature=YiT9Wf2eAjZt1rh7d9ZyYZ7gpEg%3D" alt="image-20190924224318547"></p>
+<p><img src="https://echopoison-blog.oss-cn-beijing.aliyuncs.com/image-20190924224318547.png?Expires=1571158199&OSSAccessKeyId=TMP.hYNQkgYDXgNoDxTpuwGK6AASus1wnHSCX4fDtCd4Ls54fhzgvQR4qYGpnH1p4EvfDntb6uXBawCQwhYeJmKKWeHfmYR46nwapeRq83SLDFYvKYyBkDCNxPg1SLxadq.tmp&Signature=Ri81uF48qeizKcvo825W4nMGIUY%3D" alt="image-20190924224318547"></p>
 <p>显然这种场景下是无法选出一个唯一提案的，另外，即使只有两个提案被选出且acceptor的数量是奇数的，看起来很完美然而即使只有1个acceptor出错，都有可能导致无法确定该选择哪个提案，如下图</p>
-<p><img src="https://echopoison-blog.oss-cn-beijing.aliyuncs.com/image-20190924224513680.png?Expires=1570935132&OSSAccessKeyId=TMP.hZXzMytWTxztDTudcngFASAtM2u3Kb1tKfqDnZdtLYHenHE5neDv1z9kHu9KCtiNKz4tcqqjJXNkbQmAXd4vZqnBTLJWhGJDdZTtvWnMFb5VUuu58gEDAKSpCTP5hW.tmp&Signature=1buM2aNFppcAaLMbjaqSdDThjuw%3D" alt="image-20190924224513680"></p>
+<p><img src="https://echopoison-blog.oss-cn-beijing.aliyuncs.com/image-20190924224513680.png?Expires=1571158241&OSSAccessKeyId=TMP.hYNQkgYDXgNoDxTpuwGK6AASus1wnHSCX4fDtCd4Ls54fhzgvQR4qYGpnH1p4EvfDntb6uXBawCQwhYeJmKKWeHfmYR46nwapeRq83SLDFYvKYyBkDCNxPg1SLxadq.tmp&Signature=fHfXmoJzcDxqMj18YOiKHnFWLcU%3D" alt="image-20190924224513680"></p>
 <p>因此在P1点基础上，我们还需要根据少数服从多数原则增加一个限制条件就是说一个提案被选定需要半数以上的acceptor接受(感觉这个限制条件也算是一个需求，但是文中并没有单列出来所以也不好说)  ，而这个限定条件就暗示着说一个acceptor必须能够批准不止一个提案。同时也意味着说一个提案可以被多个acceptor接受，那么怎么来区分被多个acceptor接受的提案呢？比如可以用前缀来表示，而这里paxos算法采用的是一个全局的唯一编号来唯一标示一个<strong>被acceptor批准</strong>的提案，当一个具有某Value值的提案被半数以上的acceptor接受后，我们就认为这个提案被批准了。因为引入了编号的概念所以提案已经不是单纯的Value值了，而是变成了一个“【编号，Value】”来表示一个提案。 </p>
 <p>根据上面讲到的内容，我们虽然允许多个提案被选定，但同时必须保证所有被选定的提案具有相同的Value，这是一个关于提案的Value的约定，结合提案的编号，该约定定义如下（📒小本本：需求P2出来了，那该需求是针对哪个角色提出的需求呢？大眼一瞅感觉好像都不是，因此下文会对P2进行泛化来找到该需求的具体角色）</p>
 <blockquote>
