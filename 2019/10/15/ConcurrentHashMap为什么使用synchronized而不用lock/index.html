@@ -6,19 +6,22 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <link rel="dns-prefetch" href="http://yoursite.com">
-  <title>categories | echopoison</title>
+  <title>ConcurrentHashMap为什么使用synchronized而不用lock | echopoison</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="记录一些学习上的思考，与君共勉">
-<meta property="og:type" content="website">
-<meta property="og:title" content="categories">
-<meta property="og:url" content="http://yoursite.com/categories/index.html">
+  <meta name="description" content="问题引入前段时间在面试快手的时候，遇到这样一个问题，JDK1.8之后ConcurrentHashMap为什么使用synchronized而不用lock。">
+<meta name="keywords" content="ConcurrentHashMap,Synchronized,Lock,学习心得">
+<meta property="og:type" content="article">
+<meta property="og:title" content="ConcurrentHashMap为什么使用synchronized而不用lock">
+<meta property="og:url" content="http://yoursite.com/2019/10/15/ConcurrentHashMap为什么使用synchronized而不用lock/index.html">
 <meta property="og:site_name" content="echopoison">
-<meta property="og:description" content="记录一些学习上的思考，与君共勉">
+<meta property="og:description" content="问题引入前段时间在面试快手的时候，遇到这样一个问题，JDK1.8之后ConcurrentHashMap为什么使用synchronized而不用lock。">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2019-08-21T03:14:17.526Z">
+<meta property="og:image" content="https://echopoison-blog.oss-cn-beijing.aliyuncs.com/image-20191015231618681.png?Expires=1571156269&OSSAccessKeyId=TMP.hYNQkgYDXgNoDxTpuwGK6AASus1wnHSCX4fDtCd4Ls54fhzgvQR4qYGpnH1p4EvfDntb6uXBawCQwhYeJmKKWeHfmYR46nwapeRq83SLDFYvKYyBkDCNxPg1SLxadq.tmp&Signature=ytXLf2WtveCrBETCMOqklB5DqUk%3D">
+<meta property="og:updated_time" content="2019-10-15T15:23:26.066Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="categories">
-<meta name="twitter:description" content="记录一些学习上的思考，与君共勉">
+<meta name="twitter:title" content="ConcurrentHashMap为什么使用synchronized而不用lock">
+<meta name="twitter:description" content="问题引入前段时间在面试快手的时候，遇到这样一个问题，JDK1.8之后ConcurrentHashMap为什么使用synchronized而不用lock。">
+<meta name="twitter:image" content="https://echopoison-blog.oss-cn-beijing.aliyuncs.com/image-20191015231618681.png?Expires=1571156269&OSSAccessKeyId=TMP.hYNQkgYDXgNoDxTpuwGK6AASus1wnHSCX4fDtCd4Ls54fhzgvQR4qYGpnH1p4EvfDntb6uXBawCQwhYeJmKKWeHfmYR46nwapeRq83SLDFYvKYyBkDCNxPg1SLxadq.tmp&Signature=ytXLf2WtveCrBETCMOqklB5DqUk%3D">
   
     <link rel="alternative" href="/atom.xml" title="echopoison" type="application/atom+xml">
   
@@ -150,14 +153,14 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            <article id="page-" class="article article-type-page " itemscope itemprop="blogPost">
+            <article id="post-ConcurrentHashMap为什么使用synchronized而不用lock" class="article article-type-post " itemscope itemprop="blogPost">
   <div class="article-inner">
     
       <header class="article-header">
         
   
     <h1 class="article-title" itemprop="name">
-      categories
+      ConcurrentHashMap为什么使用synchronized而不用lock
     </h1>
   
 
@@ -172,15 +175,66 @@
   </a>
   
         
-        <a href="/categories/index.html" class="archive-article-date">
-  	<time datetime="2019-08-21T03:14:01.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-08-21</time>
+        <a href="/2019/10/15/ConcurrentHashMap为什么使用synchronized而不用lock/" class="archive-article-date">
+  	<time datetime="2019-10-15T14:16:21.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-10-15</time>
 </a>
         
       </header>
     
     <div class="article-entry" itemprop="articleBody">
       
-        
+        <h3 id="问题引入"><a href="#问题引入" class="headerlink" title="问题引入"></a>问题引入</h3><p>前段时间在面试快手的时候，遇到这样一个问题，JDK1.8之后ConcurrentHashMap为什么使用synchronized而不用lock。</p>
+<a id="more"></a>
+
+<h3 id="当时是怎么胡驺的"><a href="#当时是怎么胡驺的" class="headerlink" title="当时是怎么胡驺的"></a>当时是怎么胡驺的</h3><p>当时遇到这个问题是懵逼的，一阵头脑风暴之后瞎蒙了3个原因</p>
+<ul>
+<li><p>synchronized是Java的同步原语，可能性能上高过lock</p>
+<blockquote>
+<p>唯一还靠谱点的猜测，然而经简单测试貌似在高并发的情况下反而是lock的性能要优于synchronized</p>
+</blockquote>
+</li>
+<li><p>ConcurrentHashMap出现的时候还没有lock，只能使用synchronized</p>
+<blockquote>
+<p>一看就是阅读源码不仔细，ReentrantLock的源码上已经注明了 @since 1.5</p>
+</blockquote>
+</li>
+<li><p>lock是一个接口，从扩展性的角度来说不确定之后版本的实现类</p>
+<blockquote>
+<p>纯属瞎逼</p>
+</blockquote>
+</li>
+</ul>
+<h3 id="书归正传"><a href="#书归正传" class="headerlink" title="书归正传"></a>书归正传</h3><p>面完之后在网上搜了一下没找到相关问题，于是只能继续展开头脑风暴并得出一个自认为还算靠谱点的结论</p>
+<blockquote>
+<p><strong>以下解释仅代表个人观点非官方，欢迎交流讨论，若各位大佬有权威的解释也欢迎直接拍过来</strong></p>
+</blockquote>
+<p>既然使用的是synchronized而不是lock，自然有其道理在里面，比较了一下二者的优缺点感觉synchronized唯一的优点可能就是代码简洁，不需要像lock一样去手动释放。如果只因为这一个原因的话Doug Lea大神会差这点代码量？</p>
+<p>我们都知道1.8之后ConcurrentHashMap是通过锁Node数组的头节点来缩小并发的粒度，如果说<u>真的用lock来替换的话需要怎么做呢？</u>这个问题粗看起来好像不是一个问题，当时面试的时候也是下意识的就避过了这个问题直到今天认真思考一番后发现，如果真的用lock实现好像很”麻烦“</p>
+<p>首先，我们说默认的ReentrantLock，它的使用方式是通过lock.lock()来访问并发代码块，它没有lock.lock(param)这样的方法来锁定某个参数，既然如此先不管怎么实现，它的实现方式肯定就没有synchronized(f){}这样来的简洁。</p>
+<p>其次，先不管简不简洁的问题，如果继续使用lock的话，这个lock要放到哪个类下呢？这里自然而然先想到是放在ConcurrentHashMap类里做为一个成员变量存在，如果真的这么做的话，锁的粒度还是一个Node节点吗？貌似常规使用的话这里锁住的是整个put()方法。</p>
+<p>ok，那不放到ConcurrentHashMap下就只能放到Node节点中去了，事实上1.7版本的ConcurrentHashMap也正是这么做的，只不过它的实现方式是让Segment内部类去继承ReentrantLock</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">static</span> <span class="keyword">final</span> <span class="class"><span class="keyword">class</span> <span class="title">Segment</span>&lt;<span class="title">K</span>,<span class="title">V</span>&gt; <span class="keyword">extends</span> <span class="title">ReentrantLock</span> <span class="keyword">implements</span> <span class="title">Serializable</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//尝试获取锁的最多尝试次数，即自旋次数</span></span><br><span class="line">    <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> MAX_SCAN_RETRIES =</span><br><span class="line">            Runtime.getRuntime().availableProcessors() &gt; <span class="number">1</span> ? <span class="number">64</span> : <span class="number">1</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//HashEntry数组，也就是键值对数组</span></span><br><span class="line">    <span class="keyword">transient</span> <span class="keyword">volatile</span> HashEntry&lt;K, V&gt;[] table;</span><br><span class="line">    <span class="comment">//元素的个数</span></span><br><span class="line">    <span class="keyword">transient</span> <span class="keyword">int</span> count;</span><br><span class="line">    <span class="comment">//segment中发生改变元素的操作的次数，如put/remove</span></span><br><span class="line">    <span class="keyword">transient</span> <span class="keyword">int</span> modCount;</span><br><span class="line">    <span class="comment">//当table大小超过阈值时,对table进行扩容,值为capacity *loadFactor</span></span><br><span class="line">    <span class="keyword">transient</span> <span class="keyword">int</span> threshold;</span><br><span class="line">    <span class="comment">//加载因子</span></span><br><span class="line">    <span class="keyword">final</span> <span class="keyword">float</span> loadFactor;</span><br><span class="line"></span><br><span class="line">    Segment(<span class="keyword">float</span> lf, <span class="keyword">int</span> threshold, HashEntry&lt;K, V&gt;[] tab) &#123;</span><br><span class="line">        <span class="keyword">this</span>.loadFactor = lf;</span><br><span class="line">        <span class="keyword">this</span>.threshold = threshold;</span><br><span class="line">        <span class="keyword">this</span>.table = tab;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>既然1.8通过Node[]替换了Segment，那么如果沿用lock的话就是要么让Node去继承ReentrantLock，或者干脆在Node中定义成员变量lock。</p>
+<p>这个时候继续考虑1.8的锁逻辑，ConcurrentHashMap通过lock来锁住Node数组的头节点，既然锁的是头节点，那该头节点所在链的其余Node节点自然就不需要进行加锁控制，可是lock已然成为了Node的属性那么对于链上的其余节点来说，这个lock就是被浪费掉了，因为只有在头节点被remove掉的时候其余Node节点才有可能会用上该成员变量(即只有原头节点的next节点)。这中间编码方面来说还需要考虑锁的“交接”等问题。</p>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>总结一下从编码角度来说，复杂度上升一个量级。又因为多引用了一个变量从资源角度来说会占用更多的资源。同时多引入的变量还是一个只针对头节点的一个变量。</p>
+<p>以上，即是我对这个问题的思考。感觉很多“司空见惯”的场景仔细品一下还是有很多的乐趣在里面的</p>
+<h3 id="扩展"><a href="#扩展" class="headerlink" title="扩展"></a>扩展</h3><p>其实lock和synchronized除了网上说的是否公平、是否响应中断、是否支持绑定多个条件事件、是否需要手动释放锁资源外还有一个不同点。先说结论就是<strong>使用lock的时候线程处于waiting状态，而使用synchronized的时候处于blocked状态</strong></p>
+<p>下面是分别使用lock和synchronized来实现的死锁demo</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">deadLockBySynchronized</span><span class="params">()</span></span>&#123;</span><br><span class="line">        <span class="keyword">final</span> Object o1 = <span class="keyword">new</span> Object();</span><br><span class="line">        <span class="keyword">final</span> Object o2 = <span class="keyword">new</span> Object();</span><br><span class="line">        ExecutorService threadPool = Executors.newFixedThreadPool(<span class="number">2</span>);</span><br><span class="line">        threadPool.submit(<span class="keyword">new</span> Runnable() &#123;</span><br><span class="line">            <span class="meta">@Override</span></span><br><span class="line">            <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">                <span class="keyword">synchronized</span> (o1)&#123;</span><br><span class="line">                    System.out.println(<span class="string">"synchronized===thread:=="</span>+Thread.currentThread()+<span class="string">"拿到o1资源"</span>);</span><br><span class="line">                    <span class="keyword">try</span> &#123;</span><br><span class="line">                        Thread.sleep(<span class="number">10</span>);</span><br><span class="line">                    &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">                        e.printStackTrace();</span><br><span class="line">                    &#125;</span><br><span class="line">                    <span class="keyword">synchronized</span> (o2)&#123;</span><br><span class="line">                        System.out.println(<span class="string">"thread:=="</span>+Thread.currentThread()+<span class="string">"拿到o2资源"</span>);</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;);</span><br><span class="line">        threadPool.submit(<span class="keyword">new</span> Runnable() &#123;</span><br><span class="line">            <span class="meta">@Override</span></span><br><span class="line">            <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">                <span class="keyword">synchronized</span> (o2)&#123;</span><br><span class="line">                    System.out.println(<span class="string">"synchronized===thread:=="</span>+Thread.currentThread()+<span class="string">"拿到o2资源"</span>);</span><br><span class="line">                    <span class="keyword">try</span> &#123;</span><br><span class="line">                        Thread.sleep(<span class="number">10</span>);</span><br><span class="line">                    &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">                        e.printStackTrace();</span><br><span class="line">                    &#125;</span><br><span class="line">                    <span class="keyword">synchronized</span> (o1)&#123;</span><br><span class="line">                        System.out.println(<span class="string">"thread:=="</span>+Thread.currentThread()+<span class="string">"拿到o1资源"</span>);</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;);</span><br><span class="line">        threadPool.shutdown();</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">deadLockByLock</span><span class="params">()</span></span>&#123;</span><br><span class="line">        <span class="keyword">final</span> Lock lock1 = <span class="keyword">new</span> ReentrantLock();</span><br><span class="line">        <span class="keyword">final</span> Lock lock2 = <span class="keyword">new</span> ReentrantLock();</span><br><span class="line">        ExecutorService threadPool = Executors.newFixedThreadPool(<span class="number">2</span>);</span><br><span class="line">        threadPool.submit(<span class="keyword">new</span> Runnable() &#123;</span><br><span class="line">            <span class="meta">@Override</span></span><br><span class="line">            <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">                lock1.lock();</span><br><span class="line">                System.out.println(<span class="string">"lock===thread:=="</span>+Thread.currentThread()+<span class="string">"拿到o1资源"</span>);</span><br><span class="line">                <span class="keyword">try</span> &#123;</span><br><span class="line">                    Thread.sleep(<span class="number">10</span>);</span><br><span class="line">                &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">                    e.printStackTrace();</span><br><span class="line">                &#125;</span><br><span class="line">                lock2.lock();</span><br><span class="line">                System.out.println(<span class="string">"lock:=="</span>+Thread.currentThread()+<span class="string">"拿到o2资源"</span>);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;);</span><br><span class="line">        threadPool.submit(<span class="keyword">new</span> Runnable() &#123;</span><br><span class="line">            <span class="meta">@Override</span></span><br><span class="line">            <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">                lock2.lock();</span><br><span class="line">                System.out.println(<span class="string">"lock===thread:=="</span>+Thread.currentThread()+<span class="string">"拿到o2资源"</span>);</span><br><span class="line">                <span class="keyword">try</span> &#123;</span><br><span class="line">                    Thread.sleep(<span class="number">10</span>);</span><br><span class="line">                &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">                    e.printStackTrace();</span><br><span class="line">                &#125;</span><br><span class="line">                lock1.lock();</span><br><span class="line">                System.out.println(<span class="string">"lock:=="</span>+Thread.currentThread()+<span class="string">"拿到o1资源"</span>);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;);</span><br><span class="line">        threadPool.shutdown();</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<p>main方法如下</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Exception</span>&#123;</span><br><span class="line">        deadLockBySynchronized();</span><br><span class="line">        deadLockByLock();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>既然是死锁其输出也没得啥悬念</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">synchronized</span>===thread:==Thread[pool-<span class="number">1</span>-thread-<span class="number">1</span>,<span class="number">5</span>,main]拿到o1资源</span><br><span class="line"><span class="keyword">synchronized</span>===thread:==Thread[pool-<span class="number">1</span>-thread-<span class="number">2</span>,<span class="number">5</span>,main]拿到o2资源</span><br><span class="line">lock===thread:==Thread[pool-<span class="number">2</span>-thread-<span class="number">1</span>,<span class="number">5</span>,main]拿到o1资源</span><br><span class="line">lock===thread:==Thread[pool-<span class="number">2</span>-thread-<span class="number">2</span>,<span class="number">5</span>,main]拿到o2资源</span><br></pre></td></tr></table></figure>
+
+<p>这个时候通过jstack来分析当前堆栈信息会发现一个有意思的现象</p>
+<p><img src="https://echopoison-blog.oss-cn-beijing.aliyuncs.com/image-20191015231618681.png?Expires=1571156269&OSSAccessKeyId=TMP.hYNQkgYDXgNoDxTpuwGK6AASus1wnHSCX4fDtCd4Ls54fhzgvQR4qYGpnH1p4EvfDntb6uXBawCQwhYeJmKKWeHfmYR46nwapeRq83SLDFYvKYyBkDCNxPg1SLxadq.tmp&Signature=ytXLf2WtveCrBETCMOqklB5DqUk%3D" alt="image-20191015231618681"></p>
+<p>从图中可以清晰的看到，使用lock的时候线程处于waiting状态，而使用synchronized的时候处于blocked状态。至于二者的区别 <a href="https://www.baidu.com/s?wd=waiting%E5%92%8Cblocked&rsv_spt=1&rsv_iqid=0xf619fe30000cc429&issp=1&f=8&rsv_bp=1&rsv_idx=2&ie=utf-8&tn=baiduhome_pg&rsv_enter=1&rsv_dl=tb&rsv_sug3=19&rsv_sug1=11&rsv_sug7=101&rsv_t=8b092cYLwYi%2BLTLP1r5aUWhZ%2BUlYgwZXptTtWZ%2F%2FHtbeKQTp4PipfgVlWUW0kBn15wlz&rsv_sug2=0&inputT=16059&rsv_sug4=19665" target="_blank" rel="noopener">百度一下 你就知道</a></p>
+
       
 
       
@@ -188,6 +242,29 @@
     <div class="article-info article-info-index">
       
       
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">ConcurrentHashMap</a>
+        		</li>
+      		 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">Synchronized</a>
+        		</li>
+      		 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">Lock</a>
+        		</li>
+      		 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">学习心得</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
       
 
       
@@ -238,7 +315,7 @@
     <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
     <p>扫一扫，分享到微信</p>
     <div class="wx-qrcode">
-      <img src="//api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://echopoison.com/http://yoursite.com/categories/" alt="微信分享二维码">
+      <img src="//api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://echopoison.com/http://yoursite.com/2019/10/15/ConcurrentHashMap为什么使用synchronized而不用lock/" alt="微信分享二维码">
     </div>
 </div>
 
@@ -250,6 +327,16 @@
 </article>
 
   
+<nav id="article-nav">
+  
+  
+    <a href="/2019/10/13/巧妙记住函数调用对应栈桢的出入栈/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">巧妙记住函数调用对应栈桢的出入栈</div>
+      <i class="icon-circle-right"></i>
+    </a>
+  
+</nav>
+
 
 <aside class="wrap-side-operation">
     <div class="mod-side-operation">
@@ -271,7 +358,7 @@
                 </span>
                 <span class="tooltip-content">
                     <div class="toc-article">
-                    目录被宝儿姐埋了
+                    <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#问题引入"><span class="toc-number">1.</span> <span class="toc-text">问题引入</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#当时是怎么胡驺的"><span class="toc-number">2.</span> <span class="toc-text">当时是怎么胡驺的</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#书归正传"><span class="toc-number">3.</span> <span class="toc-text">书归正传</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#总结"><span class="toc-number">4.</span> <span class="toc-text">总结</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#扩展"><span class="toc-number">5.</span> <span class="toc-text">扩展</span></a></li></ol>
                     </div>
                 </span>
             </div>
@@ -345,7 +432,7 @@
 	var yiliaConfig = {
 		mathjax: false,
 		isHome: false,
-		isPost: false,
+		isPost: true,
 		isArchive: false,
 		isTag: false,
 		isCategory: false,
