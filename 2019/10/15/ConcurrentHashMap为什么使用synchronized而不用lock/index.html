@@ -8,19 +8,19 @@
   <link rel="dns-prefetch" href="http://yoursite.com">
   <title>ConcurrentHashMap为什么使用synchronized而不用lock | echopoison</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="问题引入前段时间在面试快手的时候，遇到这样一个问题，JDK1.8之后ConcurrentHashMap为什么使用synchronized而不用lock。">
+  <meta name="description" content="前段时间在面试快手的时候，遇到这样一个问题，JDK1.8之后ConcurrentHashMap为什么使用synchronized而不用lock。">
 <meta name="keywords" content="ConcurrentHashMap,Synchronized,Lock,学习心得">
 <meta property="og:type" content="article">
 <meta property="og:title" content="ConcurrentHashMap为什么使用synchronized而不用lock">
 <meta property="og:url" content="http://yoursite.com/2019/10/15/ConcurrentHashMap为什么使用synchronized而不用lock/index.html">
 <meta property="og:site_name" content="echopoison">
-<meta property="og:description" content="问题引入前段时间在面试快手的时候，遇到这样一个问题，JDK1.8之后ConcurrentHashMap为什么使用synchronized而不用lock。">
+<meta property="og:description" content="前段时间在面试快手的时候，遇到这样一个问题，JDK1.8之后ConcurrentHashMap为什么使用synchronized而不用lock。">
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="https://echopoison-blog.oss-cn-beijing.aliyuncs.com/image-20191015231618681.png?Expires=1571156269&OSSAccessKeyId=TMP.hYNQkgYDXgNoDxTpuwGK6AASus1wnHSCX4fDtCd4Ls54fhzgvQR4qYGpnH1p4EvfDntb6uXBawCQwhYeJmKKWeHfmYR46nwapeRq83SLDFYvKYyBkDCNxPg1SLxadq.tmp&Signature=ytXLf2WtveCrBETCMOqklB5DqUk%3D">
-<meta property="og:updated_time" content="2019-10-15T15:23:26.066Z">
+<meta property="og:updated_time" content="2019-10-15T15:27:22.368Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="ConcurrentHashMap为什么使用synchronized而不用lock">
-<meta name="twitter:description" content="问题引入前段时间在面试快手的时候，遇到这样一个问题，JDK1.8之后ConcurrentHashMap为什么使用synchronized而不用lock。">
+<meta name="twitter:description" content="前段时间在面试快手的时候，遇到这样一个问题，JDK1.8之后ConcurrentHashMap为什么使用synchronized而不用lock。">
 <meta name="twitter:image" content="https://echopoison-blog.oss-cn-beijing.aliyuncs.com/image-20191015231618681.png?Expires=1571156269&OSSAccessKeyId=TMP.hYNQkgYDXgNoDxTpuwGK6AASus1wnHSCX4fDtCd4Ls54fhzgvQR4qYGpnH1p4EvfDntb6uXBawCQwhYeJmKKWeHfmYR46nwapeRq83SLDFYvKYyBkDCNxPg1SLxadq.tmp&Signature=ytXLf2WtveCrBETCMOqklB5DqUk%3D">
   
     <link rel="alternative" href="/atom.xml" title="echopoison" type="application/atom+xml">
@@ -183,7 +183,7 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <h3 id="问题引入"><a href="#问题引入" class="headerlink" title="问题引入"></a>问题引入</h3><p>前段时间在面试快手的时候，遇到这样一个问题，JDK1.8之后ConcurrentHashMap为什么使用synchronized而不用lock。</p>
+        <p>前段时间在面试快手的时候，遇到这样一个问题，JDK1.8之后ConcurrentHashMap为什么使用synchronized而不用lock。</p>
 <a id="more"></a>
 
 <h3 id="当时是怎么胡驺的"><a href="#当时是怎么胡驺的" class="headerlink" title="当时是怎么胡驺的"></a>当时是怎么胡驺的</h3><p>当时遇到这个问题是懵逼的，一阵头脑风暴之后瞎蒙了3个原因</p>
@@ -358,7 +358,7 @@
                 </span>
                 <span class="tooltip-content">
                     <div class="toc-article">
-                    <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#问题引入"><span class="toc-number">1.</span> <span class="toc-text">问题引入</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#当时是怎么胡驺的"><span class="toc-number">2.</span> <span class="toc-text">当时是怎么胡驺的</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#书归正传"><span class="toc-number">3.</span> <span class="toc-text">书归正传</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#总结"><span class="toc-number">4.</span> <span class="toc-text">总结</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#扩展"><span class="toc-number">5.</span> <span class="toc-text">扩展</span></a></li></ol>
+                    <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#当时是怎么胡驺的"><span class="toc-number">1.</span> <span class="toc-text">当时是怎么胡驺的</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#书归正传"><span class="toc-number">2.</span> <span class="toc-text">书归正传</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#总结"><span class="toc-number">3.</span> <span class="toc-text">总结</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#扩展"><span class="toc-number">4.</span> <span class="toc-text">扩展</span></a></li></ol>
                     </div>
                 </span>
             </div>
