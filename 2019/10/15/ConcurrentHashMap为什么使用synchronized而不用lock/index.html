@@ -17,7 +17,7 @@
 <meta property="og:description" content="前段时间在面试快手的时候，遇到这样一个问题，JDK1.8之后ConcurrentHashMap为什么使用synchronized而不用lock。">
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="https://echopoison-blog.oss-cn-beijing.aliyuncs.com/image-20191015231618681.png?Expires=1571156269&OSSAccessKeyId=TMP.hYNQkgYDXgNoDxTpuwGK6AASus1wnHSCX4fDtCd4Ls54fhzgvQR4qYGpnH1p4EvfDntb6uXBawCQwhYeJmKKWeHfmYR46nwapeRq83SLDFYvKYyBkDCNxPg1SLxadq.tmp&Signature=ytXLf2WtveCrBETCMOqklB5DqUk%3D">
-<meta property="og:updated_time" content="2019-10-15T15:27:22.368Z">
+<meta property="og:updated_time" content="2019-10-15T16:10:07.363Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="ConcurrentHashMap为什么使用synchronized而不用lock">
 <meta name="twitter:description" content="前段时间在面试快手的时候，遇到这样一个问题，JDK1.8之后ConcurrentHashMap为什么使用synchronized而不用lock。">
@@ -200,7 +200,7 @@
 </li>
 <li><p>lock是一个接口，从扩展性的角度来说不确定之后版本的实现类</p>
 <blockquote>
-<p>纯属瞎逼</p>
+<p>纯属瞎蒙</p>
 </blockquote>
 </li>
 </ul>
@@ -217,6 +217,7 @@
 
 <p>既然1.8通过Node[]替换了Segment，那么如果沿用lock的话就是要么让Node去继承ReentrantLock，或者干脆在Node中定义成员变量lock。</p>
 <p>这个时候继续考虑1.8的锁逻辑，ConcurrentHashMap通过lock来锁住Node数组的头节点，既然锁的是头节点，那该头节点所在链的其余Node节点自然就不需要进行加锁控制，可是lock已然成为了Node的属性那么对于链上的其余节点来说，这个lock就是被浪费掉了，因为只有在头节点被remove掉的时候其余Node节点才有可能会用上该成员变量(即只有原头节点的next节点)。这中间编码方面来说还需要考虑锁的“交接”等问题。</p>
+<p>其实最开始思考这个问题的时候想到的是下文扩展里的内容，但是分析不下去了换了个思维想到了上述原因。感觉扩展的部分可能也是原因之一但再往底层这两者对ConcurrentHashMap的影响分析不出来了，不知道有没有熟悉的小伙伴可以解答一二。</p>
 <h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>总结一下从编码角度来说，复杂度上升一个量级。又因为多引用了一个变量从资源角度来说会占用更多的资源。同时多引入的变量还是一个只针对头节点的一个变量。</p>
 <p>以上，即是我对这个问题的思考。感觉很多“司空见惯”的场景仔细品一下还是有很多的乐趣在里面的</p>
 <h3 id="扩展"><a href="#扩展" class="headerlink" title="扩展"></a>扩展</h3><p>其实lock和synchronized除了网上说的是否公平、是否响应中断、是否支持绑定多个条件事件、是否需要手动释放锁资源外还有一个不同点。先说结论就是<strong>使用lock的时候线程处于waiting状态，而使用synchronized的时候处于blocked状态</strong></p>
@@ -234,6 +235,7 @@
 <p>这个时候通过jstack来分析当前堆栈信息会发现一个有意思的现象</p>
 <p><img src="https://echopoison-blog.oss-cn-beijing.aliyuncs.com/image-20191015231618681.png?Expires=1571156269&OSSAccessKeyId=TMP.hYNQkgYDXgNoDxTpuwGK6AASus1wnHSCX4fDtCd4Ls54fhzgvQR4qYGpnH1p4EvfDntb6uXBawCQwhYeJmKKWeHfmYR46nwapeRq83SLDFYvKYyBkDCNxPg1SLxadq.tmp&Signature=ytXLf2WtveCrBETCMOqklB5DqUk%3D" alt="image-20191015231618681"></p>
 <p>从图中可以清晰的看到，使用lock的时候线程处于waiting状态，而使用synchronized的时候处于blocked状态。至于二者的区别 <a href="https://www.baidu.com/s?wd=waiting%E5%92%8Cblocked&rsv_spt=1&rsv_iqid=0xf619fe30000cc429&issp=1&f=8&rsv_bp=1&rsv_idx=2&ie=utf-8&tn=baiduhome_pg&rsv_enter=1&rsv_dl=tb&rsv_sug3=19&rsv_sug1=11&rsv_sug7=101&rsv_t=8b092cYLwYi%2BLTLP1r5aUWhZ%2BUlYgwZXptTtWZ%2F%2FHtbeKQTp4PipfgVlWUW0kBn15wlz&rsv_sug2=0&inputT=16059&rsv_sug4=19665" target="_blank" rel="noopener">百度一下 你就知道</a></p>
+<p>TODO 猜测alibaba的Arthas的thread -b命令不适配lock也是基于这样的原因，回头翻翻源码确认一下</p>
 
       
 
@@ -531,11 +533,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">redis</a>
+                <a href="javascript:void(0)" class="js-tag color5">读书笔记</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">读书笔记</a>
+                <a href="javascript:void(0)" class="js-tag color1">redis</a>
               </li>
              
               <li class="article-tag-list-item">
