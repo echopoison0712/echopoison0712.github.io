@@ -16,22 +16,22 @@
 <meta property="og:site_name" content="echopoison">
 <meta property="og:description" content="《Redis设计与实现》 读书笔记">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:image" content="https://echopoison-blog.oss-cn-beijing.aliyuncs.com/image-20190831000346835.png?Expires=1570934838&OSSAccessKeyId=TMP.hZXzMytWTxztDTudcngFASAtM2u3Kb1tKfqDnZdtLYHenHE5neDv1z9kHu9KCtiNKz4tcqqjJXNkbQmAXd4vZqnBTLJWhGJDdZTtvWnMFb5VUuu58gEDAKSpCTP5hW.tmp&Signature=QcUBMw3bnL1BT7H9uma8vvYBoFs%3D">
-<meta property="og:image" content="https://echopoison-blog.oss-cn-beijing.aliyuncs.com/image-20190831095736147.png?Expires=1570934862&OSSAccessKeyId=TMP.hZXzMytWTxztDTudcngFASAtM2u3Kb1tKfqDnZdtLYHenHE5neDv1z9kHu9KCtiNKz4tcqqjJXNkbQmAXd4vZqnBTLJWhGJDdZTtvWnMFb5VUuu58gEDAKSpCTP5hW.tmp&Signature=YCVHhULq6WDy244RUXQMm9DsO3o%3D">
-<meta property="og:image" content="https://echopoison-blog.oss-cn-beijing.aliyuncs.com/image-20190831101225871.png?Expires=1570934888&OSSAccessKeyId=TMP.hZXzMytWTxztDTudcngFASAtM2u3Kb1tKfqDnZdtLYHenHE5neDv1z9kHu9KCtiNKz4tcqqjJXNkbQmAXd4vZqnBTLJWhGJDdZTtvWnMFb5VUuu58gEDAKSpCTP5hW.tmp&Signature=0RTOOYdGVPiXodH75BskcHC3Jic%3D">
-<meta property="og:image" content="https://echopoison-blog.oss-cn-beijing.aliyuncs.com/image-20190831101321784.png?Expires=1570934925&OSSAccessKeyId=TMP.hZXzMytWTxztDTudcngFASAtM2u3Kb1tKfqDnZdtLYHenHE5neDv1z9kHu9KCtiNKz4tcqqjJXNkbQmAXd4vZqnBTLJWhGJDdZTtvWnMFb5VUuu58gEDAKSpCTP5hW.tmp&Signature=HNvvcuGM9I1YIg0BHVAetOrFpSA%3D">
-<meta property="og:image" content="https://echopoison-blog.oss-cn-beijing.aliyuncs.com/image-20190831102124452.png?Expires=1570934942&OSSAccessKeyId=TMP.hZXzMytWTxztDTudcngFASAtM2u3Kb1tKfqDnZdtLYHenHE5neDv1z9kHu9KCtiNKz4tcqqjJXNkbQmAXd4vZqnBTLJWhGJDdZTtvWnMFb5VUuu58gEDAKSpCTP5hW.tmp&Signature=b5bWzKyPISEmptXuGyvPwgvKmvU%3D">
-<meta property="og:image" content="https://echopoison-blog.oss-cn-beijing.aliyuncs.com/image-20190831102139083.png?Expires=1570934965&OSSAccessKeyId=TMP.hZXzMytWTxztDTudcngFASAtM2u3Kb1tKfqDnZdtLYHenHE5neDv1z9kHu9KCtiNKz4tcqqjJXNkbQmAXd4vZqnBTLJWhGJDdZTtvWnMFb5VUuu58gEDAKSpCTP5hW.tmp&Signature=4e3h2li4aSyRNcq8ZzT7PagGJnk%3D">
-<meta property="og:image" content="https://echopoison-blog.oss-cn-beijing.aliyuncs.com/image-20190831102334582.png?Expires=1570934994&OSSAccessKeyId=TMP.hZXzMytWTxztDTudcngFASAtM2u3Kb1tKfqDnZdtLYHenHE5neDv1z9kHu9KCtiNKz4tcqqjJXNkbQmAXd4vZqnBTLJWhGJDdZTtvWnMFb5VUuu58gEDAKSpCTP5hW.tmp&Signature=AijQkBS1c4YEs79uRBVwknXAUUc%3D">
-<meta property="og:image" content="https://echopoison-blog.oss-cn-beijing.aliyuncs.com/image-20190831211338761.png?Expires=1570935017&OSSAccessKeyId=TMP.hZXzMytWTxztDTudcngFASAtM2u3Kb1tKfqDnZdtLYHenHE5neDv1z9kHu9KCtiNKz4tcqqjJXNkbQmAXd4vZqnBTLJWhGJDdZTtvWnMFb5VUuu58gEDAKSpCTP5hW.tmp&Signature=LO1QVEYzad5orjZ29%2FutUBVmT28%3D">
-<meta property="og:image" content="https://echopoison-blog.oss-cn-beijing.aliyuncs.com/image-20190902114748806.png?Expires=1570935041&OSSAccessKeyId=TMP.hZXzMytWTxztDTudcngFASAtM2u3Kb1tKfqDnZdtLYHenHE5neDv1z9kHu9KCtiNKz4tcqqjJXNkbQmAXd4vZqnBTLJWhGJDdZTtvWnMFb5VUuu58gEDAKSpCTP5hW.tmp&Signature=fmG%2Bctvqwa3UsLR8SBZQaHmEeuw%3D">
-<meta property="og:image" content="https://echopoison-blog.oss-cn-beijing.aliyuncs.com/image-20190902114825957.png?Expires=1570935066&OSSAccessKeyId=TMP.hZXzMytWTxztDTudcngFASAtM2u3Kb1tKfqDnZdtLYHenHE5neDv1z9kHu9KCtiNKz4tcqqjJXNkbQmAXd4vZqnBTLJWhGJDdZTtvWnMFb5VUuu58gEDAKSpCTP5hW.tmp&Signature=1ilVFWwA9120EYI1af94DB48pqM%3D">
-<meta property="og:image" content="https://echopoison-blog.oss-cn-beijing.aliyuncs.com/image-20190902142057365.png?Expires=1570935086&OSSAccessKeyId=TMP.hZXzMytWTxztDTudcngFASAtM2u3Kb1tKfqDnZdtLYHenHE5neDv1z9kHu9KCtiNKz4tcqqjJXNkbQmAXd4vZqnBTLJWhGJDdZTtvWnMFb5VUuu58gEDAKSpCTP5hW.tmp&Signature=5MS73k76ODkb3l61dioJ4yGk%2F3Y%3D">
-<meta property="og:updated_time" content="2019-10-13T01:51:44.779Z">
+<meta property="og:image" content="https://echopoison-blog.oss-cn-beijing.aliyuncs.com/image-20190831000346835.png">
+<meta property="og:image" content="https://echopoison-blog.oss-cn-beijing.aliyuncs.com/image-20190831095736147.png">
+<meta property="og:image" content="https://echopoison-blog.oss-cn-beijing.aliyuncs.com/image-20190831101225871.png">
+<meta property="og:image" content="https://echopoison-blog.oss-cn-beijing.aliyuncs.com/image-20190831101321784.png">
+<meta property="og:image" content="https://echopoison-blog.oss-cn-beijing.aliyuncs.com/image-20190831102124452.png">
+<meta property="og:image" content="https://echopoison-blog.oss-cn-beijing.aliyuncs.com/image-20190831102139083.png">
+<meta property="og:image" content="https://echopoison-blog.oss-cn-beijing.aliyuncs.com/image-20190831102334582.png">
+<meta property="og:image" content="https://echopoison-blog.oss-cn-beijing.aliyuncs.com/image-20190831211338761.png">
+<meta property="og:image" content="https://echopoison-blog.oss-cn-beijing.aliyuncs.com/image-20190902114748806.png">
+<meta property="og:image" content="https://echopoison-blog.oss-cn-beijing.aliyuncs.com/image-20190902114825957.png">
+<meta property="og:image" content="https://echopoison-blog.oss-cn-beijing.aliyuncs.com/image-20190902142057365.png">
+<meta property="og:updated_time" content="2019-10-16T14:34:49.565Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="读书笔记|《Redis设计与实现》">
 <meta name="twitter:description" content="《Redis设计与实现》 读书笔记">
-<meta name="twitter:image" content="https://echopoison-blog.oss-cn-beijing.aliyuncs.com/image-20190831000346835.png?Expires=1570934838&OSSAccessKeyId=TMP.hZXzMytWTxztDTudcngFASAtM2u3Kb1tKfqDnZdtLYHenHE5neDv1z9kHu9KCtiNKz4tcqqjJXNkbQmAXd4vZqnBTLJWhGJDdZTtvWnMFb5VUuu58gEDAKSpCTP5hW.tmp&Signature=QcUBMw3bnL1BT7H9uma8vvYBoFs%3D">
+<meta name="twitter:image" content="https://echopoison-blog.oss-cn-beijing.aliyuncs.com/image-20190831000346835.png">
   
     <link rel="alternative" href="/atom.xml" title="echopoison" type="application/atom+xml">
   
@@ -200,10 +200,10 @@
 <li><p>Redis里面，C字符串只会做字符串字面量用在一些无需对字符串值进行修改的地方</p>
 </li>
 <li><p>数据结构</p>
-<p><img src="https://echopoison-blog.oss-cn-beijing.aliyuncs.com/image-20190831000346835.png?Expires=1570934838&OSSAccessKeyId=TMP.hZXzMytWTxztDTudcngFASAtM2u3Kb1tKfqDnZdtLYHenHE5neDv1z9kHu9KCtiNKz4tcqqjJXNkbQmAXd4vZqnBTLJWhGJDdZTtvWnMFb5VUuu58gEDAKSpCTP5hW.tmp&Signature=QcUBMw3bnL1BT7H9uma8vvYBoFs%3D" alt="image-20190831000346835"></p>
+<p><img src="https://echopoison-blog.oss-cn-beijing.aliyuncs.com/image-20190831000346835.png" alt="image-20190831000346835"></p>
 </li>
 <li><p>SDS与C字符串的区别</p>
-<p><img src="https://echopoison-blog.oss-cn-beijing.aliyuncs.com/image-20190831095736147.png?Expires=1570934862&OSSAccessKeyId=TMP.hZXzMytWTxztDTudcngFASAtM2u3Kb1tKfqDnZdtLYHenHE5neDv1z9kHu9KCtiNKz4tcqqjJXNkbQmAXd4vZqnBTLJWhGJDdZTtvWnMFb5VUuu58gEDAKSpCTP5hW.tmp&Signature=YCVHhULq6WDy244RUXQMm9DsO3o%3D" alt="image-20190831095736147"></p>
+<p><img src="https://echopoison-blog.oss-cn-beijing.aliyuncs.com/image-20190831095736147.png" alt="image-20190831095736147"></p>
 <ul>
 <li><p>常数复杂度获取字符串长度</p>
 <p>通过使用SDS而不是C字符串，Redis将获取字符串长度所需的复杂度从O(N)降低到O(1)；</p>
@@ -242,19 +242,19 @@
 </ul>
 <h3 id="链表"><a href="#链表" class="headerlink" title="链表"></a>链表</h3><ul>
 <li><p>在listNode的基础上定义了list数据结构来更方便的操作链表</p>
-<img src="https://echopoison-blog.oss-cn-beijing.aliyuncs.com/image-20190831101225871.png?Expires=1570934888&OSSAccessKeyId=TMP.hZXzMytWTxztDTudcngFASAtM2u3Kb1tKfqDnZdtLYHenHE5neDv1z9kHu9KCtiNKz4tcqqjJXNkbQmAXd4vZqnBTLJWhGJDdZTtvWnMFb5VUuu58gEDAKSpCTP5hW.tmp&Signature=0RTOOYdGVPiXodH75BskcHC3Jic%3D" alt="image-20190831101225871">
+<img src="https://echopoison-blog.oss-cn-beijing.aliyuncs.com/image-20190831101225871.png">
 
-<p> <img src="https://echopoison-blog.oss-cn-beijing.aliyuncs.com/image-20190831101321784.png?Expires=1570934925&OSSAccessKeyId=TMP.hZXzMytWTxztDTudcngFASAtM2u3Kb1tKfqDnZdtLYHenHE5neDv1z9kHu9KCtiNKz4tcqqjJXNkbQmAXd4vZqnBTLJWhGJDdZTtvWnMFb5VUuu58gEDAKSpCTP5hW.tmp&Signature=HNvvcuGM9I1YIg0BHVAetOrFpSA%3D" alt="image-20190831101321784"></p>
+<p> <img src="https://echopoison-blog.oss-cn-beijing.aliyuncs.com/image-20190831101321784.png" alt="image-20190831101321784"></p>
 </li>
 </ul>
 <h3 id="字典"><a href="#字典" class="headerlink" title="字典"></a>字典</h3><ul>
 <li><p>数据结构</p>
 <p>哈希表节点dictEntry —-&gt; 哈希表ditch —-&gt; 字典dict</p>
-<p><img src="https://echopoison-blog.oss-cn-beijing.aliyuncs.com/image-20190831102124452.png?Expires=1570934942&OSSAccessKeyId=TMP.hZXzMytWTxztDTudcngFASAtM2u3Kb1tKfqDnZdtLYHenHE5neDv1z9kHu9KCtiNKz4tcqqjJXNkbQmAXd4vZqnBTLJWhGJDdZTtvWnMFb5VUuu58gEDAKSpCTP5hW.tmp&Signature=b5bWzKyPISEmptXuGyvPwgvKmvU%3D" alt="image-20190831102124452"></p>
+<p><img src="https://echopoison-blog.oss-cn-beijing.aliyuncs.com/image-20190831102124452.png" alt="image-20190831102124452"></p>
 </li>
 </ul>
-<p><img src="https://echopoison-blog.oss-cn-beijing.aliyuncs.com/image-20190831102139083.png?Expires=1570934965&OSSAccessKeyId=TMP.hZXzMytWTxztDTudcngFASAtM2u3Kb1tKfqDnZdtLYHenHE5neDv1z9kHu9KCtiNKz4tcqqjJXNkbQmAXd4vZqnBTLJWhGJDdZTtvWnMFb5VUuu58gEDAKSpCTP5hW.tmp&Signature=4e3h2li4aSyRNcq8ZzT7PagGJnk%3D" alt="image-20190831102139083"></p>
-<p><img src="https://echopoison-blog.oss-cn-beijing.aliyuncs.com/image-20190831102334582.png?Expires=1570934994&OSSAccessKeyId=TMP.hZXzMytWTxztDTudcngFASAtM2u3Kb1tKfqDnZdtLYHenHE5neDv1z9kHu9KCtiNKz4tcqqjJXNkbQmAXd4vZqnBTLJWhGJDdZTtvWnMFb5VUuu58gEDAKSpCTP5hW.tmp&Signature=AijQkBS1c4YEs79uRBVwknXAUUc%3D" alt="image-20190831102334582"></p>
+<p><img src="https://echopoison-blog.oss-cn-beijing.aliyuncs.com/image-20190831102139083.png" alt="image-20190831102139083"></p>
+<p><img src="https://echopoison-blog.oss-cn-beijing.aliyuncs.com/image-20190831102334582.png" alt="image-20190831102334582"></p>
 <ul>
 <li><p>ht属性是一个包含两个项的数组，一般情况下字典只使用ht[0]哈希表，ht[1]哈希表只会在ht[0]在rehash时使用</p>
 </li>
@@ -296,7 +296,7 @@
 <li>TODO</li>
 </ul>
 <h3 id="整数集合"><a href="#整数集合" class="headerlink" title="整数集合"></a>整数集合</h3><p>整数集合是集合键的底层实现之一，当一个集合只包含整数值元素且集合的元素数量不多时，Redis会使用整数集合作为集合键的底层实现</p>
-<p><img src="https://echopoison-blog.oss-cn-beijing.aliyuncs.com/image-20190831211338761.png?Expires=1570935017&OSSAccessKeyId=TMP.hZXzMytWTxztDTudcngFASAtM2u3Kb1tKfqDnZdtLYHenHE5neDv1z9kHu9KCtiNKz4tcqqjJXNkbQmAXd4vZqnBTLJWhGJDdZTtvWnMFb5VUuu58gEDAKSpCTP5hW.tmp&Signature=LO1QVEYzad5orjZ29%2FutUBVmT28%3D" alt="image-20190831211338761"></p>
+<p><img src="https://echopoison-blog.oss-cn-beijing.aliyuncs.com/image-20190831211338761.png" alt="image-20190831211338761"></p>
 <ul>
 <li><p>升级</p>
 <p>新元素的类型比集合现有的所有类型都要长</p>
@@ -318,8 +318,8 @@
 </ul>
 <h3 id="压缩列表"><a href="#压缩列表" class="headerlink" title="压缩列表"></a>压缩列表</h3><p>压缩列表是列表键和哈希键的底层实现之一</p>
 <p>压缩列表是Redis为了节约内存而开发的，是由一系列特殊编码的连续内存块组成的顺序型数据结构，一个压缩列表可以包含多个节点，每个节点可以保存一个字节数组或者一个整数值</p>
-<p><img src="https://echopoison-blog.oss-cn-beijing.aliyuncs.com/image-20190902114748806.png?Expires=1570935041&OSSAccessKeyId=TMP.hZXzMytWTxztDTudcngFASAtM2u3Kb1tKfqDnZdtLYHenHE5neDv1z9kHu9KCtiNKz4tcqqjJXNkbQmAXd4vZqnBTLJWhGJDdZTtvWnMFb5VUuu58gEDAKSpCTP5hW.tmp&Signature=fmG%2Bctvqwa3UsLR8SBZQaHmEeuw%3D" alt="image-20190902114748806"></p>
-<p><img src="https://echopoison-blog.oss-cn-beijing.aliyuncs.com/image-20190902114825957.png?Expires=1570935066&OSSAccessKeyId=TMP.hZXzMytWTxztDTudcngFASAtM2u3Kb1tKfqDnZdtLYHenHE5neDv1z9kHu9KCtiNKz4tcqqjJXNkbQmAXd4vZqnBTLJWhGJDdZTtvWnMFb5VUuu58gEDAKSpCTP5hW.tmp&Signature=1ilVFWwA9120EYI1af94DB48pqM%3D" alt="image-20190902114825957"></p>
+<p><img src="https://echopoison-blog.oss-cn-beijing.aliyuncs.com/image-20190902114748806.png" alt="image-20190902114748806"></p>
+<p><img src="https://echopoison-blog.oss-cn-beijing.aliyuncs.com/image-20190902114825957.png" alt="image-20190902114825957"></p>
 <ul>
 <li><p>压缩列表的节点构成</p>
 <ul>
@@ -340,7 +340,7 @@
 </ul>
 </li>
 </ul>
-<p><img src="https://echopoison-blog.oss-cn-beijing.aliyuncs.com/image-20190902142057365.png?Expires=1570935086&OSSAccessKeyId=TMP.hZXzMytWTxztDTudcngFASAtM2u3Kb1tKfqDnZdtLYHenHE5neDv1z9kHu9KCtiNKz4tcqqjJXNkbQmAXd4vZqnBTLJWhGJDdZTtvWnMFb5VUuu58gEDAKSpCTP5hW.tmp&Signature=5MS73k76ODkb3l61dioJ4yGk%2F3Y%3D" alt="image-20190902142057365"></p>
+<p><img src="https://echopoison-blog.oss-cn-beijing.aliyuncs.com/image-20190902142057365.png" alt="image-20190902142057365"></p>
 <p>当我们对一个数据库键执行TYPE命令时，返回的结果为数据库键对应的值对象的类型而非键对象的类型（键对象的类型就是字符串对象）</p>
 <ul>
 <li><p>type的取值从“REDIS_STRING”,”REDIS_LIST”,”REDIS_HASH”,”REDIS_SET”,”REDIS_ZSET”中取值</p>
@@ -809,10 +809,6 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
           <ul class="article-tag-list" q-show="showTags">
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">Paxos</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color3">ConcurrentHashMap</a>
               </li>
              
@@ -829,7 +825,7 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">kafka</a>
+                <a href="javascript:void(0)" class="js-tag color1">Paxos</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -850,6 +846,10 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">读书笔记</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color1">kafka</a>
               </li>
              
               <li class="article-tag-list-item">

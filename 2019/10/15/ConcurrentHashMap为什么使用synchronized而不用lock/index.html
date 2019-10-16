@@ -16,12 +16,12 @@
 <meta property="og:site_name" content="echopoison">
 <meta property="og:description" content="前段时间在面试快手的时候，遇到这样一个问题，JDK1.8之后ConcurrentHashMap为什么使用synchronized而不用lock。">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:image" content="https://echopoison-blog.oss-cn-beijing.aliyuncs.com/image-20191015231618681.png?Expires=1571156269&OSSAccessKeyId=TMP.hYNQkgYDXgNoDxTpuwGK6AASus1wnHSCX4fDtCd4Ls54fhzgvQR4qYGpnH1p4EvfDntb6uXBawCQwhYeJmKKWeHfmYR46nwapeRq83SLDFYvKYyBkDCNxPg1SLxadq.tmp&Signature=ytXLf2WtveCrBETCMOqklB5DqUk%3D">
-<meta property="og:updated_time" content="2019-10-15T16:10:07.363Z">
+<meta property="og:image" content="https://echopoison-blog.oss-cn-beijing.aliyuncs.com/image-20191015231618681.png">
+<meta property="og:updated_time" content="2019-10-16T14:35:35.176Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="ConcurrentHashMap为什么使用synchronized而不用lock">
 <meta name="twitter:description" content="前段时间在面试快手的时候，遇到这样一个问题，JDK1.8之后ConcurrentHashMap为什么使用synchronized而不用lock。">
-<meta name="twitter:image" content="https://echopoison-blog.oss-cn-beijing.aliyuncs.com/image-20191015231618681.png?Expires=1571156269&OSSAccessKeyId=TMP.hYNQkgYDXgNoDxTpuwGK6AASus1wnHSCX4fDtCd4Ls54fhzgvQR4qYGpnH1p4EvfDntb6uXBawCQwhYeJmKKWeHfmYR46nwapeRq83SLDFYvKYyBkDCNxPg1SLxadq.tmp&Signature=ytXLf2WtveCrBETCMOqklB5DqUk%3D">
+<meta name="twitter:image" content="https://echopoison-blog.oss-cn-beijing.aliyuncs.com/image-20191015231618681.png">
   
     <link rel="alternative" href="/atom.xml" title="echopoison" type="application/atom+xml">
   
@@ -233,7 +233,7 @@
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">synchronized</span>===thread:==Thread[pool-<span class="number">1</span>-thread-<span class="number">1</span>,<span class="number">5</span>,main]拿到o1资源</span><br><span class="line"><span class="keyword">synchronized</span>===thread:==Thread[pool-<span class="number">1</span>-thread-<span class="number">2</span>,<span class="number">5</span>,main]拿到o2资源</span><br><span class="line">lock===thread:==Thread[pool-<span class="number">2</span>-thread-<span class="number">1</span>,<span class="number">5</span>,main]拿到o1资源</span><br><span class="line">lock===thread:==Thread[pool-<span class="number">2</span>-thread-<span class="number">2</span>,<span class="number">5</span>,main]拿到o2资源</span><br></pre></td></tr></table></figure>
 
 <p>这个时候通过jstack来分析当前堆栈信息会发现一个有意思的现象</p>
-<p><img src="https://echopoison-blog.oss-cn-beijing.aliyuncs.com/image-20191015231618681.png?Expires=1571156269&OSSAccessKeyId=TMP.hYNQkgYDXgNoDxTpuwGK6AASus1wnHSCX4fDtCd4Ls54fhzgvQR4qYGpnH1p4EvfDntb6uXBawCQwhYeJmKKWeHfmYR46nwapeRq83SLDFYvKYyBkDCNxPg1SLxadq.tmp&Signature=ytXLf2WtveCrBETCMOqklB5DqUk%3D" alt="image-20191015231618681"></p>
+<p><img src="https://echopoison-blog.oss-cn-beijing.aliyuncs.com/image-20191015231618681.png" alt="image-20191015231618681"></p>
 <p>从图中可以清晰的看到，使用lock的时候线程处于waiting状态，而使用synchronized的时候处于blocked状态。至于二者的区别 <a href="https://www.baidu.com/s?wd=waiting%E5%92%8Cblocked&rsv_spt=1&rsv_iqid=0xf619fe30000cc429&issp=1&f=8&rsv_bp=1&rsv_idx=2&ie=utf-8&tn=baiduhome_pg&rsv_enter=1&rsv_dl=tb&rsv_sug3=19&rsv_sug1=11&rsv_sug7=101&rsv_t=8b092cYLwYi%2BLTLP1r5aUWhZ%2BUlYgwZXptTtWZ%2F%2FHtbeKQTp4PipfgVlWUW0kBn15wlz&rsv_sug2=0&inputT=16059&rsv_sug4=19665" target="_blank" rel="noopener">百度一下 你就知道</a></p>
 <p>TODO 猜测alibaba的Arthas的thread -b命令不适配lock也是基于这样的原因，回头翻翻源码确认一下</p>
 
@@ -497,10 +497,6 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
           <ul class="article-tag-list" q-show="showTags">
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">Paxos</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color3">ConcurrentHashMap</a>
               </li>
              
@@ -517,7 +513,7 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">kafka</a>
+                <a href="javascript:void(0)" class="js-tag color1">Paxos</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -538,6 +534,10 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">读书笔记</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color1">kafka</a>
               </li>
              
               <li class="article-tag-list-item">
