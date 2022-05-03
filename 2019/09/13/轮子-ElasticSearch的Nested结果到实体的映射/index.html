@@ -6,14 +6,14 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <link rel="dns-prefetch" href="http://yoursite.com">
-  <title>轮子---ElasticSearch的Nested结果到实体的映射 | echopoison</title>
+  <title>轮子---ElasticSearch的Nested结果到实体的映射 | nezuko</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   <meta name="description" content="背景项目使用了ES来替换MySQL的查询，然而在ES的实体定义过程中，我们选择了一个索引多Nested的形式来存储数据，这样就带来了一个结果就是查询出来的ES结果被打散到各个Nested的集合中去了。同时为了降低改造的耦合度，和前端的接口定义并没有修改，这就需要将层级的ES结果再打散到扁平的实体中去。因为映射的字段不同，甚至于映射的层级也不同，BeanUtils#copyProperties()方">
 <meta name="keywords" content="轮子">
 <meta property="og:type" content="article">
 <meta property="og:title" content="轮子---ElasticSearch的Nested结果到实体的映射">
 <meta property="og:url" content="http://yoursite.com/2019/09/13/轮子-ElasticSearch的Nested结果到实体的映射/index.html">
-<meta property="og:site_name" content="echopoison">
+<meta property="og:site_name" content="nezuko">
 <meta property="og:description" content="背景项目使用了ES来替换MySQL的查询，然而在ES的实体定义过程中，我们选择了一个索引多Nested的形式来存储数据，这样就带来了一个结果就是查询出来的ES结果被打散到各个Nested的集合中去了。同时为了降低改造的耦合度，和前端的接口定义并没有修改，这就需要将层级的ES结果再打散到扁平的实体中去。因为映射的字段不同，甚至于映射的层级也不同，BeanUtils#copyProperties()方">
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:updated_time" content="2019-09-13T05:31:59.042Z">
@@ -21,7 +21,7 @@
 <meta name="twitter:title" content="轮子---ElasticSearch的Nested结果到实体的映射">
 <meta name="twitter:description" content="背景项目使用了ES来替换MySQL的查询，然而在ES的实体定义过程中，我们选择了一个索引多Nested的形式来存储数据，这样就带来了一个结果就是查询出来的ES结果被打散到各个Nested的集合中去了。同时为了降低改造的耦合度，和前端的接口定义并没有修改，这就需要将层级的ES结果再打散到扁平的实体中去。因为映射的字段不同，甚至于映射的层级也不同，BeanUtils#copyProperties()方">
   
-    <link rel="alternative" href="/atom.xml" title="echopoison" type="application/atom+xml">
+    <link rel="alternative" href="/atom.xml" title="nezuko" type="application/atom+xml">
   
   
     <link rel="icon" href="/img/favicon.png">
@@ -483,6 +483,10 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
           <ul class="article-tag-list" q-show="showTags">
              
               <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color1">Paxos</a>
+              </li>
+             
+              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color3">ConcurrentHashMap</a>
               </li>
              
@@ -499,15 +503,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">Paxos</a>
+                <a href="javascript:void(0)" class="js-tag color4">JVM</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color1">kafka</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">JVM</a>
               </li>
              
               <li class="article-tag-list-item">

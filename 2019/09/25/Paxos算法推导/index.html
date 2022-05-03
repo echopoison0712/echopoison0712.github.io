@@ -6,14 +6,14 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <link rel="dns-prefetch" href="http://yoursite.com">
-  <title>Paxos算法推导 | echopoison</title>
+  <title>Paxos算法推导 | nezuko</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   <meta name="description" content="阅读《从Paxos到Zookeeper分布式一致性原理与实践》一书中有关Paxos一致性算法的部分，在此基础上增加一些个人的见解，试图讲得在大白话一点。">
 <meta name="keywords" content="Paxos">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Paxos算法推导">
 <meta property="og:url" content="http://yoursite.com/2019/09/25/Paxos算法推导/index.html">
-<meta property="og:site_name" content="echopoison">
+<meta property="og:site_name" content="nezuko">
 <meta property="og:description" content="阅读《从Paxos到Zookeeper分布式一致性原理与实践》一书中有关Paxos一致性算法的部分，在此基础上增加一些个人的见解，试图讲得在大白话一点。">
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="https://echopoison-blog.oss-cn-beijing.aliyuncs.com/image-20190924224318547.png">
@@ -25,7 +25,7 @@
 <meta name="twitter:description" content="阅读《从Paxos到Zookeeper分布式一致性原理与实践》一书中有关Paxos一致性算法的部分，在此基础上增加一些个人的见解，试图讲得在大白话一点。">
 <meta name="twitter:image" content="https://echopoison-blog.oss-cn-beijing.aliyuncs.com/image-20190924224318547.png">
   
-    <link rel="alternative" href="/atom.xml" title="echopoison" type="application/atom+xml">
+    <link rel="alternative" href="/atom.xml" title="nezuko" type="application/atom+xml">
   
   
     <link rel="icon" href="/img/favicon.png">
@@ -526,6 +526,10 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
           <ul class="article-tag-list" q-show="showTags">
              
               <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color1">Paxos</a>
+              </li>
+             
+              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color3">ConcurrentHashMap</a>
               </li>
              
@@ -542,15 +546,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">Paxos</a>
+                <a href="javascript:void(0)" class="js-tag color4">JVM</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color1">kafka</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">JVM</a>
               </li>
              
               <li class="article-tag-list-item">

@@ -6,14 +6,14 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <link rel="dns-prefetch" href="http://yoursite.com">
-  <title>kafka分区一致性的思考 | echopoison</title>
+  <title>kafka分区一致性的思考 | nezuko</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   <meta name="description" content="在学习kafka的过程中，相信都听过一个概念“kafka不能保证消息整体的一致性，只能保证分区内的一致性“。其原因很简单当时看书的时候看到这里就觉得嗯嗯，是这么个道理，然后就接着往下看了。 后来在发送消息的API中，我以为发个消息，参数里就传topic和value就足够了，往指定topic里发value嘛，但是在代码里，发现除了这两个参数外，还有key这个参数，研讨一番后知道如果key不为null">
 <meta name="keywords" content="kafka">
 <meta property="og:type" content="article">
 <meta property="og:title" content="kafka分区一致性的思考">
 <meta property="og:url" content="http://yoursite.com/2019/09/09/kafka分区一致性的思考/index.html">
-<meta property="og:site_name" content="echopoison">
+<meta property="og:site_name" content="nezuko">
 <meta property="og:description" content="在学习kafka的过程中，相信都听过一个概念“kafka不能保证消息整体的一致性，只能保证分区内的一致性“。其原因很简单当时看书的时候看到这里就觉得嗯嗯，是这么个道理，然后就接着往下看了。 后来在发送消息的API中，我以为发个消息，参数里就传topic和value就足够了，往指定topic里发value嘛，但是在代码里，发现除了这两个参数外，还有key这个参数，研讨一番后知道如果key不为null">
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:updated_time" content="2019-09-09T07:14:43.835Z">
@@ -21,7 +21,7 @@
 <meta name="twitter:title" content="kafka分区一致性的思考">
 <meta name="twitter:description" content="在学习kafka的过程中，相信都听过一个概念“kafka不能保证消息整体的一致性，只能保证分区内的一致性“。其原因很简单当时看书的时候看到这里就觉得嗯嗯，是这么个道理，然后就接着往下看了。 后来在发送消息的API中，我以为发个消息，参数里就传topic和value就足够了，往指定topic里发value嘛，但是在代码里，发现除了这两个参数外，还有key这个参数，研讨一番后知道如果key不为null">
   
-    <link rel="alternative" href="/atom.xml" title="echopoison" type="application/atom+xml">
+    <link rel="alternative" href="/atom.xml" title="nezuko" type="application/atom+xml">
   
   
     <link rel="icon" href="/img/favicon.png">
@@ -449,6 +449,10 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
           <ul class="article-tag-list" q-show="showTags">
              
               <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color1">Paxos</a>
+              </li>
+             
+              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color3">ConcurrentHashMap</a>
               </li>
              
@@ -465,15 +469,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">Paxos</a>
+                <a href="javascript:void(0)" class="js-tag color4">JVM</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color1">kafka</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">JVM</a>
               </li>
              
               <li class="article-tag-list-item">
