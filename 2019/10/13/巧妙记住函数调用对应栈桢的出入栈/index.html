@@ -20,13 +20,13 @@
 <meta property="og:type" content="article">
 <meta property="og:title" content="巧妙记住函数调用对应栈桢的出入栈">
 <meta property="og:url" content="http://yoursite.com/2019/10/13/%E5%B7%A7%E5%A6%99%E8%AE%B0%E4%BD%8F%E5%87%BD%E6%95%B0%E8%B0%83%E7%94%A8%E5%AF%B9%E5%BA%94%E6%A0%88%E6%A1%A2%E7%9A%84%E5%87%BA%E5%85%A5%E6%A0%88/index.html">
-<meta property="og:site_name" content="blog">
+<meta property="og:site_name" content="echo&#39;s blog">
 <meta property="og:description" content="在学习JVM的时候，都会记住这样几个概念：  栈是线程私有的。 每个方法的调用对应着栈桢的入栈出栈。 每个栈帧包含局部变量表、操作数栈以及指向当前方法所属类的运行时常量池的引用。 局部变量是线程安全的  这些概念都不难理解也不难记住，不过吧总觉得这些就是干巴巴的概念，背下来也就过去了。今天突然意识到其实在看到这些相关概念前，就已经见到他们的身影并受到其恩惠了。">
 <meta property="og:locale">
 <meta property="og:image" content="https://echopoison-blog.oss-cn-beijing.aliyuncs.com/image-20191013171640070.png?Expires=1570961902&OSSAccessKeyId=TMP.hZXzMytWTxztDTudcngFASAtM2u3Kb1tKfqDnZdtLYHenHE5neDv1z9kHu9KCtiNKz4tcqqjJXNkbQmAXd4vZqnBTLJWhGJDdZTtvWnMFb5VUuu58gEDAKSpCTP5hW.tmp&Signature=kifpth4zS0gbUBRwer5g1vuttuA=">
 <meta property="og:image" content="https://echopoison-blog.oss-cn-beijing.aliyuncs.com/image-20191013171602272.png?Expires=1570961887&OSSAccessKeyId=TMP.hZXzMytWTxztDTudcngFASAtM2u3Kb1tKfqDnZdtLYHenHE5neDv1z9kHu9KCtiNKz4tcqqjJXNkbQmAXd4vZqnBTLJWhGJDdZTtvWnMFb5VUuu58gEDAKSpCTP5hW.tmp&Signature=LlM2M5ANKVE2ufKf/LbQOBE6f2Q=">
 <meta property="article:published_time" content="2019-10-13T03:43:38.000Z">
-<meta property="article:modified_time" content="2019-10-13T09:22:00.541Z">
+<meta property="article:modified_time" content="2022-05-08T16:39:11.507Z">
 <meta property="article:author" content="于洋">
 <meta property="article:tag" content="抖机灵">
 <meta property="article:tag" content="栈桢">
@@ -34,7 +34,7 @@
 <meta name="twitter:image" content="https://echopoison-blog.oss-cn-beijing.aliyuncs.com/image-20191013171640070.png?Expires=1570961902&OSSAccessKeyId=TMP.hZXzMytWTxztDTudcngFASAtM2u3Kb1tKfqDnZdtLYHenHE5neDv1z9kHu9KCtiNKz4tcqqjJXNkbQmAXd4vZqnBTLJWhGJDdZTtvWnMFb5VUuu58gEDAKSpCTP5hW.tmp&Signature=kifpth4zS0gbUBRwer5g1vuttuA=">
   
   
-  <title>巧妙记住函数调用对应栈桢的出入栈 - blog</title>
+  <title>巧妙记住函数调用对应栈桢的出入栈 - echo&#39;s blog</title>
 
   <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/css/bootstrap.min.css" />
 
@@ -83,7 +83,7 @@
     <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
   <div class="container">
     <a class="navbar-brand" href="/">
-      <strong>blog</strong>
+      <strong>echo&#39;s blog</strong>
     </a>
 
     <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
@@ -263,6 +263,13 @@
             <div>
               <div class="post-metas mb-3">
                 
+                  <div class="post-meta mr-3">
+                    <i class="iconfont icon-category"></i>
+                    
+                      <a class="hover-with-bg" href="/categories/Java/">Java</a>
+                    
+                  </div>
+                
                 
                   <div class="post-meta">
                     <i class="iconfont icon-tags"></i>
@@ -289,7 +296,7 @@
                       <a href="/2019/10/15/ConcurrentHashMap%E4%B8%BA%E4%BB%80%E4%B9%88%E4%BD%BF%E7%94%A8synchronized%E8%80%8C%E4%B8%8D%E7%94%A8lock/">
                         <i class="iconfont icon-arrowleft"></i>
                         <span class="hidden-mobile">ConcurrentHashMap为什么使用synchronized而不用lock</span>
-                        <span class="visible-mobile">Previous</span>
+                        <span class="visible-mobile">Vorheriger</span>
                       </a>
                     
                   </article>
@@ -298,7 +305,7 @@
                     
                       <a href="/2019/09/25/Paxos%E7%AE%97%E6%B3%95%E6%8E%A8%E5%AF%BC/">
                         <span class="hidden-mobile">Paxos算法推导</span>
-                        <span class="visible-mobile">Next</span>
+                        <span class="visible-mobile">Nächster</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>
                     
@@ -350,7 +357,7 @@
   <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
     <div class="modal-content">
       <div class="modal-header text-center">
-        <h4 class="modal-title w-100 font-weight-bold">Search</h4>
+        <h4 class="modal-title w-100 font-weight-bold">Suchen</h4>
         <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
@@ -359,7 +366,7 @@
         <div class="md-form mb-5">
           <input type="text" id="local-search-input" class="form-control validate">
           <label data-error="x" data-success="v"
-                 for="local-search-input">keyword</label>
+                 for="local-search-input">Stichwort</label>
         </div>
         <div class="list-group" id="local-search-result"></div>
       </div>
