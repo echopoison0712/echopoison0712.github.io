@@ -4,7 +4,20 @@
   
   
   <entry>
-    <title>Paxos算法推导</title>
+    <title>记一次Caffeine的惨案</title>
+    <link href="/2022/05/22/%E8%AE%B0%E4%B8%80%E6%AC%A1Caffeine%E7%9A%84%E6%83%A8%E6%A1%88/"/>
+    <url>/2022/05/22/%E8%AE%B0%E4%B8%80%E6%AC%A1Caffeine%E7%9A%84%E6%83%A8%E6%A1%88/</url>
+    
+    <content type="html"><![CDATA[]]></content>
+    
+    
+    
+  </entry>
+  
+  
+  
+  <entry>
+    <title>Paxos算法推导--《软件架构设计：大型网站技术架构与业务架构融合之道》</title>
     <link href="/2022/05/09/Paxos%E7%AE%97%E6%B3%95%E8%A7%A3%E6%9E%90/"/>
     <url>/2022/05/09/Paxos%E7%AE%97%E6%B3%95%E8%A7%A3%E6%9E%90/</url>
     

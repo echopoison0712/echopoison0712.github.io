@@ -18,7 +18,7 @@
   
     <meta name="description" content="Paxos算法解析本文是阅读自《软件架构设计：大型网站技术架构与业务架构融合之道》 这本书很喜欢，里面有很多干货，本文出自11.2小节 之前看Paxos的证明的时候，就是顺着P1、P2a、P2b、P2c的证明思路往下缕，整个证明过程看着欲仙欲死。而这次看的这个文章，是从一个实际的并发场景，引出Paxos要解决的问题，倒推要解决这个问题需要提供什么能力 Paxos解决什么问题###1.什么是“时序”">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Paxos算法推导">
+<meta property="og:title" content="Paxos算法推导--《软件架构设计：大型网站技术架构与业务架构融合之道》">
 <meta property="og:url" content="http://yoursite.com/2022/05/09/Paxos%E7%AE%97%E6%B3%95%E8%A7%A3%E6%9E%90/index.html">
 <meta property="og:site_name" content="echo&#39;s blog">
 <meta property="og:description" content="Paxos算法解析本文是阅读自《软件架构设计：大型网站技术架构与业务架构融合之道》 这本书很喜欢，里面有很多干货，本文出自11.2小节 之前看Paxos的证明的时候，就是顺着P1、P2a、P2b、P2c的证明思路往下缕，整个证明过程看着欲仙欲死。而这次看的这个文章，是从一个实际的并发场景，引出Paxos要解决的问题，倒推要解决这个问题需要提供什么能力 Paxos解决什么问题###1.什么是“时序”">
@@ -26,14 +26,14 @@
 <meta property="og:image" content="http://yoursite.com/blog-img/Paxos1.png">
 <meta property="og:image" content="http://yoursite.com/blog-img/Paxos2.png">
 <meta property="article:published_time" content="2022-05-08T16:00:40.000Z">
-<meta property="article:modified_time" content="2022-05-08T16:54:11.321Z">
+<meta property="article:modified_time" content="2022-05-09T03:28:41.473Z">
 <meta property="article:author" content="于洋">
 <meta property="article:tag" content="Paxos">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="http://yoursite.com/blog-img/Paxos1.png">
   
   
-  <title>Paxos算法推导 - echo&#39;s blog</title>
+  <title>Paxos算法推导--《软件架构设计：大型网站技术架构与业务架构融合之道》 - echo&#39;s blog</title>
 
   <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/css/bootstrap.min.css" />
 
@@ -179,7 +179,7 @@
       <div class="full-bg-img">
         <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
           <div class="page-header text-center fade-in-up">
-            <span class="h2" id="subtitle" title="Paxos算法推导">
+            <span class="h2" id="subtitle" title="Paxos算法推导--《软件架构设计：大型网站技术架构与业务架构融合之道》">
               
             </span>
 
@@ -238,7 +238,7 @@
         <div class="py-5" id="board">
           <article class="post-content mx-auto">
             <!-- SEO header -->
-            <h1 style="display: none">Paxos算法推导</h1>
+            <h1 style="display: none">Paxos算法推导--《软件架构设计：大型网站技术架构与业务架构融合之道》</h1>
             
             <div class="markdown-body">
               <h1 id="Paxos算法解析"><a href="#Paxos算法解析" class="headerlink" title="Paxos算法解析"></a>Paxos算法解析</h1><p>本文是阅读自<a href="https://item.jd.com/12536538.html">《软件架构设计：大型网站技术架构与业务架构融合之道》</a> 这本书很喜欢，里面有很多干货，本文出自11.2小节</p>
@@ -328,6 +328,12 @@
                 <div class="post-prevnext">
                   <article class="post-prev col-6">
                     
+                    
+                      <a href="/2022/05/22/%E8%AE%B0%E4%B8%80%E6%AC%A1Caffeine%E7%9A%84%E6%83%A8%E6%A1%88/">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">记一次Caffeine的惨案</span>
+                        <span class="visible-mobile">Vorheriger</span>
+                      </a>
                     
                   </article>
                   <article class="post-next col-6">
