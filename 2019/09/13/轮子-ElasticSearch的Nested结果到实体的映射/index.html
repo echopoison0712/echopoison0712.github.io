@@ -278,7 +278,7 @@
 <span id="more"></span>
 
 <h3 id="实体VO"><a href="#实体VO" class="headerlink" title="实体VO"></a>实体VO</h3><p>如下是ES的model，其中的Student和Course都是Nested类型</p>
-<figure class="highlight java"><table><tr><td class="gutter"><div class="code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></div></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@Document(indexName = &quot;index&quot;,type = &quot;type&quot;)</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">BasicDataResult</span> <span class="hljs-keyword">implements</span> <span class="hljs-title class_">Serializable</span> &#123;<br>    <span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">final</span> <span class="hljs-type">long</span> <span class="hljs-variable">serialVersionUID</span> <span class="hljs-operator">=</span> <span class="hljs-number">1L</span>;<br>    <span class="hljs-meta">@Field(type = FieldType.Nested)</span><br>    <span class="hljs-keyword">private</span> List&lt;Student&gt; student;<br>  	<span class="hljs-meta">@Field(type = FieldType.Nested)</span><br>  	<span class="hljs-keyword">private</span> List&lt;Course&gt; course;<br>&#125;<br><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">Student</span>&#123;<br>  <span class="hljs-keyword">private</span> Integer id;<br>  <span class="hljs-keyword">private</span> Integer name;<br>&#125;<br><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">Course</span>&#123;<br>  <span class="hljs-keyword">private</span> Integer id;<br>  <span class="hljs-keyword">private</span> Integer name;<br>&#125;<br></code></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@Document(indexName = &quot;index&quot;,type = &quot;type&quot;)</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">BasicDataResult</span> <span class="hljs-keyword">implements</span> <span class="hljs-title class_">Serializable</span> &#123;<br>    <span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">final</span> <span class="hljs-type">long</span> <span class="hljs-variable">serialVersionUID</span> <span class="hljs-operator">=</span> <span class="hljs-number">1L</span>;<br>    <span class="hljs-meta">@Field(type = FieldType.Nested)</span><br>    <span class="hljs-keyword">private</span> List&lt;Student&gt; student;<br>  	<span class="hljs-meta">@Field(type = FieldType.Nested)</span><br>  	<span class="hljs-keyword">private</span> List&lt;Course&gt; course;<br>&#125;<br><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">Student</span>&#123;<br>  <span class="hljs-keyword">private</span> Integer id;<br>  <span class="hljs-keyword">private</span> Integer name;<br>&#125;<br><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">Course</span>&#123;<br>  <span class="hljs-keyword">private</span> Integer id;<br>  <span class="hljs-keyword">private</span> Integer name;<br>&#125;<br></code></pre></td></tr></table></figure>
 
 <p>那么其查询结果是形如下面的json</p>
 <figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs json"><span class="hljs-punctuation">&#123;</span><br>    <span class="hljs-attr">&quot;student&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">[</span><br>        <span class="hljs-punctuation">&#123;</span><br>            <span class="hljs-attr">&quot;id&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">1</span><span class="hljs-punctuation">,</span><br>            <span class="hljs-attr">&quot;name&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;echo&quot;</span><br>        <span class="hljs-punctuation">&#125;</span><br>    <span class="hljs-punctuation">]</span><span class="hljs-punctuation">,</span><br>    <span class="hljs-attr">&quot;course&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">[</span><br>        <span class="hljs-punctuation">&#123;</span><br>            <span class="hljs-attr">&quot;id&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">1</span><span class="hljs-punctuation">,</span><br>            <span class="hljs-attr">&quot;name&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;java&quot;</span><br>        <span class="hljs-punctuation">&#125;</span><br>    <span class="hljs-punctuation">]</span><br><span class="hljs-punctuation">&#125;</span><br></code></pre></td></tr></table></figure>
@@ -375,19 +375,19 @@
     <div class="license-meta">
       
         <div class="license-meta-item">
-          <div>Author</div>
+          <div>Aŭtoro</div>
           <div>于洋</div>
         </div>
       
       
         <div class="license-meta-item license-meta-date">
-          <div>Posted on</div>
+          <div>Postigita</div>
           <div>September 13, 2019</div>
         </div>
       
       
       <div class="license-meta-item">
-        <div>Licensed under</div>
+        <div>Lizenta</div>
         <div>
           
             
@@ -415,7 +415,7 @@
                       <a href="/2019/09/15/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%7C%E3%80%8A%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3kafka-%E6%A0%B8%E5%BF%83%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0%E3%80%8B/" title="读书笔记|《深入理解kafka:核心设计与实现》">
                         <i class="iconfont icon-arrowleft"></i>
                         <span class="hidden-mobile">读书笔记|《深入理解kafka:核心设计与实现》</span>
-                        <span class="visible-mobile">Previous</span>
+                        <span class="visible-mobile">Antaŭa afiŝo</span>
                       </a>
                     
                   </article>
@@ -424,7 +424,7 @@
                     
                       <a href="/2019/09/11/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%7C%E3%80%8ARedis%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0%E3%80%8B/" title="读书笔记|《Redis设计与实现》">
                         <span class="hidden-mobile">读书笔记|《Redis设计与实现》</span>
-                        <span class="visible-mobile">Next</span>
+                        <span class="visible-mobile">Sekva afiŝo</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>
                     
@@ -449,7 +449,7 @@
       
   <aside class="sidebar" style="margin-left: -1rem">
     <div id="toc">
-  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;Table of Contents</p>
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;Enhavtabelo</p>
   <div class="toc-body" id="toc-body"></div>
 </div>
 
@@ -503,7 +503,7 @@
   <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
     <div class="modal-content">
       <div class="modal-header text-center">
-        <h4 class="modal-title w-100 font-weight-bold">Search</h4>
+        <h4 class="modal-title w-100 font-weight-bold">Serĉi</h4>
         <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
@@ -511,7 +511,7 @@
       <div class="modal-body mx-3">
         <div class="md-form mb-5">
           <input type="text" id="local-search-input" class="form-control validate">
-          <label data-error="x" data-success="v" for="local-search-input">Keyword</label>
+          <label data-error="x" data-success="v" for="local-search-input">ŝlosivorto</label>
         </div>
         <div class="list-group" id="local-search-result"></div>
       </div>
@@ -756,7 +756,7 @@
   
 
   <noscript>
-    <div class="noscript-warning">Blog works best with JavaScript enabled</div>
+    <div class="noscript-warning">Blogo funkcias plej bone kun JavaScript ebligita</div>
   </noscript>
 </body>
 </html>

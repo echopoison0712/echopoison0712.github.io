@@ -289,7 +289,7 @@
 <span id="more"></span>
 <p>平时都有debug程序，而debug模式下可以看到调用栈信息，最开始学习debug的时候当时带我的同事就跟我说在Frames这里是debug调用栈，蓝色选中的就是当前程序停留的位置，它往下依次是调用的方法信息。右侧Variables就可以看到当前的变量信息。当时觉得很神奇但现在想想，调用栈里的每一层不对应着一个栈桢，然后variables中的值就是对应栈桢中存储的元素。</p>
 <p>下面用一段死锁的demo来验证一下</p>
-<figure class="highlight java"><table><tr><td class="gutter"><div class="code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></div></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">DeadLock</span> &#123;<br>    <span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">final</span> <span class="hljs-type">Object</span> <span class="hljs-variable">o1</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Object</span>();<br>    <span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">final</span> <span class="hljs-type">Object</span> <span class="hljs-variable">o2</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Object</span>();<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">main</span><span class="hljs-params">(String[] args)</span> <span class="hljs-keyword">throws</span> Exception&#123;<br>        <span class="hljs-type">ExecutorService</span> <span class="hljs-variable">threadPool</span> <span class="hljs-operator">=</span> Executors.newFixedThreadPool(<span class="hljs-number">2</span>);<br>        threadPool.submit(<span class="hljs-keyword">new</span> <span class="hljs-title class_">Runnable</span>() &#123;<br>            <span class="hljs-meta">@Override</span><br>            <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">run</span><span class="hljs-params">()</span> &#123;<br>                <span class="hljs-type">int</span> <span class="hljs-variable">variableA</span> <span class="hljs-operator">=</span> <span class="hljs-number">10</span>;<br>                <span class="hljs-keyword">synchronized</span> (o1)&#123;<br>                    System.out.println(<span class="hljs-string">&quot;thread:==&quot;</span>+Thread.currentThread()+<span class="hljs-string">&quot;拿到o1资源&quot;</span>);<br>                    <span class="hljs-keyword">try</span> &#123;<br>                        Thread.sleep(<span class="hljs-number">10</span>);<br>                    &#125; <span class="hljs-keyword">catch</span> (InterruptedException e) &#123;<br>                        e.printStackTrace();<br>                    &#125;<br>                    <span class="hljs-keyword">synchronized</span> (o2)&#123;<br>                        System.out.println(<span class="hljs-string">&quot;thread:==&quot;</span>+Thread.currentThread()+<span class="hljs-string">&quot;拿到o2资源&quot;</span>);<br>                    &#125;<br>                &#125;<br>            &#125;<br>        &#125;);<br>        threadPool.submit(<span class="hljs-keyword">new</span> <span class="hljs-title class_">Runnable</span>() &#123;<br>            <span class="hljs-meta">@Override</span><br>            <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">run</span><span class="hljs-params">()</span> &#123;<br>              	<span class="hljs-type">int</span> <span class="hljs-variable">variableA</span> <span class="hljs-operator">=</span> <span class="hljs-number">20</span>;<br>                <span class="hljs-keyword">synchronized</span> (o2)&#123;<br>                    System.out.println(<span class="hljs-string">&quot;thread:==&quot;</span>+Thread.currentThread()+<span class="hljs-string">&quot;拿到o2资源&quot;</span>);<br>                    <span class="hljs-keyword">try</span> &#123;<br>                        Thread.sleep(<span class="hljs-number">10</span>);<br>                    &#125; <span class="hljs-keyword">catch</span> (InterruptedException e) &#123;<br>                        e.printStackTrace();<br>                    &#125;<br>                    <span class="hljs-keyword">synchronized</span> (o1)&#123;<br>                        System.out.println(<span class="hljs-string">&quot;thread:==&quot;</span>+Thread.currentThread()+<span class="hljs-string">&quot;拿到o1资源&quot;</span>);<br>                    &#125;<br>                &#125;<br>            &#125;<br>        &#125;);<br>        threadPool.shutdown();<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">DeadLock</span> &#123;<br>    <span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">final</span> <span class="hljs-type">Object</span> <span class="hljs-variable">o1</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Object</span>();<br>    <span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">final</span> <span class="hljs-type">Object</span> <span class="hljs-variable">o2</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Object</span>();<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">main</span><span class="hljs-params">(String[] args)</span> <span class="hljs-keyword">throws</span> Exception&#123;<br>        <span class="hljs-type">ExecutorService</span> <span class="hljs-variable">threadPool</span> <span class="hljs-operator">=</span> Executors.newFixedThreadPool(<span class="hljs-number">2</span>);<br>        threadPool.submit(<span class="hljs-keyword">new</span> <span class="hljs-title class_">Runnable</span>() &#123;<br>            <span class="hljs-meta">@Override</span><br>            <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">run</span><span class="hljs-params">()</span> &#123;<br>                <span class="hljs-type">int</span> <span class="hljs-variable">variableA</span> <span class="hljs-operator">=</span> <span class="hljs-number">10</span>;<br>                <span class="hljs-keyword">synchronized</span> (o1)&#123;<br>                    System.out.println(<span class="hljs-string">&quot;thread:==&quot;</span>+Thread.currentThread()+<span class="hljs-string">&quot;拿到o1资源&quot;</span>);<br>                    <span class="hljs-keyword">try</span> &#123;<br>                        Thread.sleep(<span class="hljs-number">10</span>);<br>                    &#125; <span class="hljs-keyword">catch</span> (InterruptedException e) &#123;<br>                        e.printStackTrace();<br>                    &#125;<br>                    <span class="hljs-keyword">synchronized</span> (o2)&#123;<br>                        System.out.println(<span class="hljs-string">&quot;thread:==&quot;</span>+Thread.currentThread()+<span class="hljs-string">&quot;拿到o2资源&quot;</span>);<br>                    &#125;<br>                &#125;<br>            &#125;<br>        &#125;);<br>        threadPool.submit(<span class="hljs-keyword">new</span> <span class="hljs-title class_">Runnable</span>() &#123;<br>            <span class="hljs-meta">@Override</span><br>            <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">run</span><span class="hljs-params">()</span> &#123;<br>              	<span class="hljs-type">int</span> <span class="hljs-variable">variableA</span> <span class="hljs-operator">=</span> <span class="hljs-number">20</span>;<br>                <span class="hljs-keyword">synchronized</span> (o2)&#123;<br>                    System.out.println(<span class="hljs-string">&quot;thread:==&quot;</span>+Thread.currentThread()+<span class="hljs-string">&quot;拿到o2资源&quot;</span>);<br>                    <span class="hljs-keyword">try</span> &#123;<br>                        Thread.sleep(<span class="hljs-number">10</span>);<br>                    &#125; <span class="hljs-keyword">catch</span> (InterruptedException e) &#123;<br>                        e.printStackTrace();<br>                    &#125;<br>                    <span class="hljs-keyword">synchronized</span> (o1)&#123;<br>                        System.out.println(<span class="hljs-string">&quot;thread:==&quot;</span>+Thread.currentThread()+<span class="hljs-string">&quot;拿到o1资源&quot;</span>);<br>                    &#125;<br>                &#125;<br>            &#125;<br>        &#125;);<br>        threadPool.shutdown();<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
 
 <p><img src="https://echopoison-blog.oss-cn-beijing.aliyuncs.com/image-20191013171640070.png?Expires=1570961902&OSSAccessKeyId=TMP.hZXzMytWTxztDTudcngFASAtM2u3Kb1tKfqDnZdtLYHenHE5neDv1z9kHu9KCtiNKz4tcqqjJXNkbQmAXd4vZqnBTLJWhGJDdZTtvWnMFb5VUuu58gEDAKSpCTP5hW.tmp&Signature=kifpth4zS0gbUBRwer5g1vuttuA=" srcset="/img/loading.gif" lazyload alt="image-20191013171602272"></p>
 <p><img src="https://echopoison-blog.oss-cn-beijing.aliyuncs.com/image-20191013171602272.png?Expires=1570961887&OSSAccessKeyId=TMP.hZXzMytWTxztDTudcngFASAtM2u3Kb1tKfqDnZdtLYHenHE5neDv1z9kHu9KCtiNKz4tcqqjJXNkbQmAXd4vZqnBTLJWhGJDdZTtvWnMFb5VUuu58gEDAKSpCTP5hW.tmp&Signature=LlM2M5ANKVE2ufKf/LbQOBE6f2Q=" srcset="/img/loading.gif" lazyload alt="image-20191013171640070"></p>
@@ -345,19 +345,19 @@
     <div class="license-meta">
       
         <div class="license-meta-item">
-          <div>Author</div>
+          <div>Aŭtoro</div>
           <div>于洋</div>
         </div>
       
       
         <div class="license-meta-item license-meta-date">
-          <div>Posted on</div>
+          <div>Postigita</div>
           <div>October 13, 2019</div>
         </div>
       
       
       <div class="license-meta-item">
-        <div>Licensed under</div>
+        <div>Lizenta</div>
         <div>
           
             
@@ -385,7 +385,7 @@
                       <a href="/2019/10/15/ConcurrentHashMap%E4%B8%BA%E4%BB%80%E4%B9%88%E4%BD%BF%E7%94%A8synchronized%E8%80%8C%E4%B8%8D%E7%94%A8lock/" title="ConcurrentHashMap为什么使用synchronized而不用lock">
                         <i class="iconfont icon-arrowleft"></i>
                         <span class="hidden-mobile">ConcurrentHashMap为什么使用synchronized而不用lock</span>
-                        <span class="visible-mobile">Previous</span>
+                        <span class="visible-mobile">Antaŭa afiŝo</span>
                       </a>
                     
                   </article>
@@ -394,7 +394,7 @@
                     
                       <a href="/2019/09/25/Paxos%E7%AE%97%E6%B3%95%E6%8E%A8%E5%AF%BC/" title="Paxos算法推导">
                         <span class="hidden-mobile">Paxos算法推导</span>
-                        <span class="visible-mobile">Next</span>
+                        <span class="visible-mobile">Sekva afiŝo</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>
                     
@@ -419,7 +419,7 @@
       
   <aside class="sidebar" style="margin-left: -1rem">
     <div id="toc">
-  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;Table of Contents</p>
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;Enhavtabelo</p>
   <div class="toc-body" id="toc-body"></div>
 </div>
 
@@ -473,7 +473,7 @@
   <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
     <div class="modal-content">
       <div class="modal-header text-center">
-        <h4 class="modal-title w-100 font-weight-bold">Search</h4>
+        <h4 class="modal-title w-100 font-weight-bold">Serĉi</h4>
         <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
@@ -481,7 +481,7 @@
       <div class="modal-body mx-3">
         <div class="md-form mb-5">
           <input type="text" id="local-search-input" class="form-control validate">
-          <label data-error="x" data-success="v" for="local-search-input">Keyword</label>
+          <label data-error="x" data-success="v" for="local-search-input">ŝlosivorto</label>
         </div>
         <div class="list-group" id="local-search-result"></div>
       </div>
@@ -726,7 +726,7 @@
   
 
   <noscript>
-    <div class="noscript-warning">Blog works best with JavaScript enabled</div>
+    <div class="noscript-warning">Blogo funkcias plej bone kun JavaScript ebligita</div>
   </noscript>
 </body>
 </html>

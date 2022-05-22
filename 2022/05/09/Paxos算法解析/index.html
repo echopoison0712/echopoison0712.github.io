@@ -307,7 +307,7 @@
 <p>下面详细阐述Paxos的算法细节。首先，每个Acceptor需要持久化三个变量（minProposalId，acceptProposalId，acceptValue）。在初始阶段：minProposalId&#x3D;acceptProposalId&#x3D;0，acceptValue&#x3D;null。然后，既然是2PC，那么自然算法有两个阶段：P1（Prepare阶段）和P2（Accept阶段）。</p>
 <h5 id="1-P1-Prepare阶段"><a href="#1-P1-Prepare阶段" class="headerlink" title="1.P1(Prepare阶段)"></a>1.P1(Prepare阶段)</h5><p>P1a：Proposer广播prepare（n），其中n是本机生成的一个自增ID，不需要全局有序，比如可以用时间戳+IP。</p>
 <p>P1b：Acceptor收到prepare（n）</p>
-<figure class="highlight coffeescript"><table><tr><td class="gutter"><div class="code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></div></td><td class="code"><pre><code class="hljs coffeescript"><span class="hljs-keyword">if</span> n &gt; minProposalId,回复 <span class="hljs-literal">yes</span><br>		更新 minProposalId = n(持久化)<br>		返回(acceptProposalId,acceptValue)<br><span class="hljs-keyword">else</span> <br>		回复 <span class="hljs-literal">no</span><br></code></pre></td></tr></table></figure>
+<figure class="highlight coffeescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs coffeescript"><span class="hljs-keyword">if</span> n &gt; minProposalId,回复 <span class="hljs-literal">yes</span><br>		更新 minProposalId = n(持久化)<br>		返回(acceptProposalId,acceptValue)<br><span class="hljs-keyword">else</span> <br>		回复 <span class="hljs-literal">no</span><br></code></pre></td></tr></table></figure>
 
 <p>P1c：Proposer如果收到半数以上的yes，则取acceptorProposalId最大的acceptValue作为v，进入第二个阶段，即开始广播accept（n，v）。如果acceptor返回的都是null，则取自己的值作为v，进入第二个阶段！否则，n自增，重复P1a。</p>
 <h5 id="2-P2-Accept阶段"><a href="#2-P2-Accept阶段" class="headerlink" title="2.P2(Accept阶段)"></a>2.P2(Accept阶段)</h5><p>P2a：Proposer广播accept（n，v）。这里的n就是P1阶段的n，v可能是自己的值，也可能是第1阶段的acceptValue。</p>
@@ -386,19 +386,19 @@
     <div class="license-meta">
       
         <div class="license-meta-item">
-          <div>Author</div>
+          <div>Aŭtoro</div>
           <div>于洋</div>
         </div>
       
       
         <div class="license-meta-item license-meta-date">
-          <div>Posted on</div>
+          <div>Postigita</div>
           <div>May 9, 2022</div>
         </div>
       
       
       <div class="license-meta-item">
-        <div>Licensed under</div>
+        <div>Lizenta</div>
         <div>
           
             
@@ -426,7 +426,7 @@
                       <a href="/2022/05/22/%E8%AE%B0%E4%B8%80%E6%AC%A1Caffeine%E7%9A%84%E6%83%A8%E6%A1%88/" title="记一次Caffeine的惨案">
                         <i class="iconfont icon-arrowleft"></i>
                         <span class="hidden-mobile">记一次Caffeine的惨案</span>
-                        <span class="visible-mobile">Previous</span>
+                        <span class="visible-mobile">Antaŭa afiŝo</span>
                       </a>
                     
                   </article>
@@ -435,7 +435,7 @@
                     
                       <a href="/2019/10/15/ConcurrentHashMap%E4%B8%BA%E4%BB%80%E4%B9%88%E4%BD%BF%E7%94%A8synchronized%E8%80%8C%E4%B8%8D%E7%94%A8lock/" title="ConcurrentHashMap为什么使用synchronized而不用lock">
                         <span class="hidden-mobile">ConcurrentHashMap为什么使用synchronized而不用lock</span>
-                        <span class="visible-mobile">Next</span>
+                        <span class="visible-mobile">Sekva afiŝo</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>
                     
@@ -460,7 +460,7 @@
       
   <aside class="sidebar" style="margin-left: -1rem">
     <div id="toc">
-  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;Table of Contents</p>
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;Enhavtabelo</p>
   <div class="toc-body" id="toc-body"></div>
 </div>
 
@@ -514,7 +514,7 @@
   <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
     <div class="modal-content">
       <div class="modal-header text-center">
-        <h4 class="modal-title w-100 font-weight-bold">Search</h4>
+        <h4 class="modal-title w-100 font-weight-bold">Serĉi</h4>
         <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
@@ -522,7 +522,7 @@
       <div class="modal-body mx-3">
         <div class="md-form mb-5">
           <input type="text" id="local-search-input" class="form-control validate">
-          <label data-error="x" data-success="v" for="local-search-input">Keyword</label>
+          <label data-error="x" data-success="v" for="local-search-input">ŝlosivorto</label>
         </div>
         <div class="list-group" id="local-search-result"></div>
       </div>
@@ -767,7 +767,7 @@
   
 
   <noscript>
-    <div class="noscript-warning">Blog works best with JavaScript enabled</div>
+    <div class="noscript-warning">Blogo funkcias plej bone kun JavaScript ebligita</div>
   </noscript>
 </body>
 </html>

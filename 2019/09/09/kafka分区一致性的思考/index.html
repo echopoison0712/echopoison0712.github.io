@@ -277,7 +277,7 @@
               <p>在学习kafka的过程中，相信都听过一个概念<strong>“kafka不能保证消息整体的一致性，只能保证分区内的一致性“</strong>。其原因很简单当时看书的时候看到这里就觉得嗯嗯，是这么个道理，然后就接着往下看了。</p>
 <p>后来在发送消息的API中，我以为发个消息，参数里就传topic和value就足够了，往指定topic里发value嘛，但是在代码里，发现除了这两个参数外，还有key这个参数，研讨一番后知道如果key不为null，计算得到的分区号会是所有分区中的任意一个（对key进行hash运算，相同hash的入同一分区），如果key为null，那么计算得到的分区号仅为可用分区中的任意一个。kafka的producer分区策略可以阅读DefaultPartitioner#partition方法</p>
 <span id="more"></span>
-<figure class="highlight java"><table><tr><td class="gutter"><div class="code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></div></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-type">int</span> <span class="hljs-title function_">partition</span><span class="hljs-params">(String topic, Object key, <span class="hljs-type">byte</span>[] keyBytes, Object value, <span class="hljs-type">byte</span>[] valueBytes, Cluster cluster)</span> &#123;<br>    List&lt;PartitionInfo&gt; partitions = cluster.partitionsForTopic(topic);<br>    <span class="hljs-type">int</span> <span class="hljs-variable">numPartitions</span> <span class="hljs-operator">=</span> partitions.size();<br>    <span class="hljs-keyword">if</span> (keyBytes == <span class="hljs-literal">null</span>) &#123; <span class="hljs-comment">// 未指定key</span><br>        <span class="hljs-type">int</span> <span class="hljs-variable">nextValue</span> <span class="hljs-operator">=</span> nextValue(topic);<br>        List&lt;PartitionInfo&gt; availablePartitions = cluster.availablePartitionsForTopic(topic);	<span class="hljs-comment">// 得到所有可用分区</span><br>        <span class="hljs-keyword">if</span> (availablePartitions.size() &gt; <span class="hljs-number">0</span>) &#123;<br>            <span class="hljs-type">int</span> <span class="hljs-variable">part</span> <span class="hljs-operator">=</span> Utils.toPositive(nextValue) % availablePartitions.size();<br>            <span class="hljs-keyword">return</span> availablePartitions.get(part).partition();<br>        &#125; <span class="hljs-keyword">else</span> &#123;<br>            <span class="hljs-comment">// no partitions are available, give a non-available partition</span><br>            <span class="hljs-keyword">return</span> Utils.toPositive(nextValue) % numPartitions;<br>        &#125;<br>    &#125; <span class="hljs-keyword">else</span> &#123;<br>        <span class="hljs-comment">// hash the keyBytes to choose a partition</span><br>        <span class="hljs-keyword">return</span> Utils.toPositive(Utils.murmur2(keyBytes)) % numPartitions;<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-type">int</span> <span class="hljs-title function_">partition</span><span class="hljs-params">(String topic, Object key, <span class="hljs-type">byte</span>[] keyBytes, Object value, <span class="hljs-type">byte</span>[] valueBytes, Cluster cluster)</span> &#123;<br>    List&lt;PartitionInfo&gt; partitions = cluster.partitionsForTopic(topic);<br>    <span class="hljs-type">int</span> <span class="hljs-variable">numPartitions</span> <span class="hljs-operator">=</span> partitions.size();<br>    <span class="hljs-keyword">if</span> (keyBytes == <span class="hljs-literal">null</span>) &#123; <span class="hljs-comment">// 未指定key</span><br>        <span class="hljs-type">int</span> <span class="hljs-variable">nextValue</span> <span class="hljs-operator">=</span> nextValue(topic);<br>        List&lt;PartitionInfo&gt; availablePartitions = cluster.availablePartitionsForTopic(topic);	<span class="hljs-comment">// 得到所有可用分区</span><br>        <span class="hljs-keyword">if</span> (availablePartitions.size() &gt; <span class="hljs-number">0</span>) &#123;<br>            <span class="hljs-type">int</span> <span class="hljs-variable">part</span> <span class="hljs-operator">=</span> Utils.toPositive(nextValue) % availablePartitions.size();<br>            <span class="hljs-keyword">return</span> availablePartitions.get(part).partition();<br>        &#125; <span class="hljs-keyword">else</span> &#123;<br>            <span class="hljs-comment">// no partitions are available, give a non-available partition</span><br>            <span class="hljs-keyword">return</span> Utils.toPositive(nextValue) % numPartitions;<br>        &#125;<br>    &#125; <span class="hljs-keyword">else</span> &#123;<br>        <span class="hljs-comment">// hash the keyBytes to choose a partition</span><br>        <span class="hljs-keyword">return</span> Utils.toPositive(Utils.murmur2(keyBytes)) % numPartitions;<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
 
 <p>以及nextValue方法</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">private</span> <span class="hljs-type">int</span> <span class="hljs-title function_">nextValue</span><span class="hljs-params">(String topic)</span> &#123;<br>    <span class="hljs-type">AtomicInteger</span> <span class="hljs-variable">counter</span> <span class="hljs-operator">=</span> topicCounterMap.get(topic);<br>    <span class="hljs-keyword">if</span> (<span class="hljs-literal">null</span> == counter) &#123;<br>        counter = <span class="hljs-keyword">new</span> <span class="hljs-title class_">AtomicInteger</span>(ThreadLocalRandom.current().nextInt());<br>        <span class="hljs-type">AtomicInteger</span> <span class="hljs-variable">currentCounter</span> <span class="hljs-operator">=</span> topicCounterMap.putIfAbsent(topic, counter);<br>        <span class="hljs-keyword">if</span> (currentCounter != <span class="hljs-literal">null</span>) &#123;<br>            counter = currentCounter;<br>        &#125;<br>    &#125;<br>    <span class="hljs-keyword">return</span> counter.getAndIncrement();<br>&#125;<br></code></pre></td></tr></table></figure>
@@ -346,19 +346,19 @@
     <div class="license-meta">
       
         <div class="license-meta-item">
-          <div>Author</div>
+          <div>Aŭtoro</div>
           <div>于洋</div>
         </div>
       
       
         <div class="license-meta-item license-meta-date">
-          <div>Posted on</div>
+          <div>Postigita</div>
           <div>September 9, 2019</div>
         </div>
       
       
       <div class="license-meta-item">
-        <div>Licensed under</div>
+        <div>Lizenta</div>
         <div>
           
             
@@ -386,7 +386,7 @@
                       <a href="/2019/09/10/%E5%B0%9D%E8%AF%95%E8%A7%A3%E8%AF%BB%E4%B8%80%E4%B8%8BhelpGC/" title="尝试解读一下helpGC">
                         <i class="iconfont icon-arrowleft"></i>
                         <span class="hidden-mobile">尝试解读一下helpGC</span>
-                        <span class="visible-mobile">Previous</span>
+                        <span class="visible-mobile">Antaŭa afiŝo</span>
                       </a>
                     
                   </article>
@@ -414,7 +414,7 @@
       
   <aside class="sidebar" style="margin-left: -1rem">
     <div id="toc">
-  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;Table of Contents</p>
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;Enhavtabelo</p>
   <div class="toc-body" id="toc-body"></div>
 </div>
 
@@ -468,7 +468,7 @@
   <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
     <div class="modal-content">
       <div class="modal-header text-center">
-        <h4 class="modal-title w-100 font-weight-bold">Search</h4>
+        <h4 class="modal-title w-100 font-weight-bold">Serĉi</h4>
         <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
@@ -476,7 +476,7 @@
       <div class="modal-body mx-3">
         <div class="md-form mb-5">
           <input type="text" id="local-search-input" class="form-control validate">
-          <label data-error="x" data-success="v" for="local-search-input">Keyword</label>
+          <label data-error="x" data-success="v" for="local-search-input">ŝlosivorto</label>
         </div>
         <div class="list-group" id="local-search-result"></div>
       </div>
@@ -721,7 +721,7 @@
   
 
   <noscript>
-    <div class="noscript-warning">Blog works best with JavaScript enabled</div>
+    <div class="noscript-warning">Blogo funkcias plej bone kun JavaScript ebligita</div>
   </noscript>
 </body>
 </html>

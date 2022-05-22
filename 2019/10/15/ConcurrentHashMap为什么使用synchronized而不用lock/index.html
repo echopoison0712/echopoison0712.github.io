@@ -307,7 +307,7 @@
 <p>首先，我们说默认的ReentrantLock，它的使用方式是通过lock.lock()来访问并发代码块，它没有lock.lock(param)这样的方法来锁定某个参数，既然如此先不管怎么实现，它的实现方式肯定就没有synchronized(f){}这样来的简洁。</p>
 <p>其次，先不管简不简洁的问题，如果继续使用lock的话，这个lock要放到哪个类下呢？这里自然而然先想到是放在ConcurrentHashMap类里做为一个成员变量存在，如果真的这么做的话，锁的粒度还是一个Node节点吗？貌似常规使用的话这里锁住的是整个put()方法。</p>
 <p>ok，那不放到ConcurrentHashMap下就只能放到Node节点中去了，事实上1.7版本的ConcurrentHashMap也正是这么做的，只不过它的实现方式是让Segment内部类去继承ReentrantLock</p>
-<figure class="highlight java"><table><tr><td class="gutter"><div class="code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></div></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">static</span> <span class="hljs-keyword">final</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">Segment</span>&lt;K,V&gt; <span class="hljs-keyword">extends</span> <span class="hljs-title class_">ReentrantLock</span> <span class="hljs-keyword">implements</span> <span class="hljs-title class_">Serializable</span> &#123;<br><br>    <span class="hljs-comment">//尝试获取锁的最多尝试次数，即自旋次数</span><br>    <span class="hljs-keyword">static</span> <span class="hljs-keyword">final</span> <span class="hljs-type">int</span> <span class="hljs-variable">MAX_SCAN_RETRIES</span> <span class="hljs-operator">=</span><br>            Runtime.getRuntime().availableProcessors() &gt; <span class="hljs-number">1</span> ? <span class="hljs-number">64</span> : <span class="hljs-number">1</span>;<br><br>    <span class="hljs-comment">//HashEntry数组，也就是键值对数组</span><br>    <span class="hljs-keyword">transient</span> <span class="hljs-keyword">volatile</span> HashEntry&lt;K, V&gt;[] table;<br>    <span class="hljs-comment">//元素的个数</span><br>    <span class="hljs-keyword">transient</span> <span class="hljs-type">int</span> count;<br>    <span class="hljs-comment">//segment中发生改变元素的操作的次数，如put/remove</span><br>    <span class="hljs-keyword">transient</span> <span class="hljs-type">int</span> modCount;<br>    <span class="hljs-comment">//当table大小超过阈值时,对table进行扩容,值为capacity *loadFactor</span><br>    <span class="hljs-keyword">transient</span> <span class="hljs-type">int</span> threshold;<br>    <span class="hljs-comment">//加载因子</span><br>    <span class="hljs-keyword">final</span> <span class="hljs-type">float</span> loadFactor;<br><br>    Segment(<span class="hljs-type">float</span> lf, <span class="hljs-type">int</span> threshold, HashEntry&lt;K, V&gt;[] tab) &#123;<br>        <span class="hljs-built_in">this</span>.loadFactor = lf;<br>        <span class="hljs-built_in">this</span>.threshold = threshold;<br>        <span class="hljs-built_in">this</span>.table = tab;<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">static</span> <span class="hljs-keyword">final</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">Segment</span>&lt;K,V&gt; <span class="hljs-keyword">extends</span> <span class="hljs-title class_">ReentrantLock</span> <span class="hljs-keyword">implements</span> <span class="hljs-title class_">Serializable</span> &#123;<br><br>    <span class="hljs-comment">//尝试获取锁的最多尝试次数，即自旋次数</span><br>    <span class="hljs-keyword">static</span> <span class="hljs-keyword">final</span> <span class="hljs-type">int</span> <span class="hljs-variable">MAX_SCAN_RETRIES</span> <span class="hljs-operator">=</span><br>            Runtime.getRuntime().availableProcessors() &gt; <span class="hljs-number">1</span> ? <span class="hljs-number">64</span> : <span class="hljs-number">1</span>;<br><br>    <span class="hljs-comment">//HashEntry数组，也就是键值对数组</span><br>    <span class="hljs-keyword">transient</span> <span class="hljs-keyword">volatile</span> HashEntry&lt;K, V&gt;[] table;<br>    <span class="hljs-comment">//元素的个数</span><br>    <span class="hljs-keyword">transient</span> <span class="hljs-type">int</span> count;<br>    <span class="hljs-comment">//segment中发生改变元素的操作的次数，如put/remove</span><br>    <span class="hljs-keyword">transient</span> <span class="hljs-type">int</span> modCount;<br>    <span class="hljs-comment">//当table大小超过阈值时,对table进行扩容,值为capacity *loadFactor</span><br>    <span class="hljs-keyword">transient</span> <span class="hljs-type">int</span> threshold;<br>    <span class="hljs-comment">//加载因子</span><br>    <span class="hljs-keyword">final</span> <span class="hljs-type">float</span> loadFactor;<br><br>    Segment(<span class="hljs-type">float</span> lf, <span class="hljs-type">int</span> threshold, HashEntry&lt;K, V&gt;[] tab) &#123;<br>        <span class="hljs-built_in">this</span>.loadFactor = lf;<br>        <span class="hljs-built_in">this</span>.threshold = threshold;<br>        <span class="hljs-built_in">this</span>.table = tab;<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
 
 <p>既然1.8通过Node[]替换了Segment，那么如果沿用lock的话就是要么让Node去继承ReentrantLock，或者干脆在Node中定义成员变量lock。</p>
 <p>这个时候继续考虑1.8的锁逻辑，ConcurrentHashMap通过lock来锁住Node数组的头节点，既然锁的是头节点，那该头节点所在链的其余Node节点自然就不需要进行加锁控制，可是lock已然成为了Node的属性那么对于链上的其余节点来说，这个lock就是被浪费掉了，因为只有在头节点被remove掉的时候其余Node节点才有可能会用上该成员变量(即只有原头节点的next节点)。这中间编码方面来说还需要考虑锁的“交接”等问题。</p>
@@ -382,19 +382,19 @@
     <div class="license-meta">
       
         <div class="license-meta-item">
-          <div>Author</div>
+          <div>Aŭtoro</div>
           <div>于洋</div>
         </div>
       
       
         <div class="license-meta-item license-meta-date">
-          <div>Posted on</div>
+          <div>Postigita</div>
           <div>October 15, 2019</div>
         </div>
       
       
       <div class="license-meta-item">
-        <div>Licensed under</div>
+        <div>Lizenta</div>
         <div>
           
             
@@ -422,7 +422,7 @@
                       <a href="/2022/05/09/Paxos%E7%AE%97%E6%B3%95%E8%A7%A3%E6%9E%90/" title="Paxos算法推导--《软件架构设计：大型网站技术架构与业务架构融合之道》">
                         <i class="iconfont icon-arrowleft"></i>
                         <span class="hidden-mobile">Paxos算法推导--《软件架构设计：大型网站技术架构与业务架构融合之道》</span>
-                        <span class="visible-mobile">Previous</span>
+                        <span class="visible-mobile">Antaŭa afiŝo</span>
                       </a>
                     
                   </article>
@@ -431,7 +431,7 @@
                     
                       <a href="/2019/10/13/%E5%B7%A7%E5%A6%99%E8%AE%B0%E4%BD%8F%E5%87%BD%E6%95%B0%E8%B0%83%E7%94%A8%E5%AF%B9%E5%BA%94%E6%A0%88%E6%A1%A2%E7%9A%84%E5%87%BA%E5%85%A5%E6%A0%88/" title="巧妙记住函数调用对应栈桢的出入栈">
                         <span class="hidden-mobile">巧妙记住函数调用对应栈桢的出入栈</span>
-                        <span class="visible-mobile">Next</span>
+                        <span class="visible-mobile">Sekva afiŝo</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>
                     
@@ -456,7 +456,7 @@
       
   <aside class="sidebar" style="margin-left: -1rem">
     <div id="toc">
-  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;Table of Contents</p>
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;Enhavtabelo</p>
   <div class="toc-body" id="toc-body"></div>
 </div>
 
@@ -510,7 +510,7 @@
   <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
     <div class="modal-content">
       <div class="modal-header text-center">
-        <h4 class="modal-title w-100 font-weight-bold">Search</h4>
+        <h4 class="modal-title w-100 font-weight-bold">Serĉi</h4>
         <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
@@ -518,7 +518,7 @@
       <div class="modal-body mx-3">
         <div class="md-form mb-5">
           <input type="text" id="local-search-input" class="form-control validate">
-          <label data-error="x" data-success="v" for="local-search-input">Keyword</label>
+          <label data-error="x" data-success="v" for="local-search-input">ŝlosivorto</label>
         </div>
         <div class="list-group" id="local-search-result"></div>
       </div>
@@ -763,7 +763,7 @@
   
 
   <noscript>
-    <div class="noscript-warning">Blog works best with JavaScript enabled</div>
+    <div class="noscript-warning">Blogo funkcias plej bone kun JavaScript ebligita</div>
   </noscript>
 </body>
 </html>
