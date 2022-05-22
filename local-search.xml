@@ -13,10 +13,20 @@
     
     <categories>
       
+      <category>中间件</category>
+      
       <category>Caffeine</category>
       
     </categories>
     
+    
+    <tags>
+      
+      <tag>Caffeine</tag>
+      
+      <tag>事故分析</tag>
+      
+    </tags>
     
   </entry>
   
@@ -205,9 +215,9 @@
     
     <tags>
       
-      <tag>Redis</tag>
-      
       <tag>读书笔记</tag>
+      
+      <tag>Redis</tag>
       
     </tags>
     
