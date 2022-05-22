@@ -18,7 +18,7 @@
   
     <meta name="description" content="记录一些学习上的思考，与君共勉">
 <meta property="og:type" content="website">
-<meta property="og:title" content="Kategorie">
+<meta property="og:title" content="Categories">
 <meta property="og:url" content="http://yoursite.com/categories/index.html">
 <meta property="og:site_name" content="echo&#39;s blog">
 <meta property="og:description" content="记录一些学习上的思考，与君共勉">
@@ -27,15 +27,21 @@
 <meta name="twitter:card" content="summary_large_image">
   
   
-  <title>Kategorie - echo&#39;s blog</title>
+    <meta name="referrer" content="no-referrer-when-downgrade">
+  
+  
+  <title>Categories - echo&#39;s blog</title>
 
   <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/css/bootstrap.min.css" />
 
 
 
-<!-- 主题依赖的图标库，不要自行修改 -->
 
-<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
 
 
 
@@ -44,21 +50,40 @@
 
 <link  rel="stylesheet" href="/css/main.css" />
 
-<!-- 自定义样式保持在最底部 -->
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
 
 
   <script id="fluid-configs">
     var Fluid = window.Fluid || {};
-    var CONFIG = {"hostname":"yoursite.com","root":"/","version":"1.8.14","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":"0fcb8f5f35b1b48a6467f16a7ad0782b","google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"yoursite.com","root":"/","version":"1.9.0","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":"0fcb8f5f35b1b48a6467f16a7ad0782b","google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
   </script>
   <script  src="/js/utils.js" ></script>
   <script  src="/js/color-schema.js" ></script>
+
+  
 <meta name="generator" content="Hexo 5.4.2"></head>
 
 
 <body>
-  <header style="height: 60vh;">
-    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 60vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
   <div class="container">
     <a class="navbar-brand" href="/">
       <strong>echo&#39;s blog</strong>
@@ -140,6 +165,7 @@
               &nbsp;<i class="iconfont icon-search"></i>&nbsp;
             </a>
           </li>
+          
         
         
           <li class="nav-item" id="color-toggle-btn">
@@ -152,29 +178,35 @@
   </div>
 </nav>
 
-    <div class="banner" id="banner" parallax=true
-         style="background: url('/img/default.png') no-repeat center center;
-           background-size: cover;">
-      <div class="full-bg-img">
-        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
-          <div class="page-header text-center fade-in-up">
-            <span class="h2" id="subtitle" title="没啥可分的">
-              
-            </span>
+  
 
-            
-          </div>
-
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="没啥可分的"></span>
           
         </div>
+
+        
       </div>
+
+      
     </div>
+  </div>
+</div>
+
+</div>
+
   </header>
 
   <main>
     
       <div class="container nopadding-x-md">
-        <div class="py-5" id="board"
+        <div id="board"
           >
           
           <div class="container">
@@ -189,24 +221,27 @@
 <div class="category-list">
   
   
-  
-  
     
     
-    <div class="category row">
-      <a
-        class="category-item collapsed list-group-item category-item-action col-10 col-md-11"
+    
+    <div class="category row nomargin-x">
+      <a class="category-item collapsed
+          list-group-item category-item-action col-10 col-md-11 col-xm-11" title="中间件"
         id="heading-3cbfec336978067fe5295fb69a0ca202" role="tab" data-toggle="collapse" href="#collapse-3cbfec336978067fe5295fb69a0ca202"
         aria-expanded="false"
       >
         中间件
+        <span class="list-group-count"></span>
         <i class="iconfont icon-arrowright"></i>
       </a>
-      <a href="/categories/%E4%B8%AD%E9%97%B4%E4%BB%B6/" class="category-count col-2 col-md-1">
-        <i class="iconfont icon-articles"></i>
-        <span>4</span>
-      </a>
-      <div class="category-collapse collapse" id="collapse-3cbfec336978067fe5295fb69a0ca202" role="tabpanel" aria-labelledby="heading-3cbfec336978067fe5295fb69a0ca202">
+      
+        <a href="/categories/%E4%B8%AD%E9%97%B4%E4%BB%B6/" class="category-count col-2 col-md-1 col-xm-1">
+          <i class="iconfont icon-articles"></i>
+          <span>4</span>
+        </a>
+      
+      <div class="category-collapse collapse " id="collapse-3cbfec336978067fe5295fb69a0ca202"
+           role="tabpanel" aria-labelledby="heading-3cbfec336978067fe5295fb69a0ca202">
         
         
           
@@ -218,23 +253,27 @@
 
           
   
-  
     
     
-    <div class="category-sub row">
-      <a
-        class="category-subitem collapsed list-group-item category-item-action col-10 col-md-11"
+    
+    <div class="category-sub row nomargin-x">
+      <a class="category-subitem collapsed
+          list-group-item category-item-action col-10 col-md-11 col-xm-11" title="kafka"
         id="heading-541661622185851c248b41bf0cea7ad0" role="tab" data-toggle="collapse" href="#collapse-541661622185851c248b41bf0cea7ad0"
         aria-expanded="false"
       >
         kafka
+        <span class="list-group-count"></span>
         <i class="iconfont icon-arrowright"></i>
       </a>
-      <a href="/categories/%E4%B8%AD%E9%97%B4%E4%BB%B6/kafka/" class="category-count col-2 col-md-1">
-        <i class="iconfont icon-articles"></i>
-        <span>2</span>
-      </a>
-      <div class="category-collapse collapse" id="collapse-541661622185851c248b41bf0cea7ad0" role="tabpanel" aria-labelledby="heading-541661622185851c248b41bf0cea7ad0">
+      
+        <a href="/categories/%E4%B8%AD%E9%97%B4%E4%BB%B6/kafka/" class="category-count col-2 col-md-1 col-xm-1">
+          <i class="iconfont icon-articles"></i>
+          <span>2</span>
+        </a>
+      
+      <div class="category-collapse collapse " id="collapse-541661622185851c248b41bf0cea7ad0"
+           role="tabpanel" aria-labelledby="heading-541661622185851c248b41bf0cea7ad0">
         
         
           
@@ -243,14 +282,18 @@
     
       
       
-        <a href="/2019/09/15/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%7C%E3%80%8A%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3kafka-%E6%A0%B8%E5%BF%83%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0%E3%80%8B/" class="list-group-item list-group-item-action">
+        <a href="/2019/09/15/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%7C%E3%80%8A%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3kafka-%E6%A0%B8%E5%BF%83%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0%E3%80%8B/" title="读书笔记|《深入理解kafka:核心设计与实现》"
+           class="list-group-item list-group-item-action
+           ">
           <span class="category-post">读书笔记|《深入理解kafka:核心设计与实现》</span>
         </a>
       
     
       
       
-        <a href="/2019/09/09/kafka%E5%88%86%E5%8C%BA%E4%B8%80%E8%87%B4%E6%80%A7%E7%9A%84%E6%80%9D%E8%80%83/" class="list-group-item list-group-item-action">
+        <a href="/2019/09/09/kafka%E5%88%86%E5%8C%BA%E4%B8%80%E8%87%B4%E6%80%A7%E7%9A%84%E6%80%9D%E8%80%83/" title="kafka分区一致性的思考"
+           class="list-group-item list-group-item-action
+           ">
           <span class="category-post">kafka分区一致性的思考</span>
         </a>
       
@@ -263,20 +306,25 @@
   
     
     
-    <div class="category-sub row">
-      <a
-        class="category-subitem collapsed list-group-item category-item-action col-10 col-md-11"
+    
+    <div class="category-sub row nomargin-x">
+      <a class="category-subitem collapsed
+          list-group-item category-item-action col-10 col-md-11 col-xm-11" title="Redis"
         id="heading-e111446745a1825b862f8727ae63bce4" role="tab" data-toggle="collapse" href="#collapse-e111446745a1825b862f8727ae63bce4"
         aria-expanded="false"
       >
         Redis
+        <span class="list-group-count"></span>
         <i class="iconfont icon-arrowright"></i>
       </a>
-      <a href="/categories/%E4%B8%AD%E9%97%B4%E4%BB%B6/Redis/" class="category-count col-2 col-md-1">
-        <i class="iconfont icon-articles"></i>
-        <span>1</span>
-      </a>
-      <div class="category-collapse collapse" id="collapse-e111446745a1825b862f8727ae63bce4" role="tabpanel" aria-labelledby="heading-e111446745a1825b862f8727ae63bce4">
+      
+        <a href="/categories/%E4%B8%AD%E9%97%B4%E4%BB%B6/Redis/" class="category-count col-2 col-md-1 col-xm-1">
+          <i class="iconfont icon-articles"></i>
+          <span>1</span>
+        </a>
+      
+      <div class="category-collapse collapse " id="collapse-e111446745a1825b862f8727ae63bce4"
+           role="tabpanel" aria-labelledby="heading-e111446745a1825b862f8727ae63bce4">
         
         
           
@@ -285,7 +333,9 @@
     
       
       
-        <a href="/2019/09/11/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%7C%E3%80%8ARedis%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0%E3%80%8B/" class="list-group-item list-group-item-action">
+        <a href="/2019/09/11/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%7C%E3%80%8ARedis%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0%E3%80%8B/" title="读书笔记|《Redis设计与实现》"
+           class="list-group-item list-group-item-action
+           ">
           <span class="category-post">读书笔记|《Redis设计与实现》</span>
         </a>
       
@@ -298,20 +348,25 @@
   
     
     
-    <div class="category-sub row">
-      <a
-        class="category-subitem collapsed list-group-item category-item-action col-10 col-md-11"
+    
+    <div class="category-sub row nomargin-x">
+      <a class="category-subitem collapsed
+          list-group-item category-item-action col-10 col-md-11 col-xm-11" title="ES"
         id="heading-04c19fa1e772ab66f0aad2efe61f25cd" role="tab" data-toggle="collapse" href="#collapse-04c19fa1e772ab66f0aad2efe61f25cd"
         aria-expanded="false"
       >
         ES
+        <span class="list-group-count"></span>
         <i class="iconfont icon-arrowright"></i>
       </a>
-      <a href="/categories/%E4%B8%AD%E9%97%B4%E4%BB%B6/ES/" class="category-count col-2 col-md-1">
-        <i class="iconfont icon-articles"></i>
-        <span>1</span>
-      </a>
-      <div class="category-collapse collapse" id="collapse-04c19fa1e772ab66f0aad2efe61f25cd" role="tabpanel" aria-labelledby="heading-04c19fa1e772ab66f0aad2efe61f25cd">
+      
+        <a href="/categories/%E4%B8%AD%E9%97%B4%E4%BB%B6/ES/" class="category-count col-2 col-md-1 col-xm-1">
+          <i class="iconfont icon-articles"></i>
+          <span>1</span>
+        </a>
+      
+      <div class="category-collapse collapse " id="collapse-04c19fa1e772ab66f0aad2efe61f25cd"
+           role="tabpanel" aria-labelledby="heading-04c19fa1e772ab66f0aad2efe61f25cd">
         
         
           
@@ -320,7 +375,9 @@
     
       
       
-        <a href="/2019/09/13/%E8%BD%AE%E5%AD%90-ElasticSearch%E7%9A%84Nested%E7%BB%93%E6%9E%9C%E5%88%B0%E5%AE%9E%E4%BD%93%E7%9A%84%E6%98%A0%E5%B0%84/" class="list-group-item list-group-item-action">
+        <a href="/2019/09/13/%E8%BD%AE%E5%AD%90-ElasticSearch%E7%9A%84Nested%E7%BB%93%E6%9E%9C%E5%88%B0%E5%AE%9E%E4%BD%93%E7%9A%84%E6%98%A0%E5%B0%84/" title="轮子---ElasticSearch的Nested结果到实体的映射"
+           class="list-group-item list-group-item-action
+           ">
           <span class="category-post">轮子---ElasticSearch的Nested结果到实体的映射</span>
         </a>
       
@@ -337,20 +394,25 @@
   
     
     
-    <div class="category row">
-      <a
-        class="category-item collapsed list-group-item category-item-action col-10 col-md-11"
+    
+    <div class="category row nomargin-x">
+      <a class="category-item collapsed
+          list-group-item category-item-action col-10 col-md-11 col-xm-11" title="Java"
         id="heading-d52387880e1ea22817a72d3759213819" role="tab" data-toggle="collapse" href="#collapse-d52387880e1ea22817a72d3759213819"
         aria-expanded="false"
       >
         Java
+        <span class="list-group-count"></span>
         <i class="iconfont icon-arrowright"></i>
       </a>
-      <a href="/categories/Java/" class="category-count col-2 col-md-1">
-        <i class="iconfont icon-articles"></i>
-        <span>3</span>
-      </a>
-      <div class="category-collapse collapse" id="collapse-d52387880e1ea22817a72d3759213819" role="tabpanel" aria-labelledby="heading-d52387880e1ea22817a72d3759213819">
+      
+        <a href="/categories/Java/" class="category-count col-2 col-md-1 col-xm-1">
+          <i class="iconfont icon-articles"></i>
+          <span>3</span>
+        </a>
+      
+      <div class="category-collapse collapse " id="collapse-d52387880e1ea22817a72d3759213819"
+           role="tabpanel" aria-labelledby="heading-d52387880e1ea22817a72d3759213819">
         
         
           
@@ -360,14 +422,18 @@
     
       
       
-        <a href="/2019/10/15/ConcurrentHashMap%E4%B8%BA%E4%BB%80%E4%B9%88%E4%BD%BF%E7%94%A8synchronized%E8%80%8C%E4%B8%8D%E7%94%A8lock/" class="list-group-item list-group-item-action">
+        <a href="/2019/10/15/ConcurrentHashMap%E4%B8%BA%E4%BB%80%E4%B9%88%E4%BD%BF%E7%94%A8synchronized%E8%80%8C%E4%B8%8D%E7%94%A8lock/" title="ConcurrentHashMap为什么使用synchronized而不用lock"
+           class="list-group-item list-group-item-action
+           ">
           <span class="category-post">ConcurrentHashMap为什么使用synchronized而不用lock</span>
         </a>
       
     
       
       
-        <a href="/2019/10/13/%E5%B7%A7%E5%A6%99%E8%AE%B0%E4%BD%8F%E5%87%BD%E6%95%B0%E8%B0%83%E7%94%A8%E5%AF%B9%E5%BA%94%E6%A0%88%E6%A1%A2%E7%9A%84%E5%87%BA%E5%85%A5%E6%A0%88/" class="list-group-item list-group-item-action">
+        <a href="/2019/10/13/%E5%B7%A7%E5%A6%99%E8%AE%B0%E4%BD%8F%E5%87%BD%E6%95%B0%E8%B0%83%E7%94%A8%E5%AF%B9%E5%BA%94%E6%A0%88%E6%A1%A2%E7%9A%84%E5%87%BA%E5%85%A5%E6%A0%88/" title="巧妙记住函数调用对应栈桢的出入栈"
+           class="list-group-item list-group-item-action
+           ">
           <span class="category-post">巧妙记住函数调用对应栈桢的出入栈</span>
         </a>
       
@@ -376,23 +442,27 @@
 
           
   
-  
     
     
-    <div class="category-sub row">
-      <a
-        class="category-subitem collapsed list-group-item category-item-action col-10 col-md-11"
+    
+    <div class="category-sub row nomargin-x">
+      <a class="category-subitem collapsed
+          list-group-item category-item-action col-10 col-md-11 col-xm-11" title="JVM"
         id="heading-18b5a217c4dad25662d3a05edb0e39d7" role="tab" data-toggle="collapse" href="#collapse-18b5a217c4dad25662d3a05edb0e39d7"
         aria-expanded="false"
       >
         JVM
+        <span class="list-group-count"></span>
         <i class="iconfont icon-arrowright"></i>
       </a>
-      <a href="/categories/Java/JVM/" class="category-count col-2 col-md-1">
-        <i class="iconfont icon-articles"></i>
-        <span>1</span>
-      </a>
-      <div class="category-collapse collapse" id="collapse-18b5a217c4dad25662d3a05edb0e39d7" role="tabpanel" aria-labelledby="heading-18b5a217c4dad25662d3a05edb0e39d7">
+      
+        <a href="/categories/Java/JVM/" class="category-count col-2 col-md-1 col-xm-1">
+          <i class="iconfont icon-articles"></i>
+          <span>1</span>
+        </a>
+      
+      <div class="category-collapse collapse " id="collapse-18b5a217c4dad25662d3a05edb0e39d7"
+           role="tabpanel" aria-labelledby="heading-18b5a217c4dad25662d3a05edb0e39d7">
         
         
           
@@ -401,7 +471,9 @@
     
       
       
-        <a href="/2019/09/10/%E5%B0%9D%E8%AF%95%E8%A7%A3%E8%AF%BB%E4%B8%80%E4%B8%8BhelpGC/" class="list-group-item list-group-item-action">
+        <a href="/2019/09/10/%E5%B0%9D%E8%AF%95%E8%A7%A3%E8%AF%BB%E4%B8%80%E4%B8%8BhelpGC/" title="尝试解读一下helpGC"
+           class="list-group-item list-group-item-action
+           ">
           <span class="category-post">尝试解读一下helpGC</span>
         </a>
       
@@ -418,20 +490,25 @@
   
     
     
-    <div class="category row">
-      <a
-        class="category-item collapsed list-group-item category-item-action col-10 col-md-11"
+    
+    <div class="category row nomargin-x">
+      <a class="category-item collapsed
+          list-group-item category-item-action col-10 col-md-11 col-xm-11" title="算法"
         id="heading-046a899ee7a6ec88d370211a518c9e80" role="tab" data-toggle="collapse" href="#collapse-046a899ee7a6ec88d370211a518c9e80"
         aria-expanded="false"
       >
         算法
+        <span class="list-group-count"></span>
         <i class="iconfont icon-arrowright"></i>
       </a>
-      <a href="/categories/%E7%AE%97%E6%B3%95/" class="category-count col-2 col-md-1">
-        <i class="iconfont icon-articles"></i>
-        <span>2</span>
-      </a>
-      <div class="category-collapse collapse" id="collapse-046a899ee7a6ec88d370211a518c9e80" role="tabpanel" aria-labelledby="heading-046a899ee7a6ec88d370211a518c9e80">
+      
+        <a href="/categories/%E7%AE%97%E6%B3%95/" class="category-count col-2 col-md-1 col-xm-1">
+          <i class="iconfont icon-articles"></i>
+          <span>2</span>
+        </a>
+      
+      <div class="category-collapse collapse " id="collapse-046a899ee7a6ec88d370211a518c9e80"
+           role="tabpanel" aria-labelledby="heading-046a899ee7a6ec88d370211a518c9e80">
         
         
           
@@ -443,23 +520,27 @@
 
           
   
-  
     
     
-    <div class="category-sub row">
-      <a
-        class="category-subitem collapsed list-group-item category-item-action col-10 col-md-11"
+    
+    <div class="category-sub row nomargin-x">
+      <a class="category-subitem collapsed
+          list-group-item category-item-action col-10 col-md-11 col-xm-11" title="Paxos"
         id="heading-dd5964e18d2a62abe1a8c1c6bd299813" role="tab" data-toggle="collapse" href="#collapse-dd5964e18d2a62abe1a8c1c6bd299813"
         aria-expanded="false"
       >
         Paxos
+        <span class="list-group-count"></span>
         <i class="iconfont icon-arrowright"></i>
       </a>
-      <a href="/categories/%E7%AE%97%E6%B3%95/Paxos/" class="category-count col-2 col-md-1">
-        <i class="iconfont icon-articles"></i>
-        <span>2</span>
-      </a>
-      <div class="category-collapse collapse" id="collapse-dd5964e18d2a62abe1a8c1c6bd299813" role="tabpanel" aria-labelledby="heading-dd5964e18d2a62abe1a8c1c6bd299813">
+      
+        <a href="/categories/%E7%AE%97%E6%B3%95/Paxos/" class="category-count col-2 col-md-1 col-xm-1">
+          <i class="iconfont icon-articles"></i>
+          <span>2</span>
+        </a>
+      
+      <div class="category-collapse collapse " id="collapse-dd5964e18d2a62abe1a8c1c6bd299813"
+           role="tabpanel" aria-labelledby="heading-dd5964e18d2a62abe1a8c1c6bd299813">
         
         
           
@@ -468,14 +549,18 @@
     
       
       
-        <a href="/2022/05/09/Paxos%E7%AE%97%E6%B3%95%E8%A7%A3%E6%9E%90/" class="list-group-item list-group-item-action">
+        <a href="/2022/05/09/Paxos%E7%AE%97%E6%B3%95%E8%A7%A3%E6%9E%90/" title="Paxos算法推导--《软件架构设计：大型网站技术架构与业务架构融合之道》"
+           class="list-group-item list-group-item-action
+           ">
           <span class="category-post">Paxos算法推导--《软件架构设计：大型网站技术架构与业务架构融合之道》</span>
         </a>
       
     
       
       
-        <a href="/2019/09/25/Paxos%E7%AE%97%E6%B3%95%E6%8E%A8%E5%AF%BC/" class="list-group-item list-group-item-action">
+        <a href="/2019/09/25/Paxos%E7%AE%97%E6%B3%95%E6%8E%A8%E5%AF%BC/" title="Paxos算法推导"
+           class="list-group-item list-group-item-action
+           ">
           <span class="category-post">Paxos算法推导</span>
         </a>
       
@@ -491,6 +576,7 @@
     </div>
   
 </div>
+
 
               </div>
             </div>
@@ -511,7 +597,7 @@
   <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
     <div class="modal-content">
       <div class="modal-header text-center">
-        <h4 class="modal-title w-100 font-weight-bold">Suchen</h4>
+        <h4 class="modal-title w-100 font-weight-bold">Search</h4>
         <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
@@ -519,56 +605,58 @@
       <div class="modal-body mx-3">
         <div class="md-form mb-5">
           <input type="text" id="local-search-input" class="form-control validate">
-          <label data-error="x" data-success="v"
-                 for="local-search-input">Stichwort</label>
+          <label data-error="x" data-success="v" for="local-search-input">Keyword</label>
         </div>
         <div class="list-group" id="local-search-result"></div>
       </div>
     </div>
   </div>
 </div>
+
     
 
     
   </main>
 
-  <footer class="text-center mt-5 py-3">
-  <div class="footer-content">
-     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
-  </div>
+  <footer>
+    <div class="footer-inner">
   
-  <div class="statistics">
-    
-    
-
-    
-      
-        <!-- 不蒜子统计PV -->
-        <span id="busuanzi_container_site_pv" style="display: none">
-            总访问量 
-            <span id="busuanzi_value_site_pv"></span>
-             次
-          </span>
-      
-      
-        <!-- 不蒜子统计UV -->
-        <span id="busuanzi_container_site_uv" style="display: none">
-            总访客数 
-            <span id="busuanzi_value_site_uv"></span>
-             人
-          </span>
-      
-    
-  </div>
-
-
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+    <div class="statistics">
+  
   
 
   
-</footer>
+    
+      <span id="busuanzi_container_site_pv" style="display: none">
+        总访问量 
+        <span id="busuanzi_value_site_pv"></span>
+         次
+      </span>
+    
+    
+      <span id="busuanzi_container_site_uv" style="display: none">
+        总访客数 
+        <span id="busuanzi_value_site_uv"></span>
+         人
+      </span>
+    
+    
+  
+</div>
 
+  
+  
+  
+</div>
 
-  <!-- SCRIPTS -->
+  </footer>
+
+  <!-- Scripts -->
   
   <script  src="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.js" ></script>
   <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.css" />
@@ -587,37 +675,18 @@
 <script  src="/js/events.js" ></script>
 <script  src="/js/plugins.js" ></script>
 
-<!-- Plugins -->
-
-
-  <script  src="/js/local-search.js" ></script>
-
-
-
-  
-    <script  src="/js/img-lazyload.js" ></script>
-  
-
-
-
-  
-
-
-
-
-
-  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
-
-
-
 
   <script  src="https://cdn.jsdelivr.net/npm/typed.js@2/lib/typed.min.js" ></script>
   <script>
     (function (window, document) {
       var typing = Fluid.plugins.typing;
-      var title = document.getElementById('subtitle').title;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
       
-        typing(title);
+        typing(text);
       
     })(window, document);
   </script>
@@ -627,18 +696,30 @@
 
 
 
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  <script  src="/js/local-search.js" ></script>
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
 
 
 
 
 
-
-
-
-
-<!-- 主题的启动项 保持在最底部 -->
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
 <script  src="/js/boot.js" ></script>
 
 
+  
+
+  <noscript>
+    <div class="noscript-warning">Blog works best with JavaScript enabled</div>
+  </noscript>
 </body>
 </html>
