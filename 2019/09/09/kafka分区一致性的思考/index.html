@@ -19,7 +19,7 @@
     <meta name="description" content="在学习kafka的过程中，相信都听过一个概念“kafka不能保证消息整体的一致性，只能保证分区内的一致性“。其原因很简单当时看书的时候看到这里就觉得嗯嗯，是这么个道理，然后就接着往下看了。 后来在发送消息的API中，我以为发个消息，参数里就传topic和value就足够了，往指定topic里发value嘛，但是在代码里，发现除了这两个参数外，还有key这个参数，研讨一番后知道如果key不为null">
 <meta property="og:type" content="article">
 <meta property="og:title" content="kafka分区一致性的思考">
-<meta property="og:url" content="http://yoursite.com/2019/09/09/kafka%E5%88%86%E5%8C%BA%E4%B8%80%E8%87%B4%E6%80%A7%E7%9A%84%E6%80%9D%E8%80%83/index.html">
+<meta property="og:url" content="http://yuyangblog.cn/2019/09/09/kafka%E5%88%86%E5%8C%BA%E4%B8%80%E8%87%B4%E6%80%A7%E7%9A%84%E6%80%9D%E8%80%83/index.html">
 <meta property="og:site_name" content="echo&#39;s blog">
 <meta property="og:description" content="在学习kafka的过程中，相信都听过一个概念“kafka不能保证消息整体的一致性，只能保证分区内的一致性“。其原因很简单当时看书的时候看到这里就觉得嗯嗯，是这么个道理，然后就接着往下看了。 后来在发送消息的API中，我以为发个消息，参数里就传topic和value就足够了，往指定topic里发value嘛，但是在代码里，发现除了这两个参数外，还有key这个参数，研讨一番后知道如果key不为null">
 <meta property="og:locale">
@@ -71,7 +71,7 @@
   <script id="fluid-configs">
     var Fluid = window.Fluid || {};
     Fluid.ctx = Object.assign({}, Fluid.ctx)
-    var CONFIG = {"hostname":"yoursite.com","root":"/","version":"1.9.0","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":"0fcb8f5f35b1b48a6467f16a7ad0782b","google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+    var CONFIG = {"hostname":"yuyangblog.cn","root":"/","version":"1.9.0","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":"0fcb8f5f35b1b48a6467f16a7ad0782b","google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
 
     if (CONFIG.web_analytics.follow_dnt) {
       var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
@@ -341,7 +341,7 @@
   <div class="license-box my-3">
     <div class="license-title">
       <div>kafka分区一致性的思考</div>
-      <div>http://yoursite.com/2019/09/09/kafka分区一致性的思考/</div>
+      <div>http://yuyangblog.cn/2019/09/09/kafka分区一致性的思考/</div>
     </div>
     <div class="license-meta">
       

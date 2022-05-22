@@ -19,24 +19,24 @@
     <meta name="description" content="Caffeine相信不少同学都有使用过，其优点及一些特性网上也有很多优质的文章，这里就不再赘述。（OS：当然，我也没去钻研） 这里举一个很简单的例子 123456789@Autowireprivate Service service;LoadingCache&lt;String, String&gt; cache &#x3D; Caffeine.newBuilder().build(new CacheLoa">
 <meta property="og:type" content="article">
 <meta property="og:title" content="记一次Caffeine的惨案">
-<meta property="og:url" content="http://yoursite.com/2022/05/22/%E8%AE%B0%E4%B8%80%E6%AC%A1Caffeine%E7%9A%84%E6%83%A8%E6%A1%88/index.html">
+<meta property="og:url" content="http://yuyangblog.cn/2022/05/22/%E8%AE%B0%E4%B8%80%E6%AC%A1Caffeine%E7%9A%84%E6%83%A8%E6%A1%88/index.html">
 <meta property="og:site_name" content="echo&#39;s blog">
 <meta property="og:description" content="Caffeine相信不少同学都有使用过，其优点及一些特性网上也有很多优质的文章，这里就不再赘述。（OS：当然，我也没去钻研） 这里举一个很简单的例子 123456789@Autowireprivate Service service;LoadingCache&lt;String, String&gt; cache &#x3D; Caffeine.newBuilder().build(new CacheLoa">
 <meta property="og:locale">
-<meta property="og:image" content="http://yoursite.com/blog-img/20220522/01.png">
-<meta property="og:image" content="http://yoursite.com/blog-img/20220522/thread_block.jpg">
-<meta property="og:image" content="http://yoursite.com/blog-img/20220522/02.png">
-<meta property="og:image" content="http://yoursite.com/blog-img/20220522/03.png">
-<meta property="og:image" content="http://yoursite.com/blog-img/20220522/04.png">
-<meta property="og:image" content="http://yoursite.com/blog-img/20220522/05.png">
-<meta property="og:image" content="http://yoursite.com/blog-img/20220522/06.png">
-<meta property="og:image" content="http://yoursite.com/blog-img/20220522/07.png">
-<meta property="og:image" content="http://yoursite.com/blog-img/20220522/08.png">
+<meta property="og:image" content="http://yuyangblog.cn/blog-img/20220522/01.png">
+<meta property="og:image" content="http://yuyangblog.cn/blog-img/20220522/thread_block.jpg">
+<meta property="og:image" content="http://yuyangblog.cn/blog-img/20220522/02.png">
+<meta property="og:image" content="http://yuyangblog.cn/blog-img/20220522/03.png">
+<meta property="og:image" content="http://yuyangblog.cn/blog-img/20220522/04.png">
+<meta property="og:image" content="http://yuyangblog.cn/blog-img/20220522/05.png">
+<meta property="og:image" content="http://yuyangblog.cn/blog-img/20220522/06.png">
+<meta property="og:image" content="http://yuyangblog.cn/blog-img/20220522/07.png">
+<meta property="og:image" content="http://yuyangblog.cn/blog-img/20220522/08.png">
 <meta property="article:published_time" content="2022-05-22T02:04:31.000Z">
 <meta property="article:modified_time" content="2022-05-22T08:43:45.367Z">
 <meta property="article:author" content="于洋">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="http://yoursite.com/blog-img/20220522/01.png">
+<meta name="twitter:image" content="http://yuyangblog.cn/blog-img/20220522/01.png">
   
   
     <meta name="referrer" content="no-referrer-when-downgrade">
@@ -80,7 +80,7 @@
   <script id="fluid-configs">
     var Fluid = window.Fluid || {};
     Fluid.ctx = Object.assign({}, Fluid.ctx)
-    var CONFIG = {"hostname":"yoursite.com","root":"/","version":"1.9.0","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":"0fcb8f5f35b1b48a6467f16a7ad0782b","google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+    var CONFIG = {"hostname":"yuyangblog.cn","root":"/","version":"1.9.0","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":"0fcb8f5f35b1b48a6467f16a7ad0782b","google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
 
     if (CONFIG.web_analytics.follow_dnt) {
       var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
@@ -381,7 +381,7 @@
   <div class="license-box my-3">
     <div class="license-title">
       <div>记一次Caffeine的惨案</div>
-      <div>http://yoursite.com/2022/05/22/记一次Caffeine的惨案/</div>
+      <div>http://yuyangblog.cn/2022/05/22/记一次Caffeine的惨案/</div>
     </div>
     <div class="license-meta">
       
