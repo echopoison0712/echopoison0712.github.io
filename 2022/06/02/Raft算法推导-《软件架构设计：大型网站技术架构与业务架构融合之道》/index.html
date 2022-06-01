@@ -23,17 +23,18 @@
 <meta property="og:site_name" content="echo&#39;s blog">
 <meta property="og:description" content="单点写入Multi Paxos虽然可以选举一个leader但也不是强制执行，且本身也是允许多主存在的。 而为了简化这一问题，Raft算法规定必须要有Leader节点，且任意时刻只能有1个Leader节点，所有写请求都传到Leader上，然后Leader再同步给Follower。 这样一来，问题就简化成了客户端-&gt;Leader-&gt;Follower的一个顺序链路中。 整个算法的阶段也就清晰">
 <meta property="og:locale">
-<meta property="og:image" content="http://yuyangblog.cn/20220602/01.png">
-<meta property="og:image" content="http://yuyangblog.cn/Users/echo/blog/source/blog-img/20220602/02.png">
-<meta property="og:image" content="http://yuyangblog.cn/Users/echo/blog/source/blog-img/20220602/03.png">
-<meta property="og:image" content="http://yuyangblog.cn/Users/echo/blog/source/blog-img/20220602/03-2.png">
+<meta property="og:image" content="http://yuyangblog.cn/blog-img/20220602/01.png">
+<meta property="og:image" content="http://yuyangblog.cn/blog-img/20220602/04.png">
+<meta property="og:image" content="http://yuyangblog.cn/blog-img/20220602/02.png">
+<meta property="og:image" content="http://yuyangblog.cn/blog-img/20220602/03.png">
+<meta property="og:image" content="http://yuyangblog.cn/blog-img/20220602/03-2.png">
 <meta property="article:published_time" content="2022-06-01T17:24:39.000Z">
-<meta property="article:modified_time" content="2022-06-01T17:26:11.797Z">
+<meta property="article:modified_time" content="2022-06-01T17:35:47.132Z">
 <meta property="article:author" content="于洋">
 <meta property="article:tag" content="读书笔记">
 <meta property="article:tag" content="Raft">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="http://yuyangblog.cn/20220602/01.png">
+<meta name="twitter:image" content="http://yuyangblog.cn/blog-img/20220602/01.png">
   
   
     <meta name="referrer" content="no-referrer-when-downgrade">
@@ -226,7 +227,7 @@
         <i class="iconfont icon-chart"></i>
         
           <!-- compatible with older versions-->
-          1.6k 字
+          2k 字
         
       </span>
     
@@ -238,7 +239,7 @@
         
         
           <!-- compatible with older versions-->
-          14 分钟
+          17 分钟
         
       </span>
     
@@ -288,16 +289,24 @@
 <p>阶段二：正常阶段，Leader正常接受写请求，然后转发给Follower</p>
 <p>阶段三：恢复阶段，旧Leader宕机，新Leader上任，由新Leader开始转发请求。</p>
 <h1 id="日志结构"><a href="#日志结构" class="headerlink" title="日志结构"></a>日志结构</h1><p>在讲算法的三个阶段之前，需要先详细介绍日志的结构。因为复制的就是日志，日志的存储结构是这个算法的基石</p>
-<p><img src="/20220602/01.png" srcset="/img/loading.gif" lazyload alt="日志存储结构"></p>
+<p><img src="/blog-img/20220602/01.png" srcset="/img/loading.gif" lazyload alt="日志存储结构"></p>
 <h2 id="term与index"><a href="#term与index" class="headerlink" title="term与index"></a>term与index</h2><p>如图，每条日志都由term、index、content来组成，其中content就是日志内容，index为日志的顺序编号，类似于Kafka的offset。</p>
 <p>term则是指写入日志的Leader的“任期”，即epoch。代表是自系统启动后的第几任Leader节点，单调递增的。</p>
 <p>这里我们需要要求日志需要满足后一个index的term要&gt;&#x3D;前一个index的term。这是为了解决脑裂问题。</p>
 <h2 id="lastApplied与commitIndex"><a href="#lastApplied与commitIndex" class="headerlink" title="lastApplied与commitIndex"></a>lastApplied与commitIndex</h2><p>commitIndex的作用类似于Kafka的HW，即该index及其之前的日志被半数以上的follower接受。而一旦一条日志被commit，就认为该日志不能被改变和删除了。同时与Kafka相同在于，通过一个全局的commitIndex后，就不需要为每个index的日志去维护一个commit&#x2F;uncommit的状态（只要&lt;&#x3D;commitIndex的都被认为是commit）。同时follower也不需要为每一个复制过来的日志逐条反馈给leader其对应的commit状态。</p>
 <p>而由于Raft和Paxos一样，也是通过存储日志来保持对变量状态的维护，因此lastApplied自然就是表示当前日志序列中，哪些已经回放到状态机了。</p>
+<h2 id="state"><a href="#state" class="headerlink" title="state"></a>state</h2><p>理解了日志的结构，下面来看每个节点上都维护了哪些变量，这些变量一起构成了每个节点的State</p>
+<p><img src="/blog-img/20220602/04.png" srcset="/img/loading.gif" lazyload alt="state变量"></p>
+<p>思考🤔为啥前三个需要落盘而后四个只需要存在内存中。</p>
+<ol>
+<li>log: 日志落盘，这个感觉没啥可说的，否则如果落内存那岂不重启就丢数据了</li>
+<li>currentTerm与voteFor：反证法证明，如果不落盘，对于currentTerm来说节点再启动时值为0，那么此时若收到脑裂的Leader节点的请求也会响应，集群不一致；对于voteFor来说节点再启动后值也为0，此时就可以又给别的节点选举投票，违背了一个节点只能voteFor一个节点的约定。</li>
+<li>后四个：这四个都是针对leader节点生效，而一个节点如果宕机重启后大概率不再会是leader节点，因此也没必要落盘。</li>
+</ol>
 <h1 id="Leader选举"><a href="#Leader选举" class="headerlink" title="Leader选举"></a>Leader选举</h1><p>Raft算法里，Leader周期性的向所有follower发送心跳。如果follower在给定的时间内没收到Leader的心跳，则认为Leader宕机，然后会随机睡眠一段时间（为了避免同一时间所有节点参与选举），发起选举Leader操作。而对于Leader如果发现有更大term的Leader存在，则推位成follower。</p>
 <p>这里，Raft的心跳是单向的，即只能Leader周期性的往follower发送心跳。与zab则是双向的。</p>
 <h2 id="leader选举实现过程"><a href="#leader选举实现过程" class="headerlink" title="leader选举实现过程"></a>leader选举实现过程</h2><p>处于Candidate状态的节点会像所有节点发送一个RequestVote的RPC调用，如果超半数节点回复true，则该节点晋升为leader。RequestVote表现如下</p>
-<p><img src="/Users/echo/blog/source/blog-img/20220602/02.png" srcset="/img/loading.gif" lazyload alt="RequestVote"></p>
+<p><img src="/blog-img/20220602/02.png" srcset="/img/loading.gif" lazyload alt="RequestVote"></p>
 <p>对于接收者处理逻辑里的日志的新旧判断，</p>
 <ul>
 <li>a.term &gt; b.term</li>
@@ -305,8 +314,8 @@
 </ul>
 <p>选举过程中，若收到半数以上true则晋升为leader、若未收到则睡眠一段时间后重新发起选举请求、若选举中收到某个Leader节点的复制请求，且term&gt;&#x3D;自己这次选举的term，则承认其leader行为退位成follower，但如果term&lt;自己本次的term，则拒绝该请求，继续发起选举。</p>
 <h2 id="日志复制"><a href="#日志复制" class="headerlink" title="日志复制"></a>日志复制</h2><p>leader成功选举后，进入第二阶段复制阶段。leader会发起AppendEntries RPC调用，</p>
-<p><img src="/Users/echo/blog/source/blog-img/20220602/03.png" srcset="/img/loading.gif" lazyload alt="AppendEntries"></p>
-<p><img src="/Users/echo/blog/source/blog-img/20220602/03-2.png" srcset="/img/loading.gif" lazyload alt="AppendEntries续"></p>
+<p><img src="/blog-img/20220602/03.png" srcset="/img/loading.gif" lazyload alt="AppendEntries"></p>
+<p><img src="/blog-img/20220602/03-2.png" srcset="/img/loading.gif" lazyload alt="AppendEntries续"></p>
 <p>接收者通过1保证接受的就是Leader节点的值。</p>
 <p>通过2保证该Leader节点的日志序列与上一次复制到的日志序列是同一份数据</p>
 <p>通过3来完成日志的截断，虽然可能丢消息但集群还是一致的</p>
