@@ -53,6 +53,8 @@
       
       <tag>Paxos</tag>
       
+      <tag>读书笔记</tag>
+      
     </tags>
     
   </entry>
@@ -159,9 +161,9 @@
     
     <tags>
       
-      <tag>kafka</tag>
-      
       <tag>读书笔记</tag>
+      
+      <tag>kafka</tag>
       
     </tags>
     
@@ -215,9 +217,9 @@
     
     <tags>
       
-      <tag>Redis</tag>
-      
       <tag>读书笔记</tag>
+      
+      <tag>Redis</tag>
       
     </tags>
     
