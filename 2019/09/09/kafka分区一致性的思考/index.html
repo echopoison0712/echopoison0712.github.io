@@ -289,7 +289,7 @@
 <p>后来，当我重读《深入理解Kafka：核心设计与实践原理》这本书的时候，再看到“kafka不能保证消息整体的一致性，只能保证分区内的一致性”这个概念的时候，突然想到了这个示例，突然间意识到原来当时那个topic的partitionCount &#x3D; 1 是有其业务意义的，因为消息的是表的DML语句，其对于顺序的要求是很高的，先Insert再Update和先Update再Insert这就有可能产生两种数据，如果这里建立了多个分区，一致性就得不到保障。当想通这个道理的时候不禁觉得前辈到底是前辈，这里确实只能建一个分区。</p>
 <p>再后来，当我看到producer的key这个参数的时候，再回想这个示例不禁发现，真的只能建一个分区吗？kafka既然是一个成熟的中间件了，对于这种需要保证消息一致性的解决方案就是只能是建一个分区吗？显然，kafka留下了key这个参数用来解决这个问题，在该业务上，完全可以将同一张表的DML&#x2F;DDL用一个key来映射，不同的表使用不同的key，这样就完美解决了该问题，其分区也就可以根据情况来创建多个了。类比到其他业务线上比如订单系统中相同订单号的消息使用同一topic来send。想到这里，emmm，“前辈”确实只是个“前辈”。</p>
 <p>至此，通过一个样例，将kafka的两个概念串联了起来，不禁觉得这些看起来很easy的概念，如果面试的时候面试官单问任何一个都可以侃侃而谈的概念，如果多思考，多问为什么，还是可以得到很多不一样的心得与体会的。学习的乐趣大体在于此吧。</p>
-
+<script type="text&#x2F;javascript" src="https://unpkg.com/kity@2.0.4/dist/kity.min.js"></script><script type="text&#x2F;javascript" src="https://unpkg.com/kityminder-core@1.4.50/dist/kityminder.core.min.js"></script><script defer="true" type="text&#x2F;javascript" src="https://unpkg.com/hexo-simple-mindmap@0.8.0/dist/mindmap.min.js"></script><link rel="stylesheet" type="text&#x2F;css" href="https://unpkg.com/hexo-simple-mindmap@0.8.0/dist/mindmap.min.css">
               
             </div>
             <hr/>

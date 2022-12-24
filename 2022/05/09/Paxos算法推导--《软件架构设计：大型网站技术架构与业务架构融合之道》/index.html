@@ -338,7 +338,7 @@
 <h5 id="2-Acceptor被动查询"><a href="#2-Acceptor被动查询" class="headerlink" title="2. Acceptor被动查询"></a>2. Acceptor被动查询</h5><p>当一个Acceptor被选为Leader后，对于所有未确认的日志，可以逐个再执行一遍Paxos，来判断该条日志被多数派确认的值是多少。比如还是刚才收到firstUnchosenIndex&#x3D;7的那个Acceptor，当他又收到7～9这三条日志后，被选为Leader，那么就对这3条日志逐个广播确认看看大家是否存储的事一致的</p>
 <p>因为Basic Paxos有一个核心特性：一旦一个值被确定后，无论再执行多少遍Paxos，该值都不会改变！因此，再执行1遍Paxos，相当于向集群发起了一次查询！</p>
 <p>至此，Multi Paxos算法就介绍完了。</p>
-
+<script type="text&#x2F;javascript" src="https://unpkg.com/kity@2.0.4/dist/kity.min.js"></script><script type="text&#x2F;javascript" src="https://unpkg.com/kityminder-core@1.4.50/dist/kityminder.core.min.js"></script><script defer="true" type="text&#x2F;javascript" src="https://unpkg.com/hexo-simple-mindmap@0.8.0/dist/mindmap.min.js"></script><link rel="stylesheet" type="text&#x2F;css" href="https://unpkg.com/hexo-simple-mindmap@0.8.0/dist/mindmap.min.css">
               
             </div>
             <hr/>
