@@ -4,6 +4,33 @@
   
   
   <entry>
+    <title>偏向锁与hashcode</title>
+    <link href="/2023/02/07/%E5%81%8F%E5%90%91%E9%94%81%E4%B8%8Ehashcode/"/>
+    <url>/2023/02/07/%E5%81%8F%E5%90%91%E9%94%81%E4%B8%8Ehashcode/</url>
+    
+    <content type="html"><![CDATA[<p>最近在微信读书上看<a href="https://book.douban.com/subject/35446285/">《Java高并发核心编程（卷2）》</a>，看到书上有这样一句话</p><blockquote><p>对象一旦生产了哈希码，它就无法进入偏向锁状态。也就是说，只要一个对象已经计算过哈希码，它就无法进入偏向锁状态，当一个对象当前正处于偏向锁状态，并且需要计算其哈希码的话，它的偏向锁会被撤销，并且锁会膨胀为重量级锁</p></blockquote><p>其原因在于计算对象的hashcode采用的是随机生成的方式，而由于需要保证对象的hashcode的一致性，且对象的hashcode是懒加载的。因此当生产hashcode后会将该值塞到对象头的MarkWord里。</p><p>另一方面，锁状态为偏向锁时，MarkWord前62位需要存储偏向相关信息，这部分空间与hashcode的位数存在重复，因此二者无法共存</p><p><img src="https://img-blog.csdnimg.cn/b26dfeb728a646cea614872296f3e8b6.png#pic_center" alt="img"></p><p>下面写一个程序来验证一下。</p><p><img src="/blog-img/20230208/01.png" alt="未重写hashcode场景"></p><p><img src="/blog-img/20230208/02.png" alt="重写hashcode场景"></p><blockquote><p>参考</p><p><a href="https://blog.csdn.net/u014044812/article/details/124302959">Java synchronized偏向锁后hashcode存在哪里？</a></p></blockquote><script type="text&#x2F;javascript" src="https://unpkg.com/kity@2.0.4/dist/kity.min.js"></script><script type="text&#x2F;javascript" src="https://unpkg.com/kityminder-core@1.4.50/dist/kityminder.core.min.js"></script><script defer="true" type="text&#x2F;javascript" src="https://unpkg.com/hexo-simple-mindmap@0.8.0/dist/mindmap.min.js"></script><link rel="stylesheet" type="text&#x2F;css" href="https://unpkg.com/hexo-simple-mindmap@0.8.0/dist/mindmap.min.css">]]></content>
+    
+    
+    <categories>
+      
+      <category>Java</category>
+      
+    </categories>
+    
+    
+    <tags>
+      
+      <tag>学习心得</tag>
+      
+      <tag>Java</tag>
+      
+    </tags>
+    
+  </entry>
+  
+  
+  
+  <entry>
     <title>InnoDB引擎下的间隙锁及加锁规则</title>
     <link href="/2022/12/17/InnoDB%E5%BC%95%E6%93%8E%E4%B8%8B%E7%9A%84%E9%97%B4%E9%9A%99%E9%94%81%E5%8F%8A%E5%8A%A0%E9%94%81%E8%A7%84%E5%88%99/"/>
     <url>/2022/12/17/InnoDB%E5%BC%95%E6%93%8E%E4%B8%8B%E7%9A%84%E9%97%B4%E9%9A%99%E9%94%81%E5%8F%8A%E5%8A%A0%E9%94%81%E8%A7%84%E5%88%99/</url>
